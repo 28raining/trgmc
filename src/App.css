@@ -1,0 +1,9 @@
+html {
+  font-size: 16px;
+  background-color: rgba(250, 250, 250, 1.0);
+}
+
+.custom-tooltip {
+  --bs-tooltip-bg: var(--bd-violet-bg);
+  --bs-tooltip-color: var(--bs-white);
+}
