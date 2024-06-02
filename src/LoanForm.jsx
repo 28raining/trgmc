@@ -29,7 +29,7 @@ function ValidFbComp({ x }) {
 function LoanForm({ displayState, flash, updateUserInput, valid }) {
   const [show, setShow] = useState(false);
   const feeOptions = ["$ / year", "$ / month", "% / year", "% / month"];
-  const extraPayments = (displayState['propertyTax'] > 0) || (displayState['hoa'] > 0) || (displayState['insurance'] > 0);
+  const extraPayments = displayState["propertyTax"] > 0 || displayState["hoa"] > 0 || displayState["insurance"] > 0;
   // console.log(displayState['propertyTax'], displayState['hoa'],displayState['insurance'], extraPayments )
 
   // var validClass = {};
@@ -102,10 +102,11 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                 onChange={(e) => updateIfChanged(displayState["homeVal"], e.target.value, "homeVal")}
               />
               <ValidFbComp x={valid["homeVal"]} />
-              {extraPayments ? 
-              <label>
-                <small></small>
-              </label>: null }
+              {extraPayments ? (
+                <label>
+                  <small></small>
+                </label>
+              ) : null}
             </div>
             <div className="col-2 text-center align-self-center">or</div>
             <div className="col-5 ps-0">
@@ -117,10 +118,11 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                 value={cashFormat(displayState["monthlyPayment"])}
               />
               <ValidFbComp x={valid["monthlyPayment"]} />
-              {extraPayments ? 
-              <label>
-                <small>{cashFormat(displayState["monthlyPaymentToLoan"])} towards loan</small>
-              </label> : null }
+              {extraPayments ? (
+                <label>
+                  <small>{cashFormat(displayState["monthlyPaymentToLoan"])} towards loan</small>
+                </label>
+              ) : null}
 
               {/* {valid.monthlyPayment === null ? null : (
                 <div className="invalid-feedback" style={{ display: "initial" }}>

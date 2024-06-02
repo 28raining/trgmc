@@ -453,13 +453,14 @@ function App() {
             <Comments website-id={11189} page-id="" />
           </div>
           <div className="row pt-3">
-          <div className="col-6 text-start">
-          <Github className="me-2" />github
-            
-          </div>
-          <div className="col-6 pb-3 text-end">
-          <CCircle className="me-2" />Will Kelsey
-          </div>
+            <div className="col-6 text-start">
+              <Github className="me-2" />
+              github
+            </div>
+            <div className="col-6 pb-3 text-end">
+              <CCircle className="me-2" />
+              Will Kelsey
+            </div>
           </div>
         </div>
       </footer>
