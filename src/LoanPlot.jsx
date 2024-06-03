@@ -17,7 +17,7 @@ import { useState } from "react";
 
 function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, insurance, startDate }) {
   const [monthsPerYearToPlot, setMonthsPerYearToPlot] = useState("yearly payments");
-  const indexPlot = monthsPerYearToPlot == "monthly payments" ? 1 : 12;
+  // const indexPlot = monthsPerYearToPlot == "monthly payments" ? 1 : 12;
   const yTitle = monthsPerYearToPlot == "monthly payments" ? "Monthly Payments" : "Yearly Payments";
   const startMonth = startDate.getMonth();
   // console.log(startDate, startMonth)
@@ -34,6 +34,7 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, insurance
     monthlyInterestFiltered = loanRes["monthlyInterest"];
     remainingFiltered = loanRes["remaining"];
   } else {
+    //User wants to plot yearly - it's easier to read
     // var loanMonthsFiltered = [0]
     monthlyPrincipalFiltered = [0];
     monthlyInterestFiltered = [0];
@@ -42,13 +43,21 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, insurance
     var loanMonthsFiltered_full = loanMonths.filter(function (element, index) {
       return index % 12 === 0;
     });
-    loanMonthsFiltered = loanMonthsFiltered_full.map((d) => d.substring(4, 8));
+    loanMonthsFiltered = loanMonthsFiltered_full.map((d) => d.substring(4, 8)); //get only the year, throw away the month
     remainingFiltered = loanRes["remaining"].filter(function (element, index) {
-      return index % indexPlot === 0;
+      return index % 12 === 0;
     });
 
+    var prev_year;
     for (var i = 0; i < loanMonths.length; i++) {
       var yearIndex = Math.floor((startMonth + i) / 12);
+
+      var year = loanMonths[i].substring(4, 8);
+      if (prev_year != year) {
+        prev_year = year;
+        loanMonthsFiltered[yearIndex] = loanMonths[i].substring(4, 8);
+        remainingFiltered[yearIndex] = loanRes["remaining"][i];
+      }
       // console.log(yearIndex)
       // if ((yearIndex==0) || (i==0)) {
       //   monthlyPrincipalFiltered.push(0);// = 0
@@ -59,6 +68,7 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, insurance
       monthlyPrincipalFiltered[yearIndex] = monthlyPrincipalFiltered[yearIndex] + loanRes["monthlyPrincipal"][i];
       monthlyInterestFiltered[yearIndex] = monthlyInterestFiltered[yearIndex] + loanRes["monthlyInterest"][i];
     }
+    console.log(loanMonthsFiltered.length, monthlyPrincipalFiltered.length);
     // console.log(yearIndex, loanRes["monthlyPrincipal"], loanRes["monthlyInterest"])
 
     // var monthlyPrincipalFiltered = loanRes["monthlyPrincipal"].filter(function (element, index) {

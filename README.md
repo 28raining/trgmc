@@ -1,12 +1,3 @@
-# React + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
 # Purpose of this tool
 - add refinancing, re-casting, and many overpayments
 - more modern & friendly interface
@@ -18,10 +9,7 @@ Currently, two official plugins are available:
 # Todo
 
 ## Important
-- tax should reduce if loan length decreases
-- show new finish date after events
 - double check maths against other sites
--- google analytics
 -- google adwords
 
 
@@ -50,10 +38,13 @@ Currently, two official plugins are available:
 - typing '.' at the end of homeVal adds a zero to the front?
 - setting downpay cash to 15%, make homeValue big, make homeValue small
 -- save it to cookie
+- show balance change for each overpayment
 
 
 
 # Done
+- tax should reduce if loan length decreases
+-- google analytics
 -- Add footer with ym name and link to git
 - get a domain, make the site live
 - favicon and home icon
@@ -63,7 +54,7 @@ Currently, two official plugins are available:
 -- fix total repayment when overpayment & refinance added
 -- show amount saved by doing overpayment
 -- overpayment shows remaining balance reduction
-
+- yearly is missing a year
 -- new monthly payment when re-cast is chosen
 -- show “yearly”, “monthly”
 -- move export fn to common file to enable fast refresh

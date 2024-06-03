@@ -318,13 +318,17 @@ function EventsForm({ loanMonths, loanEvent, setLoanEvent, monthlyPaymentPerEven
                     {x["event"] == "Refinance" ? (
                       <tr key={"refi1"}>
                         <td></td>
-                        <td colSpan={5}>New loan length: {x["newLength"] == "" ? <em>unchanged</em> : `${x["newLength"]}yr`}</td>
+                        <td colSpan={5} className="py-1">
+                          New loan length: {x["newLength"] == "" ? <em>unchanged</em> : `${x["newLength"]}yr`}
+                        </td>
                       </tr>
                     ) : null}
                     {x["event"] == "Refinance" || x["event"] == "Recast" ? (
                       <tr key={"refi2"}>
                         <td></td>
-                        <td colSpan={5}>New monthly payment: {cashFormat(monthlyPaymentPerEvent[i + 1])}</td>
+                        <td colSpan={5} className="py-1">
+                          New monthly payment: {cashFormat(monthlyPaymentPerEvent[i + 1])}
+                        </td>
                       </tr>
                     ) : null}
                   </tbody>

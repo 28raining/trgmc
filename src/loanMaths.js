@@ -181,10 +181,14 @@ export function loanMaths(
   }
 
   //remove the last element of 'remaining' which should be 0
-  remaining.splice(remaining.length - 1, 1);
-  // console.log(monthlyPaymentPerEvent)
+  // remaining.splice(remaining.length - 1, 1);
 
-  //FIXME - total repay is not correct when there's events - must be fixed
+  // console.log(i, numMonths, monthlyPayment.length,[...monthlyPayment]);
+  monthlyPayment.splice(i + 1, numMonths - i);
+  monthlyInterest.splice(i + 1, numMonths - i);
+  monthlyPrincipal.splice(i + 1, numMonths - i);
+  remaining.splice(i + 1, numMonths - i);
+  // console.log(i, numMonths, monthlyPayment.length,[...monthlyPayment]);
 
   return {
     loanAmount: originalLoanAmount,

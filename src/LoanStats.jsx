@@ -25,9 +25,10 @@ function LoanStats({ loanRes, loanEvent, userInput }) {
   var totalHoA = scaleMonthlyWUnit(userInput["hoa"], userInput["hoaUnit"], loanRes["homeVal"], loanRes["monthlyInterest"].length);
   var totalInsurance = scaleMonthlyWUnit(userInput["insurance"], userInput["insuranceUnit"], loanRes["homeVal"], loanRes["monthlyInterest"].length);
   // console.log("loanRes['monthlyPrincipal']", loanRes['monthlyPrincipal'],totalPrincipal)
+  // console.log(loanRes)
 
   return (
-    <div className="row shadow-sm border rounded mb-2 py-3 mx-0">
+    <div className="row shadow-sm border rounded py-3 mx-0">
       <div className="col-12">
         <div className="row pb-2">
           <div className="col-12">
@@ -47,7 +48,7 @@ function LoanStats({ loanRes, loanEvent, userInput }) {
           <div className="col-12">
             <div className="input-group">
               <span className="input-group-text outputLabelWidth" id="basic-addon1">
-                Total costs
+                Total costs<small>&nbsp;(to {loanRes["loanMonths"][loanRes["loanMonths"].length - 1]})</small>
               </span>
               <output type="text" className="form-control bg-info-subtle">
                 {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(
@@ -57,9 +58,9 @@ function LoanStats({ loanRes, loanEvent, userInput }) {
             </div>
           </div>
         </div>
-        <div className="row pb-2">
+        <div className="row">
           <div className="col-12">
-            <ul className="ps-5 pt-2">
+            <ul className="ps-5 pt-2 mb-0">
               <li>Principal: {cashFormat(totalPrincipal)}</li>
               <li>Interest: {cashFormat(totalInterest)}</li>
               {loanRes["extraPayments"] > 0 ? <li>Overpayments & fees: {cashFormat(loanRes["extraPayments"])}</li> : null}
@@ -70,7 +71,7 @@ function LoanStats({ loanRes, loanEvent, userInput }) {
           </div>
         </div>
         {!showTimeReduced ? null : (
-          <div className="row">
+          <div className="row pt-2">
             <div className="input-group">
               <span className="input-group-text outputLabelWidth" id="basic-addon1">
                 Time reduced due to overpayments
