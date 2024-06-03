@@ -33,6 +33,7 @@
 .plotHeight {
   height: calc(100vh - 110px);
   max-height: 1000px;
+  min-height: 350px;
 }
 
 /* .outputLabelWidth {
@@ -40,4 +41,22 @@
 } */
 .mw-130 {
   min-width: 130px;
+}
+
+.hideLogo {
+  display: inline-block;
+}
+.titleSize {
+  font-size: inherit;
+}
+
+@media (width <= 500px) {
+  .hideLogo {
+    display: none !important;
+    font-size: 14px;
+  }
+  .titleSize {
+    font-size: 16px !important;
+  }
+  /* … */
 }

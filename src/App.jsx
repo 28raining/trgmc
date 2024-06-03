@@ -378,10 +378,10 @@ function App() {
     <>
       <nav className="navbar bg-body-tertiary mb-2">
         <div className="container-xxl">
-          <span className="navbar-brand">
-            <Bank height="24" className="me-2 d-inline-block align-text-bottom" />
-            <span>
-              the <b>R</b>eally <b>G</b>ood <b>M</b>ortgage <b>C</b>alculator <small>.net</small>
+          <span className="navbar-brand titleSize">
+            <Bank height="24" className="hideLogo me-2 align-text-bottom " />
+            <span style={{ whiteSpace: "normal" }}>
+              the <b>R</b>eally <b>G</b>ood <b>M</b>ortgage <b>C</b>alculator
             </span>
           </span>
           <span className="justify-content-end">
@@ -398,7 +398,7 @@ function App() {
               />
             </OverlayTrigger>
             <OverlayTrigger overlay={<Tooltip>{"reset"}</Tooltip>} placement="bottom">
-              <Trash key="Trash" onClick={() => updateUserInput("reset")} style={{ cursor: "pointer" }} size={20} className="me-2" />
+              <Trash key="Trash" onClick={() => updateUserInput("reset")} style={{ cursor: "pointer" }} size={20} className="me-3" />
             </OverlayTrigger>
           </span>
         </div>
@@ -444,7 +444,7 @@ function App() {
           </div>
         </div>
       </div>
-      <footer className="bg-body-tertiary mt-2">
+      <footer className="bg-body-tertiary mt-4">
         <div className="container-xxl">
           <div className="row pt-3">
             <p>It would be great to hear your feedback!</p>

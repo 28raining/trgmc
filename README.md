@@ -18,11 +18,9 @@ Currently, two official plugins are available:
 # Todo
 
 ## Important
--- Add footer with ym name and link to git
 - tax should reduce if loan length decreases
 - show new finish date after events
 - double check maths against other sites
-- get a domain, make the site live
 -- google analytics
 -- google adwords
 
@@ -56,6 +54,8 @@ Currently, two official plugins are available:
 
 
 # Done
+-- Add footer with ym name and link to git
+- get a domain, make the site live
 - favicon and home icon
 -- Add a share button
 -- Add a reset button
