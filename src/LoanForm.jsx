@@ -96,6 +96,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
               <input
                 // key={homeVal}
                 type="text"
+                pattern="\d*"
                 // className={flash["homeVal"] ? `form-control anim1 ${class_validHomeVal}` : `form-control anim2 ${class_validHomeVal}`}
                 className={inputClass["homeVal"]}
                 value={cashFormat(displayState["homeVal"])}
