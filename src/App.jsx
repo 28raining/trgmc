@@ -117,8 +117,8 @@ var coarseDate = Date.parse(dStr); //only care about month - don't want minor da
 const initialState = {
   homeVal: "500000",
   monthlyPayment: "0",
-  downPayCash: "100000",
-  downPayPercent: "0",
+  downPayCash: "0",
+  downPayPercent: "20",
   interestRate: "5.00",
   loanLength: "30",
   propertyTax: "0.00",
@@ -142,7 +142,7 @@ for (const [key, value] of searchParams.entries()) {
 function App() {
   const [loanEvent, setLoanEvent] = useState(initialEvents);
   const [chosenInput, setChosenInput] = useState("homeVal");
-  const [userSetDownPercent, setUserSetDownPercent] = useState(false);
+  const [userSetDownPercent, setUserSetDownPercent] = useState(true);
 
   const [userInput, setUserInput] = useState({ ...initialState, ...initialOverride });
   const [flash, setFlash] = useState({
@@ -275,6 +275,7 @@ function App() {
       newUserInput.startDate = value;
     } else if (field == "reset") {
       newUserInput = initialState;
+      newUserSetDownPercent = true;
       newLoanEvent = [];
     }
 

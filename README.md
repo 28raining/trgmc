@@ -11,6 +11,13 @@
 ## Important
 - double check maths against other sites
 -- google adwords
+- yearly plot should show sum of taxes (not just monthly)
+Down payment can’t be 0?
+Time reduced box is too big on phone
+Show finish date
+Inputs should be numbers only
+Mobile start date arrangement
+Show total interest saved by overpaying
 
 
 ## Later

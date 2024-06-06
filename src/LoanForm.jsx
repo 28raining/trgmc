@@ -4,7 +4,7 @@ import { Modal } from "react-bootstrap";
 import { useState } from "react";
 
 export function cashFormat(val) {
-  if (val == "") return "";
+  if (val === "") return "";
   if (!isNumber(val)) return "";
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -69,10 +69,12 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
 
   function updateIfChanged(oldVal, newVal, name) {
     var parsedNewVal = newVal.replace(/[^0-9.]+/g, "");
+    console.log(oldVal, parsedNewVal, oldVal !== parsedNewVal)
     if (oldVal !== parsedNewVal) {
       if (oldVal === "0" && isNumber(parsedNewVal)) {
         var noLeading0 = parseFloat(parsedNewVal).toString();
       } else noLeading0 = parsedNewVal;
+      console.log(noLeading0)
       updateUserInput(name, noLeading0);
     }
   }
@@ -95,8 +97,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
               <label>Home Value</label>
               <input
                 // key={homeVal}
-                type="text"
-                pattern="\d*"
+                type="text" pattern="\d*" inputMode="numeric"
                 // className={flash["homeVal"] ? `form-control anim1 ${class_validHomeVal}` : `form-control anim2 ${class_validHomeVal}`}
                 className={inputClass["homeVal"]}
                 value={cashFormat(displayState["homeVal"])}
