@@ -73,7 +73,7 @@ function LoanStats({ loanRes, loanEvent, userInput }) {
         {!showTimeReduced ? null : (
           <div className="row pt-2">
             <div className="input-group">
-              <span className="input-group-text outputLabelWidth" id="basic-addon1">
+              <span className="input-group-text outputLabelWidth maxW" id="basic-addon1">
                 Time reduced due to overpayments
               </span>
               <output type="text" className="form-control bg-info-subtle">

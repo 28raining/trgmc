@@ -50,6 +50,11 @@
   font-size: inherit;
 }
 
+.maxW {
+  max-width: 60%;
+  white-space: initial !important;
+}
+
 @media (width <= 500px) {
   .hideLogo {
     display: none !important;
