@@ -98,7 +98,6 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
               <input
                 // key={homeVal}
                 type="text"
-                pattern="\d*"
                 inputMode="numeric"
                 // className={flash["homeVal"] ? `form-control anim1 ${class_validHomeVal}` : `form-control anim2 ${class_validHomeVal}`}
                 className={inputClass["homeVal"]}
@@ -117,6 +116,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
               <label>Monthly Payment</label>
               <input
                 type="text"
+                inputMode="numeric"
                 className={inputClass["monthlyPayment"]}
                 onChange={(e) => updateIfChanged(displayState["monthlyPayment"], e.target.value, "monthlyPayment")}
                 value={cashFormat(displayState["monthlyPayment"])}
@@ -146,6 +146,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
               <div className="input-group mb-1">
                 <input
                   type="text"
+                  inputMode="numeric"
                   className={inputClass["downPayCash"]}
                   // className={userSetDownPercent ? (flash["downPay"] ? "form-control anim1" : "form-control anim2") : "form-control"}
                   style={{ width: "70px" }}
@@ -162,6 +163,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                 </span>
                 <input
                   type="text"
+                  inputMode="numeric"
                   className={inputClass["downPayPercent"]}
                   // className={userSetDownPercent ? "form-control" : flash["downPay"] ? "form-control anim1" : "form-control anim2"}
                   value={displayState["downPayPercent"]}
@@ -184,6 +186,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
 
               <input
                 type="text"
+                inputMode="numeric"
                 className={inputClass["loanAmount"]}
                 // className={flash["loanAmount"] ? "form-control anim1" : "form-control anim2"}
                 value={cashFormat(displayState["loanAmount"])}
@@ -234,6 +237,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
               <div className="input-group mb-1">
                 <input
                   type="text"
+                  inputMode="numeric"
                   className={inputClass["loanLength"]}
                   value={displayState["loanLength"]}
                   onChange={(e) => {
@@ -275,7 +279,6 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                 />
 
                 <select
-                  type="text"
                   className="form-select px-2 input-group-text"
                   value={displayState["propertyTaxUnit"]}
                   onChange={(e) => {
@@ -312,7 +315,6 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                 />
 
                 <select
-                  type="text"
                   className="form-select px-2 input-group-text"
                   value={displayState["hoaUnit"]}
                   onChange={(e) => {
@@ -347,7 +349,6 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                 />
 
                 <select
-                  type="text"
                   className="form-select px-2 input-group-text"
                   value={displayState["insuranceUnit"]}
                   onChange={(e) => {
