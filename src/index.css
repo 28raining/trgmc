@@ -55,6 +55,12 @@
   white-space: initial !important;
 }
 
+.lock {
+  background: url("lock.svg") no-repeat;
+  background-size: 16px 16px;
+  background-position: right 5px center;
+}
+
 @media (width <= 500px) {
   .hideLogo {
     display: none !important;

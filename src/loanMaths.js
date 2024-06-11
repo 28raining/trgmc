@@ -4,19 +4,31 @@ export function isNumber(num) {
   return !isNaN(num);
 }
 
+export function cashFormat(val) {
+  if (val === "") return "";
+  if (!isNumber(val)) return "";
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+    minimumFractionDigits: 0,
+    minimumIntegerDigits: val.length,
+  }).format(val);
+}
+
 function loanCalc(numMonths, interestRate, loanAmount, chosenInput, monthlyPaymentInput, downPay, userSetDownPercent, monthlyExtraPercent, monthlyExtraFee) {
   // console.log('loanCalc', numMonths, interestRate, loanAmount, chosenInput, monthlyPaymentInput, downPayCash, monthlyExtraPercent, monthlyExtraFee)
   // console.log("chosenInput", chosenInput)
   var monthlyInterest = 1 + interestRate / (12 * 100);
   var interestScalar = monthlyInterest ** numMonths;
   var T = monthlyExtraPercent / 100;
-  var homeVal, loanAmount_new, totalRepay, monthlyTax;
+  var homeVal, loanAmount_new, interestPlusPrincipal, monthlyTax, totalRepay;
 
   if (chosenInput == "monthlyPayment") {
     var actualMonthly = monthlyPaymentInput - monthlyExtraFee;
-    totalRepay = numMonths * actualMonthly;
+    interestPlusPrincipal = numMonths * actualMonthly;
     if (interestRate == 0) {
-      loanAmount_new = totalRepay;
+      loanAmount_new = interestPlusPrincipal;
       homeVal = userSetDownPercent ? loanAmount_new / (1 - downPay) : loanAmount_new + downPay;
     } else {
       var Z = (interestScalar - 1) / (interestRate / (12 * 100)) / interestScalar;
@@ -36,26 +48,33 @@ function loanCalc(numMonths, interestRate, loanAmount, chosenInput, monthlyPayme
 
     return {
       monthly: actualMonthly - monthlyTax,
-      totalRepay: totalRepay,
+      interestPlusPrincipal: interestPlusPrincipal,
       loanAmount: loanAmount_new,
       monthlyExta: monthlyTax + monthlyExtraFee,
       homeVal: homeVal,
     };
   } else {
-    var monthly, newTotalRepay;
+    var monthly;
     totalRepay = loanAmount * interestScalar;
     if (interestRate == 0) {
       monthly = totalRepay / numMonths;
-      newTotalRepay = loanAmount;
+      interestPlusPrincipal = loanAmount;
     } else {
       monthly = totalRepay / ((interestScalar - 1) / (interestRate / (12 * 100)));
-      newTotalRepay = monthly * numMonths;
+      interestPlusPrincipal = monthly * numMonths;
     }
     homeVal = userSetDownPercent ? loanAmount / (1 - downPay) : loanAmount + downPay;
     monthlyTax = T * homeVal;
     // console.log('bp85', homeVal)
 
-    return { monthly: monthly, totalRepay: newTotalRepay, loanAmount: loanAmount, monthlyExta: monthlyTax + monthlyExtraFee, homeVal: homeVal };
+    // console.log(interestPlusPrincipal);
+    return {
+      monthly: monthly,
+      interestPlusPrincipal: interestPlusPrincipal,
+      loanAmount: loanAmount,
+      monthlyExta: monthlyTax + monthlyExtraFee,
+      homeVal: homeVal,
+    };
   }
 }
 
@@ -101,12 +120,15 @@ export function loanMaths(
 
   var originalLoanAmount = loanData["loanAmount"];
   var originalHomeVal = loanData["homeVal"];
+  var originalInterestPlusPrincipal = loanData["interestPlusPrincipal"];
 
   var monthlyPayment = new Array(numYears * 12).fill(0);
   var monthlyInterest = new Array(numYears * 12).fill(0);
   var monthlyPrincipal = new Array(numYears * 12).fill(0);
   var remaining = new Array(numYears * 12 + 1).fill(0);
   var loanCopy = { ...loanData };
+  var totalPrincipal = 0;
+  var totalInterest = 0;
   remaining[0] = loanCopy["loanAmount"];
 
   var rate = interestRate / 100;
@@ -175,6 +197,12 @@ export function loanMaths(
     if (remaining[i + 1] <= 0) {
       monthlyPrincipal[i] = monthlyPrincipal[i] + remaining[i + 1];
       monthlyPayment[i] = monthlyPrincipal[i] + monthlyInterest[i + 1];
+    }
+
+    totalPrincipal += monthlyPrincipal[i];
+    totalInterest += monthlyInterest[i];
+
+    if (remaining[i + 1] <= 0) {
       remaining[i + 1] = 0;
       break;
     }
@@ -199,9 +227,11 @@ export function loanMaths(
     monthlyPrincipal: monthlyPrincipal,
     numMonths: numMonths,
     remaining: remaining,
-    // totalRepay: loanData["totalRepay"],
+    interestPlusPrincipal: originalInterestPlusPrincipal,
     homeVal: originalHomeVal,
     extraPayments: extraPayments,
     monthlyPaymentPerEvent: monthlyPaymentPerEvent,
+    totalPrincipal: totalPrincipal,
+    totalInterest: totalInterest,
   };
 }

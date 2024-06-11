@@ -17,7 +17,6 @@ import { useState } from "react";
 
 function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, insurance, startDate }) {
   const [monthsPerYearToPlot, setMonthsPerYearToPlot] = useState("yearly payments");
-  // const indexPlot = monthsPerYearToPlot == "monthly payments" ? 1 : 12;
   const yTitle = monthsPerYearToPlot == "monthly payments" ? "Monthly Payments" : "Yearly Payments";
   const startMonth = startDate.getMonth();
   // console.log(startDate, startMonth)
@@ -27,17 +26,28 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, insurance
   var monthlyInterestFiltered;
   var loanMonthsFiltered;
   var remainingFiltered;
+  var taxPlot = [];
+  var hoaPlot = [];
+  var insPlot = [];
 
   if (monthsPerYearToPlot == "monthly payments") {
     loanMonthsFiltered = loanMonths;
     monthlyPrincipalFiltered = loanRes["monthlyPrincipal"];
     monthlyInterestFiltered = loanRes["monthlyInterest"];
     remainingFiltered = loanRes["remaining"];
+    for (var i = 0; i < loanMonthsFiltered.length; i++) {
+      taxPlot[i] = propertyTax;
+      hoaPlot[i] = hoa;
+      insPlot[i] = insurance;
+    }
   } else {
     //User wants to plot yearly - it's easier to read
     // var loanMonthsFiltered = [0]
     monthlyPrincipalFiltered = [0];
     monthlyInterestFiltered = [0];
+    taxPlot = [0];
+    hoaPlot = [0];
+    insPlot = [0];
     // var remainingFiltered = [0]
 
     var loanMonthsFiltered_full = loanMonths.filter(function (element, index) {
@@ -49,7 +59,7 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, insurance
     });
 
     var prev_year;
-    for (var i = 0; i < loanMonths.length; i++) {
+    for (i = 0; i < loanMonths.length; i++) {
       var yearIndex = Math.floor((startMonth + i) / 12);
 
       var year = loanMonths[i].substring(4, 8);
@@ -65,8 +75,14 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, insurance
       // }
       if (yearIndex >= monthlyPrincipalFiltered.length) monthlyPrincipalFiltered.push(0);
       if (yearIndex >= monthlyInterestFiltered.length) monthlyInterestFiltered.push(0);
+      if (yearIndex >= taxPlot.length) taxPlot.push(0);
+      if (yearIndex >= hoaPlot.length) hoaPlot.push(0);
+      if (yearIndex >= insPlot.length) insPlot.push(0);
       monthlyPrincipalFiltered[yearIndex] = monthlyPrincipalFiltered[yearIndex] + loanRes["monthlyPrincipal"][i];
       monthlyInterestFiltered[yearIndex] = monthlyInterestFiltered[yearIndex] + loanRes["monthlyInterest"][i];
+      taxPlot[yearIndex] = taxPlot[yearIndex] + propertyTax;
+      hoaPlot[yearIndex] = hoaPlot[yearIndex] + hoa;
+      insPlot[yearIndex] = insPlot[yearIndex] + insurance;
     }
     // console.log(loanMonthsFiltered.length, monthlyPrincipalFiltered.length);
     // console.log(yearIndex, loanRes["monthlyPrincipal"], loanRes["monthlyInterest"])
@@ -130,15 +146,13 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, insurance
   };
 
   var title = ["Tax", "HoA", "Insurance"];
+  var pl = [taxPlot, hoaPlot, insPlot];
   [propertyTax, hoa, insurance].forEach((x, i) => {
     if (x > 0) {
-      // console.log('test', x)
-      var plotable = [];
-      for (var z = 0; z < loanMonthsFiltered.length; z++) plotable.push(x);
       data.datasets.push({
         type: "bar",
         label: title[i],
-        data: plotable,
+        data: pl[i],
         backgroundColor: DEFAULT_PLOTLY_COLORS[2 + i],
         hoverBackgroundColor: "rgba(0, 0, 0, 1.0)",
         barPercentage: 1.0,
@@ -220,7 +234,7 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, insurance
   };
 
   return (
-    <div className="row shadow-sm border rounded my-2 py-1 mx-0 px-1">
+    <div className="row shadow-sm border rounded mb-3 py-1 mx-0 px-1">
       <div className="col-12 px-0">
         <div className="row mx-0">
           <div className="col-12 px-0">
@@ -231,7 +245,7 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, insurance
         </div>
 
         <div className="row mx-0">
-          <div className="col-12 px-0">
+          <div className="col-12 px-3">
             <div className="input-group ">
               <span className="pe-3">Show: </span>
               {["monthly payments", "yearly payments"].map((x) => (

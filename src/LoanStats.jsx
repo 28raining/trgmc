@@ -1,4 +1,4 @@
-import { cashFormat } from "./LoanForm";
+import { cashFormat } from "./loanMaths.js";
 
 function scaleMonthlyWUnit(v, unit, homeVal, length) {
   if (unit == 0) return (parseFloat(v) * length) / 12;
@@ -7,15 +7,8 @@ function scaleMonthlyWUnit(v, unit, homeVal, length) {
   else if (unit == 3) return (parseFloat(v) * homeVal * length) / 100;
 }
 
-function LoanStats({ loanRes, loanEvent, userInput }) {
-  var timeSaved = loanRes["numMonths"] - loanRes["endMonth"];
-  var yearsSaved = Math.floor(timeSaved / 12);
-  var monthSaved = timeSaved % 12;
-
-  var showTimeReduced = false;
-  for (var i = 0; i < loanEvent.length; i++) {
-    if (loanEvent[i]["event"] == "Over-payment") showTimeReduced = true;
-  }
+function LoanStats({ loanRes, userInput }) {
+  const lastMonth = loanRes["loanMonths"][loanRes["loanMonths"].length - 1];
 
   var totalPrincipal = 0;
   var totalInterest = 0;
@@ -24,18 +17,15 @@ function LoanStats({ loanRes, loanEvent, userInput }) {
   var totalTax = scaleMonthlyWUnit(userInput["propertyTax"], userInput["propertyTaxUnit"], loanRes["homeVal"], loanRes["monthlyInterest"].length);
   var totalHoA = scaleMonthlyWUnit(userInput["hoa"], userInput["hoaUnit"], loanRes["homeVal"], loanRes["monthlyInterest"].length);
   var totalInsurance = scaleMonthlyWUnit(userInput["insurance"], userInput["insuranceUnit"], loanRes["homeVal"], loanRes["monthlyInterest"].length);
-  // console.log("loanRes['monthlyPrincipal']", loanRes['monthlyPrincipal'],totalPrincipal)
-  // console.log(loanRes)
+  const thereWereExtraPayments = totalTax > 0 || totalHoA > 0 || totalInsurance > 0 || loanRes["extraPayments"] > 0;
 
   return (
-    <div className="row shadow-sm border rounded py-3 mx-0">
+    <div className="row shadow-sm border rounded py-3 mx-0 mb-3">
       <div className="col-12">
         <div className="row pb-2">
           <div className="col-12">
             <div className="input-group">
-              <span className="input-group-text outputLabelWidth" id="basic-addon1">
-                Total Loan re-payment
-              </span>
+              <span className="input-group-text outputLabelWidth">Total Loan re-payment</span>
               <output type="text" className="form-control bg-info-subtle">
                 {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(
                   totalPrincipal + totalInterest + loanRes["extraPayments"]
@@ -44,20 +34,32 @@ function LoanStats({ loanRes, loanEvent, userInput }) {
             </div>
           </div>
         </div>
-        <div className="row">
+        <div className="row pb-2">
           <div className="col-12">
             <div className="input-group">
-              <span className="input-group-text outputLabelWidth" id="basic-addon1">
-                Total costs<small>&nbsp;(to {loanRes["loanMonths"][loanRes["loanMonths"].length - 1]})</small>
-              </span>
+              <span className="input-group-text outputLabelWidth">Last payment date</span>
               <output type="text" className="form-control bg-info-subtle">
-                {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(
-                  totalPrincipal + totalInterest + loanRes["extraPayments"] + totalTax + totalHoA + totalInsurance
-                )}
+                {lastMonth}
               </output>
             </div>
           </div>
         </div>
+        {!thereWereExtraPayments ? null : (
+          <div className="row">
+            <div className="col-12">
+              <div className="input-group">
+                <span className="input-group-text outputLabelWidth">
+                  Total costs<small>&nbsp;(to {lastMonth})</small>
+                </span>
+                <output type="text" className="form-control bg-info-subtle">
+                  {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(
+                    totalPrincipal + totalInterest + loanRes["extraPayments"] + totalTax + totalHoA + totalInsurance
+                  )}
+                </output>
+              </div>
+            </div>
+          </div>
+        )}
         <div className="row">
           <div className="col-12">
             <ul className="ps-5 pt-2 mb-0">
@@ -70,18 +72,6 @@ function LoanStats({ loanRes, loanEvent, userInput }) {
             </ul>
           </div>
         </div>
-        {!showTimeReduced ? null : (
-          <div className="row pt-2">
-            <div className="input-group">
-              <span className="input-group-text outputLabelWidth maxW" id="basic-addon1">
-                Time reduced due to overpayments
-              </span>
-              <output type="text" className="form-control bg-info-subtle">
-                {`${yearsSaved}yr ${monthSaved}m`}
-              </output>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

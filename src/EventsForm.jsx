@@ -3,15 +3,26 @@ import { DashCircle, Pen } from "react-bootstrap-icons";
 // import Modal from "react-bootstrap/Modal";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
-import { cashFormat } from "./LoanForm";
+import { cashFormat } from "./loanMaths.js";
 import { isNumber } from "./loanMaths.js";
 
-function EventsForm({ loanMonths, loanEvent, setLoanEvent, monthlyPaymentPerEvent }) {
+function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPaymentPerEvent }) {
   const [chosenEvent, setChosenEvent] = useState("Over-payment");
   const [newChange, setNewChange] = useState(1000);
   const [chosenDate, setChosenDate] = useState(loanMonths[1]);
   const [newLength, setNewLength] = useState(0);
   const [cost, setCost] = useState(0);
+
+  var timeSaved = loanRes["numMonths"] - loanRes["endMonth"];
+  var yearsSaved = Math.floor(timeSaved / 12);
+  var monthSaved = timeSaved % 12;
+
+  var showTimeReduced = false;
+  for (var i = 0; i < loanEvent.length; i++) {
+    if (loanEvent[i]["event"] == "Over-payment") showTimeReduced = true;
+  }
+
+  var interestSaved = loanRes["interestPlusPrincipal"] - loanRes["totalPrincipal"] - loanRes["totalInterest"] - loanRes["extraPayments"];
 
   //prevent hanging when url params set up illegal state
   if (loanMonths.length < 2) return null;
@@ -92,7 +103,7 @@ function EventsForm({ loanMonths, loanEvent, setLoanEvent, monthlyPaymentPerEven
   }
 
   return (
-    <div className="row shadow-sm border rounded mb-2 py-2 mx-0" key="row0">
+    <div className="row shadow-sm border rounded mb-3 py-2 mx-0" key="row0">
       <div className="col-12" key="col0">
         <div className="row">
           <div className="col-12" key="col1">
@@ -175,11 +186,7 @@ function EventsForm({ loanMonths, loanEvent, setLoanEvent, monthlyPaymentPerEven
                     setNewChange(stripped);
                   }}
                 />
-                {chosenEvent == "Over-payment" ? null : (
-                  <span className="input-group-text" id="basic-addon1">
-                    %
-                  </span>
-                )}
+                {chosenEvent == "Over-payment" ? null : <span className="input-group-text">%</span>}
               </div>
               {!validOverpay ? (
                 <div className="invalid-feedback" style={{ display: "initial" }}>
@@ -336,6 +343,28 @@ function EventsForm({ loanMonths, loanEvent, setLoanEvent, monthlyPaymentPerEven
               </table>
             )}
           </div>
+        </div>
+        <div className="row">
+          {!showTimeReduced ? null : (
+            <div>
+              <div className="row">
+                <div className="input-group">
+                  <span className="input-group-text outputLabelWidth maxW">Amount saved</span>
+                  <output type="text" className="form-control bg-info-subtle">
+                    {cashFormat(interestSaved)}
+                  </output>
+                </div>
+              </div>
+              <div className="row pt-2">
+                <div className="input-group">
+                  <span className="input-group-text outputLabelWidth maxW">Time reduced due to overpayments</span>
+                  <output type="text" className="form-control bg-info-subtle">
+                    {`${yearsSaved}yr ${monthSaved}m`}
+                  </output>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

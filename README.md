@@ -9,15 +9,10 @@
 # Todo
 
 ## Important
-- double check maths against other sites
 -- google adwords
-- yearly plot should show sum of taxes (not just monthly)
-Down payment can’t be 0?
-Time reduced box is too big on phone
-Show finish date
-Inputs should be numbers only
-Mobile start date arrangement
-Show total interest saved by overpaying
+toast saying event added?
+can't delete middle character from monthly
+what happens if you chose monthly and do an overpayment
 
 
 ## Later
@@ -50,6 +45,19 @@ Show total interest saved by overpaying
 
 
 # Done
+Show finish date
+show padlock in boxes which are locked
+increase gap between areas
+add a blurb
+- yearly plot should show sum of taxes (not just monthly)
+Mobile start date arrangement
+Show total interest saved by overpaying
+Move time reducde box to other grid
+show interest saved by overpaying
+- double check maths against other sites
+Down payment can’t be 0?
+Time reduced box is too big on phone
+Inputs should be numbers only
 - tax should reduce if loan length decreases
 -- google analytics
 -- Add footer with ym name and link to git

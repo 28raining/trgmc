@@ -54,9 +54,9 @@ function runCalculations(userInput, loanEvent, chosenInput, userSetDownPercent) 
   const homeVal = parseFloat(loanRes["homeVal"]);
 
   if (chosenInput == "monthlyPayment") {
-    displayState["monthlyPayment"] = userInput["monthlyPayment"];
+    displayState["monthlyPayment"] = parseInt(userInput["monthlyPayment"]).toString();
   } else {
-    displayState["monthlyPayment"] = parseFloat(loanRes["monthlyPayment"][0]);
+    displayState["monthlyPayment"] = parseInt(loanRes["monthlyPayment"][0]).toString();
   }
   displayState["monthlyPaymentToLoan"] = parseFloat(loanRes["monthlyInterest"][0]) + parseFloat(loanRes["monthlyPrincipal"][0]);
   // console.log("homeVal",homeVal)
@@ -86,11 +86,13 @@ function runCalculations(userInput, loanEvent, chosenInput, userSetDownPercent) 
   displayState["insuranceUnit"] = userInput["insuranceUnit"];
   displayState["startDate"] = userInput["startDate"];
 
+  displayState["lock"] = [];
+  displayState["lock"].push(chosenInput);
+
   return [displayState, loanRes];
 }
 
 function loanEventEncoder(loanEvent) {
-  // console.log(loanEvent)
   var str = `${loanEvent["event"]}_${loanEvent["date"].replace(" ", "")}_${loanEvent["cost"]}_${loanEvent["change"]}`;
   if ("newLength" in loanEvent) str += `_${loanEvent["newLength"]}`;
   return str;
@@ -175,33 +177,7 @@ function App() {
   const [loanRes, setLoanRes] = useState(newLoanRes);
   const [showShareModal, setShowShareModal] = useState(false);
 
-  // console.log("loanEvent", loanEvent);
   var newUserInput = { ...userInput };
-
-  // function useFirstRender() {
-  //   const ref = useRef(true);
-  //   const firstRender = ref.current;
-  //   ref.current = false;
-  //   return firstRender;
-  // }
-  // if (useFirstRender()) {
-  //   // var newDisplayState, newLoanRes;
-  //   // // var newUserInput = { ...userInput };
-
-  //   // //read saved state from the URL
-  //   var isDiff = false;
-  //   const searchParams = new URLSearchParams(window.location.search);
-  //   for (const [key, value] of searchParams.entries()) {
-  //     if (newUserInput[key] != value) isDiff = true;
-  //     newUserInput[key] = value;
-  //   }
-
-  //   // [newDisplayState, newLoanRes] = runCalculations(newUserInput, loanEvent, chosenInput, userSetDownPercent);
-  //   // setDisplayState(newDisplayState);
-  //   // setLoanRes(newLoanRes);
-  //   console.log('bp1', newDisplayState, isDiff, newUserInput)
-  //   if (isDiff) updateUserInput(null, null)
-  // }
 
   function updateUserInput(field, value) {
     var newFlash = { ...flash };
@@ -274,6 +250,7 @@ function App() {
     } else if (field == "startDate") {
       newUserInput.startDate = value;
     } else if (field == "reset") {
+      newChosenInput = "homeVal";
       newUserInput = initialState;
       newUserSetDownPercent = true;
       newLoanEvent = [];
@@ -344,6 +321,7 @@ function App() {
     setChosenInput(newChosenInput);
     setUserSetDownPercent(newUserSetDownPercent);
     setValid(newValid);
+    setLoanEvent(newLoanEvent);
   }
 
   function unitScaler(u) {
@@ -361,23 +339,14 @@ function App() {
   urlParams.delete("events");
   if (loanEvent.length > 0) {
     for (const o in loanEvent) {
-      // var str = `${loanEvent[o]['event']}_${loanEvent[o]['date'].replace(" ", "")}_${loanEvent[o]['cost']}_${loanEvent[o]['change']}`;
-      // if ('newLength' in Object.keys(loanEvent[o])) str+=`_${loanEvent[o]['newLength']}`
       urlParams.append("events", loanEventEncoder(loanEvent[o]));
     }
   }
   window.history.replaceState(null, null, "?" + urlParams.toString());
 
-  //   const url = new URL();
-  // url.search = new URLSearchParams(obj);
-  //   console.log("userDiff",new URLSearchParams(userDiff).toString())
-  //   console.log("url", url)
-  // console.log(
-  // loanRes["loanMonths"],
-  // loanEvent,loanRes["monthlyPaymentPerEvent"]);
   return (
     <>
-      <nav className="navbar bg-body-tertiary mb-2">
+      <nav className="navbar bg-body-tertiary mb-3">
         <div className="container-xxl">
           <span className="navbar-brand titleSize">
             <Bank height="24" className="hideLogo me-2 align-text-bottom " />
@@ -415,11 +384,25 @@ function App() {
       </nav>
       <div className="container-xxl">
         <div className="row">
+          <div className="col-12">
+            <div className="row shadow-sm border rounded mx-0 mb-3">
+              <div className="col">
+                <p className="my-2">
+                  An easy to use mortgage calculator to find out exactly how much it will cost to buy a house. Or, enter a monthly budget and see how much you
+                  can afford
+                </p>
+                <p className="mb-2">This tool is unique because it supports unlimited overpayment, re-finance and recast events</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="row">
           <div className="col-md-5 col-12">
             <LoanForm displayState={displayState} valid={valid} flash={flash} updateUserInput={(f, v) => updateUserInput(f, v)} />
             <EventsForm
               loanMonths={loanRes["loanMonths"]}
               loanEvent={loanEvent}
+              loanRes={loanRes}
               setLoanEvent={(e) => {
                 setLoanEvent(e);
                 var newDisplayState, newLoanRes;
@@ -430,7 +413,7 @@ function App() {
               monthlyPaymentPerEvent={loanRes["monthlyPaymentPerEvent"]}
             />
 
-            <LoanStats loanRes={loanRes} loanEvent={loanEvent} userInput={userInput} />
+            <LoanStats loanRes={loanRes} userInput={userInput} />
           </div>
           <div className="col-md-7 col-12">
             <LoanPlot
@@ -459,7 +442,7 @@ function App() {
               github
             </div>
             <div className="col-6 pb-3 text-end">
-              <CCircle className="me-2" />
+              <CCircle className="me-1" />
               Will Kelsey
             </div>
           </div>

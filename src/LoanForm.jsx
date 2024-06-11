@@ -2,18 +2,7 @@ import { isNumber } from "./loanMaths.js";
 import { Calendar } from "react-calendar";
 import { Modal } from "react-bootstrap";
 import { useState } from "react";
-
-export function cashFormat(val) {
-  if (val === "") return "";
-  if (!isNumber(val)) return "";
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0,
-    minimumFractionDigits: 0,
-    minimumIntegerDigits: val.length,
-  }).format(val);
-}
+import { cashFormat } from "./loanMaths.js";
 
 function ValidFbComp({ x }) {
   if (x === null) return null;
@@ -31,6 +20,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
   const feeOptions = ["$ / year", "$ / month", "% / year", "% / month"];
   const extraPayments = displayState["propertyTax"] > 0 || displayState["hoa"] > 0 || displayState["insurance"] > 0;
   // console.log(displayState['propertyTax'], displayState['hoa'],displayState['insurance'], extraPayments )
+  // console.log("displSta", displayState)
 
   // var validClass = {};
   // for (const i in valid) validClass[i] = valid[i] === null ? null : "is-invalid";
@@ -64,6 +54,8 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
 
     if (i in flash) inputClass[i] += flash[i] ? " anim1" : " anim2";
     else console.log(`${i} missing from flash`);
+
+    if (displayState["lock"].includes(i)) inputClass[i] += " lock";
   }
   // console.log('inputClass', inputClass)
 
@@ -90,7 +82,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
   //  console.log("displayState", displayState)
   return (
     <div>
-      <div className="row shadow-sm border rounded my-2 py-2 mx-0">
+      <div className="row shadow-sm border rounded mb-3 py-2 mx-0">
         <div className="col-12">
           <div className="row">
             <div className="col-5 pe-0">
@@ -121,6 +113,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                 onChange={(e) => updateIfChanged(displayState["monthlyPayment"], e.target.value, "monthlyPayment")}
                 value={cashFormat(displayState["monthlyPayment"])}
               />
+
               <ValidFbComp x={valid["monthlyPayment"]} />
               {extraPayments ? (
                 <label>
@@ -137,7 +130,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
           </div>
         </div>
       </div>
-      <div className="row shadow-sm border rounded my-2 py-2 mx-0">
+      <div className="row shadow-sm border rounded mb-3 py-2 mx-0">
         <div className="col-12">
           <div className="row">
             <div className="col-12">
@@ -158,9 +151,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                     // updateDownPayCash(e.target.value.replace(/[^0-9.]+/g, ""));
                   }}
                 />
-                <span className="input-group-text" id="basic-addon1">
-                  or
-                </span>
+                <span className="input-group-text">or</span>
                 <input
                   type="text"
                   inputMode="numeric"
@@ -174,9 +165,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                     // updateDownPayPercent(e.target.value);
                   }}
                 />
-                <span className="input-group-text" id="basic-addon1">
-                  %
-                </span>
+                <span className="input-group-text">%</span>
               </div>
             </div>
           </div>
@@ -210,9 +199,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                   value={displayState["interestRate"]}
                   onChange={(e) => updateIfChanged(displayState["interestRate"], e.target.value, "interestRate")}
                 />
-                <span className="input-group-text" id="basic-addon1">
-                  %
-                </span>
+                <span className="input-group-text">%</span>
               </div>
             </div>
           </div>
@@ -245,16 +232,14 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                     // updateUserInput("loanLength", e.target.value.replace(/[^0-9.]+/g, ""));
                   }}
                 />
-                <span className="input-group-text" id="basic-addon1">
-                  years
-                </span>
+                <span className="input-group-text">years</span>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="row shadow-sm border rounded my-2 py-2 mx-0">
+      <div className="row shadow-sm border rounded mb-3 py-2 mx-0">
         <div className="col-12 px-0">
           <div className="row mx-0">
             <div className="col-xl-6 col-12">
