@@ -25,11 +25,9 @@ function LoanStats({ loanRes, userInput }) {
         <div className="row pb-2">
           <div className="col-12">
             <div className="input-group">
-              <span className="input-group-text outputLabelWidth">Total Loan re-payment</span>
+              <span className="input-group-text outputLabelWidth">Last payment date</span>
               <output type="text" className="form-control bg-info-subtle">
-                {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(
-                  totalPrincipal + totalInterest + loanRes["extraPayments"]
-                )}
+                {lastMonth}
               </output>
             </div>
           </div>
@@ -37,9 +35,11 @@ function LoanStats({ loanRes, userInput }) {
         <div className="row pb-2">
           <div className="col-12">
             <div className="input-group">
-              <span className="input-group-text outputLabelWidth">Last payment date</span>
+              <span className="input-group-text outputLabelWidth">Total Loan re-payment</span>
               <output type="text" className="form-control bg-info-subtle">
-                {lastMonth}
+                {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(
+                  totalPrincipal + totalInterest + loanRes["extraPayments"]
+                )}
               </output>
             </div>
           </div>
@@ -62,7 +62,7 @@ function LoanStats({ loanRes, userInput }) {
         )}
         <div className="row">
           <div className="col-12">
-            <ul className="ps-5 pt-2 mb-0">
+            <ul className="ps-5 mb-0">
               <li>Principal: {cashFormat(totalPrincipal)}</li>
               <li>Interest: {cashFormat(totalInterest)}</li>
               {loanRes["extraPayments"] > 0 ? <li>Overpayments & fees: {cashFormat(loanRes["extraPayments"])}</li> : null}

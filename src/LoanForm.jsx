@@ -61,12 +61,10 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
 
   function updateIfChanged(oldVal, newVal, name) {
     var parsedNewVal = newVal.replace(/[^0-9.]+/g, "");
-    console.log(oldVal, parsedNewVal, oldVal !== parsedNewVal);
     if (oldVal !== parsedNewVal) {
       if (oldVal === "0" && isNumber(parsedNewVal)) {
         var noLeading0 = parseFloat(parsedNewVal).toString();
       } else noLeading0 = parsedNewVal;
-      console.log(noLeading0);
       updateUserInput(name, noLeading0);
     }
   }
@@ -79,7 +77,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
     updateUserInput("startDate", newDate.getTime());
   }
 
-  //  console.log("displayState", displayState)
+  // console.log("displayState", displayState["monthlyPayment"], cashFormat(displayState["monthlyPayment"]));
   return (
     <div>
       <div className="row shadow-sm border rounded mb-3 py-2 mx-0">
@@ -120,12 +118,6 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                   <small>{cashFormat(displayState["monthlyPaymentToLoan"])} towards loan</small>
                 </label>
               ) : null}
-
-              {/* {valid.monthlyPayment === null ? null : (
-                <div className="invalid-feedback" style={{ display: "initial" }}>
-                  {valid.monthlyPayment}
-                </div>
-              )} */}
             </div>
           </div>
         </div>
@@ -171,25 +163,6 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
           </div>
           <div className="row">
             <div className="col-xl-6 col-12">
-              <label>Loan Amount</label>
-
-              <input
-                type="text"
-                inputMode="numeric"
-                className={inputClass["loanAmount"]}
-                // className={flash["loanAmount"] ? "form-control anim1" : "form-control anim2"}
-                value={cashFormat(displayState["loanAmount"])}
-                onChange={
-                  (e) =>
-                    // console.log("triggered loanAmount Change");
-                    updateIfChanged(displayState["loanAmount"], e.target.value, "loanAmount")
-                  // updateUserInput("loanAmount", e.target.value.replace(/[^0-9.]+/g, ""))
-
-                  // setLoanAmount(e.target.value.replace(/[^0-9.]+/g, ""));
-                }
-              />
-            </div>
-            <div className="col-xl-6 col-12">
               <label>Interest rate</label>
               <div className="input-group mb-1">
                 <input
@@ -201,23 +174,6 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                 />
                 <span className="input-group-text">%</span>
               </div>
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-6">
-              <label>Start Date</label>
-              <output type="text" className="form-control" value="may" onClick={() => setShow(true)}>
-                {new Intl.DateTimeFormat("en-US", startDateOptions).format(displayState["startDate"])}
-              </output>
-
-              <Modal show={show} onHide={() => setShow(false)}>
-                <Modal.Header closeButton>
-                  <Modal.Title>Chose the starting month</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                  <Calendar maxDetail="year" onClickMonth={(v) => calToMonth(v)} />
-                </Modal.Body>
-              </Modal>
             </div>
             <div className="col-xl-6 col-12">
               <label>Loan length</label>
@@ -235,6 +191,43 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                 <span className="input-group-text">years</span>
               </div>
             </div>
+          </div>
+
+          <div className="row">
+            <div className="col-6">
+              <label>Start Date</label>
+              <output type="text" className="form-control" value="may" onClick={() => setShow(true)}>
+                {new Intl.DateTimeFormat("en-US", startDateOptions).format(displayState["startDate"])}
+              </output>
+
+              <Modal show={show} onHide={() => setShow(false)}>
+                <Modal.Header closeButton>
+                  <Modal.Title>Chose the starting month</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  <Calendar maxDetail="year" onClickMonth={(v) => calToMonth(v)} />
+                </Modal.Body>
+              </Modal>
+            </div>
+            {/* <div className="col-xl-6 col-12">
+              <label>Loan Amount</label>
+
+              <input
+                type="text"
+                inputMode="numeric"
+                className={inputClass["loanAmount"]}
+                // className={flash["loanAmount"] ? "form-control anim1" : "form-control anim2"}
+                value={cashFormat(displayState["loanAmount"])}
+                onChange={
+                  (e) =>
+                    // console.log("triggered loanAmount Change");
+                    updateIfChanged(displayState["loanAmount"], e.target.value, "loanAmount")
+                  // updateUserInput("loanAmount", e.target.value.replace(/[^0-9.]+/g, ""))
+
+                  // setLoanAmount(e.target.value.replace(/[^0-9.]+/g, ""));
+                }
+              />
+            </div> */}
           </div>
         </div>
       </div>

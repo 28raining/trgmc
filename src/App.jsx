@@ -71,7 +71,8 @@ function runCalculations(userInput, loanEvent, chosenInput, userSetDownPercent) 
   if (chosenInput == "homeVal") {
     displayState["homeVal"] = userInput.homeVal;
   } else {
-    displayState["homeVal"] = parseFloat(loanRes["loanAmount"]) + parseFloat(userInput.downPayCash);
+    displayState["homeVal"] = homeVal;
+    // displayState["homeVal"] = parseFloat(loanRes["loanAmount"]) + parseFloat(userInput.downPayCash);
   }
   displayState["interestRate"] = userInput["interestRate"];
   displayState["loanLength"] = userInput["loanLength"];
@@ -436,14 +437,18 @@ function App() {
           <div className="row">
             <Comments website-id={11189} page-id="" />
           </div>
-          <div className="row pt-3">
+          <div className="row pt-3 px-3 ">
             <div className="col-6 text-start">
-              <Github className="me-2" />
-              github
+              <a href="https://github.com/28raining/trgmc" style={{ color: "black" }}>
+                <Github className="me-2" />
+                github pages
+              </a>
             </div>
             <div className="col-6 pb-3 text-end">
-              <CCircle className="me-1" />
-              Will Kelsey
+              <a href="https://www.will-kelsey.com" style={{ color: "black" }}>
+                <CCircle className="me-1" />
+                Will Kelsey
+              </a>
             </div>
           </div>
         </div>

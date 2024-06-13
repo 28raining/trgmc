@@ -11,8 +11,8 @@
 ## Important
 -- google adwords
 toast saying event added?
-can't delete middle character from monthly
 what happens if you chose monthly and do an overpayment
+recast to overpay shows nan (after clicking trash?) (and being on monthly before)
 
 
 ## Later

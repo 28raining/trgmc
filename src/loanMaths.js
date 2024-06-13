@@ -34,7 +34,7 @@ function loanCalc(numMonths, interestRate, loanAmount, chosenInput, monthlyPayme
       var Z = (interestScalar - 1) / (interestRate / (12 * 100)) / interestScalar;
       if (userSetDownPercent) {
         homeVal = actualMonthly / (T + 1 / Z) / (1 - downPay / (T * Z + 1));
-        loanAmount_new = homeVal / (1 + downPay);
+        loanAmount_new = homeVal * (1 - downPay);
       } else {
         homeVal = actualMonthly / (T + 1 / Z) + downPay / (T * Z + 1);
         loanAmount_new = homeVal - downPay;
@@ -44,7 +44,7 @@ function loanCalc(numMonths, interestRate, loanAmount, chosenInput, monthlyPayme
       // var compoundTotalRepay = actualMonthly * ((interestScalar - 1) / (interestRate / (12 * 100)));
       // var loanAmount_new = compoundTotalRepay / interestScalar;
     }
-    // console.log('bp85', loanAmount, loanAmount_new, actualMonthly, monthlyTax, numMonths, interestScalar, monthlyExtraFee)
+    // console.log('bp85', loanAmount_new, homeVal, downPay)
 
     return {
       monthly: actualMonthly - monthlyTax,
@@ -118,6 +118,8 @@ export function loanMaths(
     monthlyExtraFee
   );
 
+  // console.log('bp7', loanData.monthly, loanData.loanAmount)
+
   var originalLoanAmount = loanData["loanAmount"];
   var originalHomeVal = loanData["homeVal"];
   var originalInterestPlusPrincipal = loanData["interestPlusPrincipal"];
@@ -126,10 +128,10 @@ export function loanMaths(
   var monthlyInterest = new Array(numYears * 12).fill(0);
   var monthlyPrincipal = new Array(numYears * 12).fill(0);
   var remaining = new Array(numYears * 12 + 1).fill(0);
-  var loanCopy = { ...loanData };
+  // var loanCopy = { ...loanData };
   var totalPrincipal = 0;
   var totalInterest = 0;
-  remaining[0] = loanCopy["loanAmount"];
+  remaining[0] = loanData["loanAmount"];
 
   var rate = interestRate / 100;
 
@@ -160,32 +162,6 @@ export function loanMaths(
       }
       eventIndex = eventIndex + 1;
     }
-
-    // if (loanEvent.length > eventIndex) {
-    //   if (thisMonth == loanEvent[eventIndex]["date"]) {
-    //     // console.log('Event!', loanEvent[eventIndex])
-    //     if (loanEvent[eventIndex]["event"] == "Over-payment") {
-    //       remaining[i] = remaining[i] + loanEvent[eventIndex]["cost"] - loanEvent[eventIndex]["change"];
-    //     } else if (loanEvent[eventIndex]["event"] == "Refinance") {
-    //       rate = Number(loanEvent[eventIndex].change) / 100;
-    //       remaining[i] = remaining[i] + loanEvent[eventIndex].cost;
-    //       if (loanEvent[eventIndex]["newLength"] != 0) numMonths = i + loanEvent[eventIndex]["newLength"] * 12;
-    //       loanData = loanCalc(numMonths - i, rate * 100, remaining[i], "homeVal", null, 0, 0, monthlyExtraPercent, monthlyExtraFee);
-    //     }
-    //     eventIndex = eventIndex + 1;
-    //   }
-    // }
-    // //code is like this to handle recast on same date as overpayment
-    // if (loanEvent.length > eventIndex) {
-    //   if (thisMonth == loanEvent[eventIndex]["date"]) {
-    //     if (loanEvent[eventIndex]["event"] == "Recast") {
-    //       // rate = loanEvent[eventIndex].change/100;
-    //       remaining[i] = remaining[i] + loanEvent[eventIndex].cost;
-    //       loanData = loanCalc(numMonths - i, interestRate, remaining[i], "homeVal", null, 0, 0, monthlyExtraPercent, monthlyExtraFee);
-    //       eventIndex = eventIndex + 1;
-    //     }
-    //   }
-    // }
 
     //Calculate 'the numbers' for the month
     monthlyPayment[i] = loanData.monthly + loanData.monthlyExta;
