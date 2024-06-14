@@ -3,15 +3,19 @@ import { DashCircle, Pen } from "react-bootstrap-icons";
 // import Modal from "react-bootstrap/Modal";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
+import Toast from "react-bootstrap/Toast";
+import ToastContainer from "react-bootstrap/ToastContainer";
 import { cashFormat } from "./loanMaths.js";
 import { isNumber } from "./loanMaths.js";
 
 function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPaymentPerEvent }) {
-  const [chosenEvent, setChosenEvent] = useState("Over-payment");
+  const [chosenEvent, setChosenEvent] = useState("Over-pay");
   const [newChange, setNewChange] = useState(1000);
   const [chosenDate, setChosenDate] = useState(loanMonths[1]);
   const [newLength, setNewLength] = useState(0);
   const [cost, setCost] = useState(0);
+
+  const [showEventToast, setShowEventToast] = useState(false);
 
   var timeSaved = loanRes["numMonths"] - loanRes["endMonth"];
   var yearsSaved = Math.floor(timeSaved / 12);
@@ -19,7 +23,7 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
 
   var showTimeReduced = false;
   for (var i = 0; i < loanEvent.length; i++) {
-    if (loanEvent[i]["event"] == "Over-payment") showTimeReduced = true;
+    if (loanEvent[i]["event"] == "Over-pay") showTimeReduced = true;
   }
 
   var interestSaved = loanRes["interestPlusPrincipal"] - loanRes["totalPrincipal"] - loanRes["totalInterest"] - loanRes["extraPayments"];
@@ -33,9 +37,9 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
   // const handleClose = () => setShow(false);
   // const handleShow = () => setShow(true);
 
-  const eventList = ["Over-payment", "Recast", "Refinance"];
+  const eventList = ["Over-pay", "Recast", "Refinance"];
   const description = {
-    "Over-payment": "Pay extra money into the loan",
+    "Over-pay": "Pay extra money into the loan",
     Recast: "Reduce the monthly payments after over-paying",
     Refinance: "Change the interest rate",
   };
@@ -54,7 +58,7 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
       for (const e of loanEvent) {
         if (dateIsOlder(e["date"], chosenDate)) {
           break;
-        } else if (e["event"] == "Over-payment") {
+        } else if (e["event"] == "Over-pay") {
           overPayFirst = true;
           break;
         }
@@ -73,14 +77,18 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
     return true;
   }
 
-  if (loanMonths.indexOf(chosenDate) < 0) setChosenDate(loanMonths[1]);
-  const validDate = loanMonths.indexOf(chosenDate) >= 0;
+  const indexOfChosenDate = loanMonths.indexOf(chosenDate);
+
+  if (indexOfChosenDate < 0) setChosenDate(loanMonths[1]);
+  const remainingBalance = loanRes["remaining"][indexOfChosenDate];
+  const OverPayNotTooMuch = parseFloat(newChange) < parseFloat(remainingBalance);
+  const validDate = indexOfChosenDate >= 0;
   const validRecast = validRecastDate();
-  const validOverpay = chosenEvent != "Over-payment" || newChange > 0;
+  const validOverpay = chosenEvent != "Over-pay" || (newChange > 0 && OverPayNotTooMuch);
   const canRefi = noOtherEvents();
   const canAdd = validDate & validRecast & validOverpay & canRefi;
   const canAddText = "Correct the form";
-  const overPayText = "Overpay must be > 0";
+  const overPayText = !isNumber(newChange) || newChange == 0 ? "Overpay must be > 0" : "Overpay must be less than remaining balance";
 
   function addEvent() {
     var newEvent = {};
@@ -98,12 +106,22 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
     newEventObj.sort(sortEvents);
     setLoanEvent(newEventObj);
 
-    var newDate = loanMonths.indexOf(chosenDate) + 1;
+    var newDate = indexOfChosenDate + 1;
     setChosenDate(loanMonths[newDate]);
+    setShowEventToast(true);
   }
 
   return (
     <div className="row shadow-sm border rounded mb-3 py-2 mx-0" key="row0">
+      <ToastContainer position="top-end" className="pt-4">
+        <Toast show={showEventToast} onClose={() => setShowEventToast(false)} delay={3000} autohide bg="info">
+          <Toast.Header>
+            <strong className="me-auto">Event added</strong>
+          </Toast.Header>
+          <Toast.Body>You just added an event, check the table</Toast.Body>
+        </Toast>
+      </ToastContainer>
+
       <div className="col-12" key="col0">
         <div className="row">
           <div className="col-12" key="col1">
@@ -139,42 +157,16 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
                 </option>
               ))}
             </select>
-
-            {/* <input
-              className={validDate ? "form-control px-1" : "form-control px-1 is-invalid"}
-              list="datalistOptions"
-              placeholder="Chose the month..."
-              value={chosenDate}
-              onChange={(e) => setChosenDate(e.target.value)}
-            />
-            <datalist id="datalistOptions">
-              {loanMonths.map((x) => (
-                <option value={x} key={x} />
-              ))}
-            </datalist> */}
-            {!validDate ? (
-              <div className="invalid-feedback" style={{ display: "initial" }}>
-                Date invalid
-              </div>
-            ) : !validRecast ? (
-              <div className="invalid-feedback" style={{ display: "initial" }}>
-                Recast only possible after overpay
-              </div>
-            ) : !canRefi ? (
-              <div className="invalid-feedback" style={{ display: "initial" }}>
-                Cannot refinance on same date as other event
-              </div>
-            ) : null}
           </div>
           {chosenEvent == "Recast" ? null : (
             <div className="col-xl-3 col-6" key="col2">
-              <label>{chosenEvent == "Over-payment" ? "Amount" : "New rate"}</label>
+              <label>{chosenEvent == "Over-pay" ? "Amount" : "New rate"}</label>
               <div className="input-group ">
                 <input
                   type="text"
                   className="form-control px-1"
                   value={
-                    chosenEvent == "Over-payment"
+                    chosenEvent == "Over-pay"
                       ? new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(
                           newChange
                         )
@@ -186,13 +178,8 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
                     setNewChange(stripped);
                   }}
                 />
-                {chosenEvent == "Over-payment" ? null : <span className="input-group-text">%</span>}
+                {chosenEvent == "Over-pay" ? null : <span className="input-group-text">%</span>}
               </div>
-              {!validOverpay ? (
-                <div className="invalid-feedback" style={{ display: "initial" }}>
-                  {overPayText}
-                </div>
-              ) : null}
             </div>
           )}
 
@@ -259,6 +246,32 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
           </div>
         )}
 
+        <div className="row pt-2">
+          <div className="col-12">
+            {!validDate ? (
+              <div className="invalid-feedback" style={{ display: "initial" }}>
+                Date invalid
+              </div>
+            ) : !validRecast ? (
+              <div className="invalid-feedback" style={{ display: "initial" }}>
+                Recast only possible after overpay
+              </div>
+            ) : !canRefi ? (
+              <div className="invalid-feedback" style={{ display: "initial" }}>
+                Cannot refinance on same date as other event
+              </div>
+            ) : !validOverpay ? (
+              <div className="invalid-feedback" style={{ display: "initial" }}>
+                {overPayText}
+              </div>
+            ) : (
+              <div className="feedback">
+                {chosenDate} remaining balance = {cashFormat(remainingBalance)}
+              </div>
+            )}
+          </div>
+        </div>
+
         <div className="row" key="row3">
           <div className="col-12">
             {loanEvent.length == 0 ? null : (
@@ -286,7 +299,7 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
                           maximumFractionDigits: 0,
                         }).format(x["cost"])}
                       </td>
-                      <td>{x["event"] == "Refinance" ? `${x["change"]}%` : x["event"] == "Over-payment" ? cashFormat(x["change"]) : x["change"]}</td>
+                      <td>{x["event"] == "Refinance" ? `${x["change"]}%` : x["event"] == "Over-pay" ? cashFormat(x["change"]) : x["change"]}</td>
                       <td key="pen">
                         <span
                           style={{ cursor: "pointer" }}
@@ -349,7 +362,7 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
             <div>
               <div className="row">
                 <div className="input-group">
-                  <span className="input-group-text outputLabelWidth maxW">Amount saved</span>
+                  <span className="input-group-text outputLabelWidth maxW">Interest payments saved</span>
                   <output type="text" className="form-control bg-info-subtle">
                     {cashFormat(interestSaved)}
                   </output>

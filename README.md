@@ -9,10 +9,6 @@
 # Todo
 
 ## Important
--- google adwords
-toast saying event added?
-what happens if you chose monthly and do an overpayment
-recast to overpay shows nan (after clicking trash?) (and being on monthly before)
 
 
 ## Later
@@ -45,6 +41,10 @@ recast to overpay shows nan (after clicking trash?) (and being on monthly before
 
 
 # Done
+prevent overpayment larger than remaining
+toast saying event added?
+-- google adwords
+what happens if you chose monthly and do an overpayment
 Show finish date
 show padlock in boxes which are locked
 increase gap between areas

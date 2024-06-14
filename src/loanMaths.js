@@ -144,7 +144,7 @@ export function loanMaths(
 
     //Check if any events happening this month
     while (loanEvent.length > eventIndex && thisMonth == loanEvent[eventIndex]["date"]) {
-      if (loanEvent[eventIndex]["event"] == "Over-payment") {
+      if (loanEvent[eventIndex]["event"] == "Over-pay") {
         remaining[i] = remaining[i] + parseFloat(loanEvent[eventIndex]["cost"]) - parseFloat(loanEvent[eventIndex]["change"]);
         extraPayments += parseFloat(loanEvent[eventIndex].cost) + parseFloat(loanEvent[eventIndex]["change"]);
       } else if (loanEvent[eventIndex]["event"] == "Refinance") {
