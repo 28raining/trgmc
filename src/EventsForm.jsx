@@ -370,7 +370,7 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
               <div className="row">
                 <div className="input-group">
                   <span className="input-group-text outputLabelWidth maxW">Interest payments saved</span>
-                  <output type="text" className="form-control bg-info-subtle">
+                  <output type="text" className="form-control bg-warning-subtle">
                     {cashFormat(interestSaved)}
                   </output>
                 </div>
@@ -378,7 +378,7 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
               <div className="row pt-2">
                 <div className="input-group">
                   <span className="input-group-text outputLabelWidth maxW">Time reduced due to overpayments</span>
-                  <output type="text" className="form-control bg-info-subtle">
+                  <output type="text" className="form-control bg-warning-subtle">
                     {`${yearsSaved}yr ${monthSaved}m`}
                   </output>
                 </div>
