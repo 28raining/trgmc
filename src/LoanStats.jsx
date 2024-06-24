@@ -26,7 +26,7 @@ function LoanStats({ loanRes, userInput }) {
           <div className="col-12">
             <div className="input-group">
               <span className="input-group-text outputLabelWidth">Last payment date</span>
-              <output type="text" className="form-control bg-info-subtle">
+              <output type="text" className="form-control bg-warning-subtle">
                 {lastMonth}
               </output>
             </div>
@@ -36,7 +36,7 @@ function LoanStats({ loanRes, userInput }) {
           <div className="col-12">
             <div className="input-group">
               <span className="input-group-text outputLabelWidth">Total Loan re-payment</span>
-              <output type="text" className="form-control bg-info-subtle">
+              <output type="text" className="form-control bg-warning-subtle">
                 {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(
                   totalPrincipal + totalInterest + loanRes["extraPayments"]
                 )}
@@ -51,7 +51,7 @@ function LoanStats({ loanRes, userInput }) {
                 <span className="input-group-text outputLabelWidth">
                   Total costs<small>&nbsp;(to {lastMonth})</small>
                 </span>
-                <output type="text" className="form-control bg-info-subtle">
+                <output type="text" className="form-control bg-warning-subtle">
                   {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(
                     totalPrincipal + totalInterest + loanRes["extraPayments"] + totalTax + totalHoA + totalInsurance
                   )}

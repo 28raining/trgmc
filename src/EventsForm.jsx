@@ -246,29 +246,36 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
           </div>
         )}
 
+        {canAdd ? null : (
+          <div className="row pt-2">
+            <div className="col-12">
+              {!validDate ? (
+                <div className="invalid-feedback" style={{ display: "initial" }}>
+                  Date invalid
+                </div>
+              ) : !validRecast ? (
+                <div className="invalid-feedback" style={{ display: "initial" }}>
+                  Recast only possible after overpay
+                </div>
+              ) : !canRefi ? (
+                <div className="invalid-feedback" style={{ display: "initial" }}>
+                  Cannot refinance on same date as other event
+                </div>
+              ) : !validOverpay ? (
+                <div className="invalid-feedback" style={{ display: "initial" }}>
+                  {overPayText}
+                </div>
+              ) : null}
+            </div>
+          </div>
+        )}
         <div className="row pt-2">
           <div className="col-12">
-            {!validDate ? (
-              <div className="invalid-feedback" style={{ display: "initial" }}>
-                Date invalid
-              </div>
-            ) : !validRecast ? (
-              <div className="invalid-feedback" style={{ display: "initial" }}>
-                Recast only possible after overpay
-              </div>
-            ) : !canRefi ? (
-              <div className="invalid-feedback" style={{ display: "initial" }}>
-                Cannot refinance on same date as other event
-              </div>
-            ) : !validOverpay ? (
-              <div className="invalid-feedback" style={{ display: "initial" }}>
-                {overPayText}
-              </div>
-            ) : (
-              <div className="feedback">
-                {chosenDate} remaining balance = {cashFormat(remainingBalance)}
-              </div>
-            )}
+            <div className="px-2 py-1 bg-info-subtle card">
+              <span>
+                {chosenDate} remaining balance = <b>{cashFormat(remainingBalance)}</b>
+              </span>
+            </div>
           </div>
         </div>
 
