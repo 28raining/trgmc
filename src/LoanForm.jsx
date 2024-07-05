@@ -65,6 +65,11 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
       if (oldVal === "0" && isNumber(parsedNewVal)) {
         var noLeading0 = parseFloat(parsedNewVal).toString();
       } else noLeading0 = parsedNewVal;
+
+      if (newVal.slice(-1) === "." && noLeading0.slice(-1) !== ".") {
+        noLeading0 = `${noLeading0}.`;
+      }
+
       updateUserInput(name, noLeading0);
     }
   }
@@ -162,7 +167,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
             </div>
           </div>
           <div className="row">
-            <div className="col-xl-6 col-12">
+            <div className="col-xl-4 col-12">
               <label>Interest rate</label>
               <div className="input-group mb-1">
                 <input
@@ -175,7 +180,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                 <span className="input-group-text">%</span>
               </div>
             </div>
-            <div className="col-xl-6 col-12">
+            <div className="col-xl-4 col-12">
               <label>Loan length</label>
               <div className="input-group mb-1">
                 <input
@@ -191,10 +196,8 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                 <span className="input-group-text">years</span>
               </div>
             </div>
-          </div>
 
-          <div className="row">
-            <div className="col-6">
+            <div className="col-4">
               <label>Start Date</label>
               <output type="text" className="form-control" value="may" onClick={() => setShow(true)}>
                 {new Intl.DateTimeFormat("en-US", startDateOptions).format(displayState["startDate"])}
@@ -232,10 +235,10 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
         </div>
       </div>
 
-      <div className="row shadow-sm border rounded mb-3 py-2 mx-0">
+      <div className="row shadow-sm border rounded py-2 mx-0">
         <div className="col-12 px-0">
           <div className="row mx-0">
-            <div className="col-xl-6 col-12">
+            <div className="col-xl-4 col-12">
               <label>Property Tax</label>
               <div className="input-group mb-1">
                 <input
@@ -275,7 +278,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
               </div>
             </div>
 
-            <div className="col-xl-6 col-12">
+            <div className="col-xl-4 col-12">
               <label>HoA</label>
               <div className="input-group mb-1">
                 <input
@@ -311,10 +314,8 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                 <ValidFbComp x={valid["hoa"]} />
               </div>
             </div>
-          </div>
 
-          <div className="row mx-0">
-            <div className="col-xl-6 col-12">
+            <div className="col-xl-4 col-12">
               <label>Insurance</label>
               <div className="input-group mb-1">
                 <input

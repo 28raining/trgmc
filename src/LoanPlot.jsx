@@ -121,7 +121,7 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, insurance
         categoryPercentage: 1.0,
         borderWidth: 0,
         order: 3,
-        xAxisID: "x",
+        yAxisID: "y",
       },
       {
         type: "bar",
@@ -133,14 +133,14 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, insurance
         categoryPercentage: 1.0,
         borderWidth: 0,
         order: 2,
-        xAxisID: "x",
+        yAxisID: "y",
       },
       {
         type: "line",
         label: "Remaining Balance",
         data: remainingFiltered,
         order: 1,
-        xAxisID: "x1",
+        yAxisID: "y1",
       },
     ],
   };
@@ -159,18 +159,18 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, insurance
         categoryPercentage: 1.0,
         borderWidth: 0,
         order: 4 + i,
-        xAxisID: "x",
+        yAxisID: "y",
       });
     }
   });
 
   var options = {
-    indexAxis: "y",
+    indexAxis: "x",
     maintainAspectRatio: false,
     scales: {
-      x: {
+      y: {
         max: Math.round(maxMonthly),
-        position: "top",
+        position: "left",
         stacked: true,
         grid: { display: false },
         ticks: {
@@ -182,9 +182,16 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, insurance
             // return '$' + value;
           },
         },
-        title: { text: yTitle, display: true },
+        title: {
+          text: yTitle,
+          display: true,
+          font: {
+            size: 16,
+          },
+        },
       },
-      x1: {
+      y1: {
+        position: "right",
         ticks: {
           // minRotation: 20,
           // Include a dollar sign in the ticks
@@ -194,10 +201,16 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, insurance
             // return '$' + value;
           },
         },
-        title: { text: "Remaining Balance", display: true },
+        title: {
+          text: "Remaining Balance",
+          display: true,
+          font: {
+            size: 16,
+          },
+        },
       },
 
-      y: {
+      x: {
         stacked: true,
         grid: { display: false },
       },
@@ -224,7 +237,7 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, insurance
               label += ": ";
             }
             if (context.parsed.y !== null) {
-              label += new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(context.parsed.x);
+              label += new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(context.parsed.y);
             }
             return label;
           },
@@ -234,7 +247,7 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, insurance
   };
 
   return (
-    <div className="row shadow-sm border rounded mb-3 py-1 mx-0 px-1">
+    <div className="row shadow-sm border rounded mb-3 py-1 mx-0 px-1 mt-3">
       <div className="col-12 px-0">
         <div className="row mx-0">
           <div className="col-12 px-0">

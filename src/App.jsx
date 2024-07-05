@@ -1,5 +1,4 @@
 import { useState } from "react";
-import "./App.css";
 // import { PlusCircle } from "react-bootstrap-icons";
 import LoanForm from "./LoanForm.jsx";
 import { loanMaths, isNumber } from "./loanMaths.js";
@@ -398,25 +397,34 @@ function App() {
           </div>
         </div>
         <div className="row">
-          <div className="col-md-5 col-12">
-            <LoanForm displayState={displayState} valid={valid} flash={flash} updateUserInput={(f, v) => updateUserInput(f, v)} />
-            <EventsForm
-              loanMonths={loanRes["loanMonths"]}
-              loanEvent={loanEvent}
-              loanRes={loanRes}
-              setLoanEvent={(e) => {
-                setLoanEvent(e);
-                var newDisplayState, newLoanRes;
-                [newDisplayState, newLoanRes] = runCalculations(userInput, e, chosenInput, userSetDownPercent);
-                setDisplayState(newDisplayState);
-                setLoanRes(newLoanRes);
-              }}
-              monthlyPaymentPerEvent={loanRes["monthlyPaymentPerEvent"]}
-            />
-
-            <LoanStats loanRes={loanRes} userInput={userInput} />
-          </div>
           <div className="col-md-7 col-12">
+            <LoanForm displayState={displayState} valid={valid} flash={flash} updateUserInput={(f, v) => updateUserInput(f, v)} />
+          </div>
+          <div className="col-md-5 col-12">
+            <div className="row">
+              <div className="col-12">
+                <EventsForm
+                  loanMonths={loanRes["loanMonths"]}
+                  loanEvent={loanEvent}
+                  loanRes={loanRes}
+                  setLoanEvent={(e) => {
+                    setLoanEvent(e);
+                    var newDisplayState, newLoanRes;
+                    [newDisplayState, newLoanRes] = runCalculations(userInput, e, chosenInput, userSetDownPercent);
+                    setDisplayState(newDisplayState);
+                    setLoanRes(newLoanRes);
+                  }}
+                  monthlyPaymentPerEvent={loanRes["monthlyPaymentPerEvent"]}
+                />
+              </div>
+              <div className=" col-12">
+                <LoanStats loanRes={loanRes} userInput={userInput} />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-12">
             <LoanPlot
               maxMonthly={Math.max(loanRes["monthlyPayment"])}
               loanRes={loanRes}

@@ -20,7 +20,7 @@ function LoanStats({ loanRes, userInput }) {
   const thereWereExtraPayments = totalTax > 0 || totalHoA > 0 || totalInsurance > 0 || loanRes["extraPayments"] > 0;
 
   return (
-    <div className="row shadow-sm border rounded py-3 mx-0 mb-3">
+    <div className="row shadow-sm border rounded py-2 mx-0">
       <div className="col-12">
         <div className="row pb-2">
           <div className="col-12">
@@ -60,7 +60,7 @@ function LoanStats({ loanRes, userInput }) {
             </div>
           </div>
         )}
-        <div className="row">
+        <div className="row pt-2">
           <div className="col-12">
             <ul className="ps-5 mb-0">
               <li>Principal: {cashFormat(totalPrincipal)}</li>
