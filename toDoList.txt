@@ -3,6 +3,8 @@
 
 ## Important
 
+- add country picker
+- allow recurring overpayments
 
 ## Later
 -- show standard loan types and autofill length
@@ -32,6 +34,8 @@
 - show balance change for each overpayment
 
 
+#Done since July 6th 2024
+- fix when loan is blank and when loan > 250
 
 # Done
 prevent overpayment larger than remaining

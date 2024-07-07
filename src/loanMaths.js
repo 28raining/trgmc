@@ -4,10 +4,11 @@ export function isNumber(num) {
   return !isNaN(num);
 }
 
+//converts float / int to nicely formatted currency
 export function cashFormat(val) {
   if (val === "") return "";
   if (!isNumber(val)) return "";
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat(undefined, {
     style: "currency",
     currency: "USD",
     maximumFractionDigits: 0,
@@ -91,13 +92,12 @@ export function loanMaths(
   monthlyExtraFee,
   startDate
 ) {
-  // console.log('loanMaths', loanAmount, numYears, interestRate, loanEvent, chosenInput, monthlyPaymentInput, downPayCash, monthlyExtraPercent, monthlyExtraFee)
+  if (!isNumber(numYears) || numYears == 0) numYears = 1; //fix issue when loan length is blank
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   var stDate = new Date(Number(startDate));
   var loanMonths = [];
   var monthIndex;
   var start = stDate.getMonth();
-  // console.log(start, startDate, stDate)
   var thisMonth;
   var year = stDate.getFullYear(); // % 100;
   var eventIndex = 0;
@@ -117,8 +117,6 @@ export function loanMaths(
     monthlyExtraPercent,
     monthlyExtraFee
   );
-
-  // console.log('bp7', loanData.monthly, loanData.loanAmount)
 
   var originalLoanAmount = loanData["loanAmount"];
   var originalHomeVal = loanData["homeVal"];

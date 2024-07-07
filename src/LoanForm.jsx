@@ -195,9 +195,10 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                 />
                 <span className="input-group-text">years</span>
               </div>
+              <ValidFbComp x={valid["loanLength"]} />
             </div>
 
-            <div className="col-4">
+            <div className="col-xl-4 col-12">
               <label>Start Date</label>
               <output type="text" className="form-control" value="may" onClick={() => setShow(true)}>
                 {new Intl.DateTimeFormat("en-US", startDateOptions).format(displayState["startDate"])}

@@ -219,6 +219,7 @@ function App() {
       newUserInput.interestRate = value;
     } else if (field == "loanLength") {
       newUserInput.loanLength = value;
+      if (isNumber(value)) if (parseFloat(value) > 250) newUserInput.loanLength = 250;
     } else if (field == "downPayCash") {
       newUserSetDownPercent = false;
       newUserInput.downPayCash = value;
@@ -274,6 +275,11 @@ function App() {
         if (i == "homeVal" || i == "loanAmount" || i == "monthlyPayment") {
           if (inputNumber <= 0) {
             newValid[i] = "Must be a greater than 0";
+          }
+        }
+        if (i == "loanLength") {
+          if (inputNumber >= 250) {
+            newValid[i] = "Must be less than 250";
           }
         }
         if (i == "homeVal" && !newUserSetDownPercent) {
@@ -355,6 +361,9 @@ function App() {
             </span>
           </span>
           <span className="justify-content-end">
+            <span className="me-3 align-middle" style={{ fontSize: "16px" }}>
+              🇺🇸
+            </span>
             <OverlayTrigger overlay={<Tooltip>{"share"}</Tooltip>} placement="bottom">
               <BoxArrowUp
                 key="BoxArrowUp"
@@ -437,9 +446,9 @@ function App() {
           </div>
         </div>
       </div>
-      <footer className="bg-body-tertiary mt-4">
+      <footer className="bg-body-tertiary mt-5">
         <div className="container-xxl">
-          <div className="row pt-3">
+          <div className="row pt-5 pb-3">
             <p>It would be great to hear your feedback!</p>
           </div>
           <div className="row">
