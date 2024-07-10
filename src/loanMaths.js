@@ -79,6 +79,38 @@ function loanCalc(numMonths, interestRate, loanAmount, chosenInput, monthlyPayme
   }
 }
 
+//function to handle recurring overpayments
+//0 : "doesn't repeat"
+//1 : "weekly"
+//2 : "bi-weekly"
+//3 : "monthly"
+//4 : "bi-monthly"
+//5 : "every 6 months"
+//6 : "annualy"
+//7 : "bi-annually"]
+
+function handleRepeatPayments(payArray, repeats, amount, month) {
+  //it is more correct to count sundays in a month - that way every month would get exactly the right number of sundays (overpayments).
+  //then the tool would be more accurate because the interest calculations are based on different remaining balances
+  //however, I decided that was too complicated and only has a minor impact on the final numbers. And who knows exactly how banks calculate interest, is it accrued daily or at end of month... or varies by bank
+  var i;
+  if (repeats == 1) {
+    for (i = month + 1; i < payArray.length; i += 12 / 52) payArray[Math.floor(i)] += amount;
+  } else if (repeats == 2) {
+    for (i = month + 1; i < payArray.length; i += 12 / 26) payArray[Math.floor(i)] += amount;
+  } else if (repeats == 3) {
+    for (i = month + 1; i < payArray.length; i++) payArray[i] += amount;
+  } else if (repeats == 4) {
+    for (i = month + 2; i < payArray.length; i += 2) payArray[i] += amount;
+  } else if (repeats == 5) {
+    for (i = month + 6; i < payArray.length; i += 6) payArray[i] += amount;
+  } else if (repeats == 6) {
+    for (i = month + 12; i < payArray.length; i += 12) payArray[i] += amount;
+  } else if (repeats == 7) {
+    for (i = month + 24; i < payArray.length; i += 24) payArray[i] += amount;
+  }
+  return payArray;
+}
 export function loanMaths(
   loanAmount,
   numYears,
@@ -126,9 +158,11 @@ export function loanMaths(
   var monthlyInterest = new Array(numYears * 12).fill(0);
   var monthlyPrincipal = new Array(numYears * 12).fill(0);
   var remaining = new Array(numYears * 12 + 1).fill(0);
+  var repeatingOverpayments = new Array(numYears * 12 + 1).fill(0);
   // var loanCopy = { ...loanData };
   var totalPrincipal = 0;
   var totalInterest = 0;
+  var overPay = 0;
   remaining[0] = loanData["loanAmount"];
 
   var rate = interestRate / 100;
@@ -145,6 +179,7 @@ export function loanMaths(
       if (loanEvent[eventIndex]["event"] == "Over-pay") {
         remaining[i] = remaining[i] + parseFloat(loanEvent[eventIndex]["cost"]) - parseFloat(loanEvent[eventIndex]["change"]);
         extraPayments += parseFloat(loanEvent[eventIndex].cost) + parseFloat(loanEvent[eventIndex]["change"]);
+        repeatingOverpayments = handleRepeatPayments(repeatingOverpayments, loanEvent[eventIndex]["repeats"], parseFloat(loanEvent[eventIndex]["change"]), i);
       } else if (loanEvent[eventIndex]["event"] == "Refinance") {
         interestRate = Number(loanEvent[eventIndex].change);
         rate = interestRate / 100;
@@ -162,10 +197,16 @@ export function loanMaths(
     }
 
     //Calculate 'the numbers' for the month
+
     monthlyPayment[i] = loanData.monthly + loanData.monthlyExta;
     monthlyInterest[i] = (remaining[i] * rate) / 12;
     monthlyPrincipal[i] = loanData.monthly - monthlyInterest[i];
     remaining[i + 1] = remaining[i] - monthlyPrincipal[i];
+    if (repeatingOverpayments[i] < remaining[i + 1]) overPay = repeatingOverpayments[i];
+    else overPay = 0;
+    remaining[i + 1] -= overPay;
+    extraPayments += overPay;
+
     monthlyPaymentPerEvent[eventIndex] = loanData.monthly;
 
     if (remaining[i + 1] <= 0) {
@@ -181,6 +222,8 @@ export function loanMaths(
       break;
     }
   }
+
+  // console.log('ex', extraPayments)
 
   //remove the last element of 'remaining' which should be 0
   // remaining.splice(remaining.length - 1, 1);

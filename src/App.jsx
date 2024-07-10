@@ -93,21 +93,31 @@ function runCalculations(userInput, loanEvent, chosenInput, userSetDownPercent) 
 }
 
 function loanEventEncoder(loanEvent) {
-  var str = `${loanEvent["event"]}_${loanEvent["date"].replace(" ", "")}_${loanEvent["cost"]}_${loanEvent["change"]}`;
-  if ("newLength" in loanEvent) str += `_${loanEvent["newLength"]}`;
+  var str = `${loanEvent["event"]}_${loanEvent["date"].replace(" ", "")}_${loanEvent["cost"]}_${loanEvent["change"]}_${loanEvent["newLength"]}_${loanEvent["repeats"]}`;
+  // if ("newLength" in loanEvent) str += `_${loanEvent["newLength"]}`;
+  // console.log(str, loanEvent)
   return str;
 }
 
-function loanEventDecoder(e) {
-  var newEvent = {};
-  var items = e.split("_");
-  newEvent["event"] = items[0];
-  newEvent["date"] = `${items[1].substring(0, 3)} ${items[1].substring(3, 7)}`;
-  newEvent["cost"] = parseInt(items[2]);
-  newEvent["change"] = parseInt(items[3]);
-  if (items.length > 4) newEvent["newLength"] = parseInt(items[4]);
-  // console.log(newEvent, items);
-  return newEvent;
+function loanEventDecoder(e, initialEvents) {
+  try {
+    var newEvent = {};
+    var items = e.split("_");
+    newEvent["event"] = items[0];
+    newEvent["date"] = `${items[1].substring(0, 3)} ${items[1].substring(3, 7)}`;
+    newEvent["cost"] = parseInt(items[2]);
+    if (items[3] == "-") newEvent["change"] = "-";
+    else newEvent["change"] = parseInt(items[3]);
+    if (items[4] == "-") newEvent["newLength"] = "-";
+    else newEvent["newLength"] = parseInt(items[4]);
+    if (items[5] == "-") newEvent["repeats"] = "-";
+    else newEvent["repeats"] = parseInt(items[5]);
+    // console.log(newEvent, items);
+    initialEvents.push(newEvent);
+    return initialEvents;
+  } catch (error) {
+    console.log("error decoding the url", error);
+  }
 }
 
 var accurateDate = new Date();
@@ -135,7 +145,7 @@ const searchParams = new URLSearchParams(window.location.search);
 const initialOverride = {};
 var initialEvents = [];
 for (const [key, value] of searchParams.entries()) {
-  if (key == "events") initialEvents.push(loanEventDecoder(value));
+  if (key == "events") initialEvents = loanEventDecoder(value, initialEvents);
   else initialOverride[key] = value;
 }
 
@@ -411,6 +421,9 @@ function App() {
           </div>
           <div className="col-md-5 col-12">
             <div className="row">
+              <div className="col-12 mb-3">
+                <LoanStats loanRes={loanRes} userInput={userInput} />
+              </div>
               <div className="col-12">
                 <EventsForm
                   loanMonths={loanRes["loanMonths"]}
@@ -425,9 +438,6 @@ function App() {
                   }}
                   monthlyPaymentPerEvent={loanRes["monthlyPaymentPerEvent"]}
                 />
-              </div>
-              <div className=" col-12">
-                <LoanStats loanRes={loanRes} userInput={userInput} />
               </div>
             </div>
           </div>

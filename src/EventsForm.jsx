@@ -12,6 +12,7 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
   const [chosenEvent, setChosenEvent] = useState("Over-pay");
   const [newChange, setNewChange] = useState(1000);
   const [chosenDate, setChosenDate] = useState(loanMonths[1]);
+  const [repeats, setRepeats] = useState(0);
   const [newLength, setNewLength] = useState(0);
   const [cost, setCost] = useState(0);
 
@@ -43,6 +44,8 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
     Recast: "Reduce the monthly payments after over-paying",
     Refinance: "Change the interest rate",
   };
+
+  const repeatOptions = ["doesn't repeat", "weekly", "bi-weekly", "monthly", "bi-monthly", "every 6 months", "annualy", "bi-annually"];
 
   function dateIsOlder(a, b) {
     return loanMonths.indexOf(a) > loanMonths.indexOf(b);
@@ -96,10 +99,15 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
     newEvent["date"] = chosenDate;
     if (isNumber(cost)) newEvent["cost"] = parseFloat(cost);
     else newEvent["cost"] = 0;
+
     if (chosenEvent == "Recast") newEvent["change"] = "-";
     else newEvent["change"] = newChange;
 
+    if (chosenEvent == "Over-pay") newEvent["repeats"] = repeats;
+    else newEvent["repeats"] = "-";
+
     if (chosenEvent == "Refinance") newEvent["newLength"] = newLength;
+    else newEvent["newLength"] = "-";
 
     var newEventObj = [...loanEvent];
     newEventObj.push(newEvent);
@@ -112,7 +120,7 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
   }
 
   return (
-    <div className="row shadow-sm border rounded mb-3 py-2 mx-0" key="row0">
+    <div className="row shadow-sm border rounded py-2 mx-0" key="row0">
       <ToastContainer position="top-end" className="pt-4">
         <Toast show={showEventToast} onClose={() => setShowEventToast(false)} delay={3000} autohide bg="info">
           <Toast.Header>
@@ -230,7 +238,7 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
           </div>
         </div>
 
-        {chosenEvent != "Refinance" ? null : (
+        {chosenEvent == "Refinance" ? (
           // <div className="row pb-2" key="row1a">
           <div className="row">
             <div className="col">
@@ -244,7 +252,20 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
               />
             </div>
           </div>
-        )}
+        ) : chosenEvent == "Over-pay" ? (
+          <div className="row">
+            <div className="col">
+              <label>Repeating payment?</label>
+              <select className="form-select mb-1" onChange={(e) => setRepeats(e.target.value)} value={repeats}>
+                {repeatOptions.map((x, i) => (
+                  <option value={i} key={i}>
+                    {x}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        ) : null}
 
         {canAdd ? null : (
           <div className="row pt-2">
@@ -271,7 +292,7 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
         )}
         <div className="row pt-2">
           <div className="col-12">
-            <div className="px-2 py-1 bg-info-subtle card">
+            <div className="px-2 py-1 mb-1 bg-info-subtle card">
               <span>
                 {chosenDate} remaining balance = <b>{cashFormat(remainingBalance)}</b>
               </span>
@@ -319,6 +340,7 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
                             setChosenDate(oldEvent[0]["date"]);
                             setCost(oldEvent[0]["cost"]);
                             setNewChange(oldEvent[0]["change"]);
+                            setRepeats(oldEvent[0]["repeats"]);
                             setLoanEvent(newEventObj);
                           }}
                         >
@@ -347,6 +369,13 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
                         <td></td>
                         <td colSpan={5} className="py-1">
                           New loan length: {x["newLength"] == "" ? <em>unchanged</em> : `${x["newLength"]}yr`}
+                        </td>
+                      </tr>
+                    ) : x["event"] == "Over-pay" && x["repeats"] != 0 ? (
+                      <tr key={"overpayRep"}>
+                        <td></td>
+                        <td colSpan={5} className="py-1">
+                          Payment repeats: {repeatOptions[x["repeats"]]}
                         </td>
                       </tr>
                     ) : null}
