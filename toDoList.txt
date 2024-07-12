@@ -10,7 +10,8 @@
 - add utilities
 - add school tax
 - county tax
-- pmi
+- upfront costs
+- refinance including taxes show costs
 
 ## Later
 -- show standard loan types and autofill length
@@ -44,6 +45,7 @@
 - fix when loan is blank and when loan > 250
 
 # Done
+- pmi
 prevent overpayment larger than remaining
 toast saying event added?
 -- google adwords

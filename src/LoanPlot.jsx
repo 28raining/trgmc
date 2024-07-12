@@ -15,7 +15,7 @@ import { useState } from "react";
 //   BarController
 // );
 
-function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, insurance, startDate }) {
+function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, pmi, insurance, startDate }) {
   const [monthsPerYearToPlot, setMonthsPerYearToPlot] = useState("yearly payments");
   const yTitle = monthsPerYearToPlot == "monthly payments" ? "Monthly Payments" : "Yearly Payments";
   const startMonth = startDate.getMonth();
@@ -28,6 +28,7 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, insurance
   var remainingFiltered;
   var taxPlot = [];
   var hoaPlot = [];
+  var pmiPlot = [];
   var insPlot = [];
 
   if (monthsPerYearToPlot == "monthly payments") {
@@ -38,6 +39,7 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, insurance
     for (var i = 0; i < loanMonthsFiltered.length; i++) {
       taxPlot[i] = propertyTax;
       hoaPlot[i] = hoa;
+      pmiPlot[i] = pmi;
       insPlot[i] = insurance;
     }
   } else {
@@ -47,6 +49,7 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, insurance
     monthlyInterestFiltered = [0];
     taxPlot = [0];
     hoaPlot = [0];
+    pmiPlot = [0];
     insPlot = [0];
     // var remainingFiltered = [0]
 
@@ -77,11 +80,13 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, insurance
       if (yearIndex >= monthlyInterestFiltered.length) monthlyInterestFiltered.push(0);
       if (yearIndex >= taxPlot.length) taxPlot.push(0);
       if (yearIndex >= hoaPlot.length) hoaPlot.push(0);
+      if (yearIndex >= pmiPlot.length) pmiPlot.push(0);
       if (yearIndex >= insPlot.length) insPlot.push(0);
       monthlyPrincipalFiltered[yearIndex] = monthlyPrincipalFiltered[yearIndex] + loanRes["monthlyPrincipal"][i];
       monthlyInterestFiltered[yearIndex] = monthlyInterestFiltered[yearIndex] + loanRes["monthlyInterest"][i];
       taxPlot[yearIndex] = taxPlot[yearIndex] + propertyTax;
       hoaPlot[yearIndex] = hoaPlot[yearIndex] + hoa;
+      pmiPlot[yearIndex] = pmiPlot[yearIndex] + pmi;
       insPlot[yearIndex] = insPlot[yearIndex] + insurance;
     }
     // console.log(loanMonthsFiltered.length, monthlyPrincipalFiltered.length);
@@ -101,7 +106,6 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, insurance
     "rgba(44, 160, 44, 0.6)",
     "rgba(214, 39, 40, 0.6)",
     "rgba(148, 103, 189, 0.6)",
-    "rgba(140, 86, 75, 0.6)",
     "rgba(227, 119, 194, 0.6)",
     "rgba(127, 127, 127, 0.6)",
     "rgba(188, 189, 34, 0.6)",
@@ -145,9 +149,9 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, insurance
     ],
   };
 
-  var title = ["Tax", "HoA", "Insurance"];
-  var pl = [taxPlot, hoaPlot, insPlot];
-  [propertyTax, hoa, insurance].forEach((x, i) => {
+  var title = ["Tax", "HoA", "Insurance", "PMI"];
+  var pl = [taxPlot, hoaPlot, insPlot, pmiPlot];
+  [propertyTax, hoa, insurance, pmi].forEach((x, i) => {
     if (x > 0) {
       data.datasets.push({
         type: "bar",

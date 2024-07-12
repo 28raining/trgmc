@@ -18,14 +18,7 @@ function ValidFbComp({ x }) {
 function LoanForm({ displayState, flash, updateUserInput, valid }) {
   const [show, setShow] = useState(false);
   const feeOptions = ["$ / year", "$ / month", "% / year", "% / month"];
-  const extraPayments = displayState["propertyTax"] > 0 || displayState["hoa"] > 0 || displayState["insurance"] > 0;
-  // console.log(displayState['propertyTax'], displayState['hoa'],displayState['insurance'], extraPayments )
-  // console.log("displSta", displayState)
-
-  // var validClass = {};
-  // for (const i in valid) validClass[i] = valid[i] === null ? null : "is-invalid";
-  // const class_validHomeVal = valid.homeVal === null ? null : "is-invalid";
-  // const class_validMontly = valid.monthlyPayment === null ? null : "is-invalid";
+  const extraPayments = displayState["propertyTax"] > 0 || displayState["hoa"] > 0 || displayState["insurance"] > 0 || displayState["pmi"] > 0;
 
   //builds class for each input based on flash (whether it changed and should flash) and valid (if user input is valid)
   const startDateOptions = { month: "short", year: "numeric" };
@@ -40,6 +33,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
     "loanLength",
     "propertyTax",
     "hoa",
+    "pmi",
     "insurance",
   ]) {
     inputClass[i] = "form-control";
@@ -251,12 +245,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                       : displayState["propertyTax"]
                   }
                   onChange={(e) => {
-                    // var x = Number(e.target.value.replace(/[^0-9.]+/g, ""));
                     updateIfChanged(displayState["propertyTax"], e.target.value, "propertyTax");
-                    // updateUserInput("propertyTax", x);
-
-                    // setPropertyTax(x);
-                    // setAdditionalMonthly(displayState['hoa'] * unitScaler(displayState['hoaUnit']) + x * unitScaler(displayState['propertyTaxUnit']) + displayState['insurance'] * unitScaler(displayState['insuranceUnit']));
                   }}
                 />
 
@@ -265,8 +254,6 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                   value={displayState["propertyTaxUnit"]}
                   onChange={(e) => {
                     updateUserInput("propertyTaxUnit", e.target.value);
-                    // setPropertyTaxUnit(e.target.value);
-                    // setAdditionalMonthly(displayState['hoa'] * unitScaler(displayState['hoaUnit']) + displayState['propertyTax'] * unitScaler(e.target.value) + displayState['insurance'] * unitScaler(displayState['insuranceUnit']));
                   }}
                 >
                   {feeOptions.map((x, i) => (
@@ -287,12 +274,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                   className={inputClass["hoa"]}
                   value={displayState["hoaUnit"] == 0 || displayState["hoaUnit"] == 1 ? cashFormat(displayState["hoa"]) : displayState["hoa"]}
                   onChange={(e) => {
-                    // var x = Number(e.target.value.replace(/[^0-9.]+/g, ""));
-                    // updateUserInput("hoa", x);
                     updateIfChanged(displayState["hoa"], e.target.value, "hoa");
-
-                    // setHoa(x);
-                    // setAdditionalMonthly(x * unitScaler(displayState['hoaUnit']) + displayState['propertyTax'] * unitScaler(displayState['propertyTaxUnit']) + displayState['insurance'] * unitScaler(displayState['insuranceUnit']));
                   }}
                 />
 
@@ -301,9 +283,6 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                   value={displayState["hoaUnit"]}
                   onChange={(e) => {
                     updateUserInput("hoaUnit", e.target.value);
-
-                    // setHoaUnit(e.target.value);
-                    // setAdditionalMonthly(displayState['hoa'] * unitScaler(e.target.value) + displayState['propertyTax'] * unitScaler(displayState['propertyTaxUnit']) + displayState['insurance'] * unitScaler(displayState['insuranceUnit']));
                   }}
                 >
                   {feeOptions.map((x, i) => (
@@ -332,10 +311,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                   className="form-select px-2 input-group-text"
                   value={displayState["insuranceUnit"]}
                   onChange={(e) => {
-                    // setInsuranceUnit(e.target.value);
                     updateUserInput("insuranceUnit", e.target.value);
-
-                    // setAdditionalMonthly(displayState['hoa'] * unitScaler(displayState['hoaUnit']) + displayState['propertyTax'] * unitScaler(displayState['propertyTaxUnit']) + displayState['insurance'] * unitScaler(e.target.value));
                   }}
                 >
                   {feeOptions.map((x, i) => (
@@ -345,6 +321,37 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                   ))}
                 </select>
                 <ValidFbComp x={valid["insurance"]} />
+              </div>
+            </div>
+
+            <div className="col-xl-4 col-12">
+              <label>
+                PMI <small>Private Mortgage Insurance</small>
+              </label>
+              <div className="input-group mb-1">
+                <input
+                  type="text"
+                  className={inputClass["pmi"]}
+                  value={displayState["pmiUnit"] == 0 || displayState["pmiUnit"] == 1 ? cashFormat(displayState["pmi"]) : displayState["pmi"]}
+                  onChange={(e) => {
+                    updateIfChanged(displayState["pmi"], e.target.value, "pmi");
+                  }}
+                />
+
+                <select
+                  className="form-select px-2 input-group-text"
+                  value={displayState["pmiUnit"]}
+                  onChange={(e) => {
+                    updateUserInput("pmiUnit", e.target.value);
+                  }}
+                >
+                  {feeOptions.map((x, i) => (
+                    <option value={i} key={i}>
+                      {x}
+                    </option>
+                  ))}
+                </select>
+                <ValidFbComp x={valid["pmi"]} />
               </div>
             </div>
           </div>

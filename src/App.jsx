@@ -21,6 +21,7 @@ function runCalculations(userInput, loanEvent, chosenInput, userSetDownPercent) 
   for (const x of [
     { num: userInput["propertyTax"], unit: userInput["propertyTaxUnit"] },
     { num: userInput["hoa"], unit: userInput["hoaUnit"] },
+    { num: userInput["pmi"], unit: userInput["pmiUnit"] },
     { num: userInput["insurance"], unit: userInput["insuranceUnit"] },
   ]) {
     if (x.unit == 0) monthlyExtraFee = monthlyExtraFee + parseFloat(x.num) / 12;
@@ -80,9 +81,11 @@ function runCalculations(userInput, loanEvent, chosenInput, userSetDownPercent) 
 
   displayState["propertyTax"] = userInput["propertyTax"];
   displayState["hoa"] = userInput["hoa"];
+  displayState["pmi"] = userInput["pmi"];
   displayState["insurance"] = userInput["insurance"];
   displayState["propertyTaxUnit"] = userInput["propertyTaxUnit"];
   displayState["hoaUnit"] = userInput["hoaUnit"];
+  displayState["pmiUnit"] = userInput["pmiUnit"];
   displayState["insuranceUnit"] = userInput["insuranceUnit"];
   displayState["startDate"] = userInput["startDate"];
 
@@ -135,9 +138,11 @@ const initialState = {
   loanLength: "30",
   propertyTax: "0.00",
   hoa: "0",
+  pmi: "0",
   insurance: "0",
   propertyTaxUnit: 2,
   hoaUnit: 1,
+  pmiUnit: 1,
   insuranceUnit: 0,
   startDate: coarseDate,
 };
@@ -167,6 +172,7 @@ function App() {
     loanLength: false,
     propertyTax: false,
     hoa: false,
+    pmi: false,
     insurance: false,
   });
   const [valid, setValid] = useState({
@@ -179,6 +185,7 @@ function App() {
     loanLength: null,
     propertyTax: null,
     hoa: null,
+    pmi: null,
     insurance: null,
   });
   var newDisplayState, newLoanRes;
@@ -251,6 +258,11 @@ function App() {
       if (newChosenInput == "homeVal") newFlash["loanAmount"] = !newFlash["loanAmount"];
     } else if (field == "hoaUnit") {
       newUserInput.hoaUnit = value;
+    } else if (field == "pmi") {
+      newUserInput.pmi = value;
+      if (newChosenInput == "homeVal") newFlash["loanAmount"] = !newFlash["loanAmount"];
+    } else if (field == "pmiUnit") {
+      newUserInput.pmiUnit = value;
       if (newChosenInput == "homeVal") newFlash["loanAmount"] = !newFlash["loanAmount"];
     } else if (field == "propertyTax") {
       newUserInput.propertyTax = value;
@@ -302,6 +314,7 @@ function App() {
           (i == "downPayPercent" && newUserSetDownPercent) ||
           (i == "insurance" && newUserInput.insuranceUnit > 1) ||
           (i == "hoa" && newUserInput.hoaUnit > 1) ||
+          (i == "pmi" && newUserInput.pmiUnit > 1) ||
           (i == "propertyTax" && newUserInput.propertyTaxUnit > 1)
         ) {
           // var newDownPay = field == "downPayCash" ? newUserInput.downPayCash : downPayCash;
@@ -309,7 +322,7 @@ function App() {
             newValid[i] = "Must be <100%";
           }
         }
-        if ((i == "propertyTax" || i == "hoa" || i == "insurance") && newChosenInput == "monthlyPayment") {
+        if ((i == "propertyTax" || i == "hoa" || i == "pmi" || i == "insurance") && newChosenInput == "monthlyPayment") {
           // var newDownPay = field == "downPayCash" ? newUserInput.downPayCash : downPayCash;
           if (inputNumber > newUserInput.monthlyPayment) {
             newValid[i] = "Must be < than monthly payment";
@@ -450,6 +463,7 @@ function App() {
               loanMonths={loanRes["loanMonths"]}
               propertyTax={userInput["propertyTax"] * unitScaler(userInput["propertyTaxUnit"])}
               hoa={userInput["hoa"] * unitScaler(userInput["hoaUnit"])}
+              pmi={userInput["pmi"] * unitScaler(userInput["pmiUnit"])}
               insurance={userInput["insurance"] * unitScaler(userInput["insuranceUnit"])}
               startDate={new Date(Number(userInput["startDate"]))}
             />
