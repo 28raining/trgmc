@@ -239,7 +239,7 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
         {chosenEvent == "Refinance" ? (
           // <div className="row pb-2" key="row1a">
           <div className="row">
-            <div className="col-xl-4 col-12">
+            <div className="col-xl-7 col-12">
               <label>New loan length:</label>
               <div className="input-group mb-1">
                 <input
@@ -384,9 +384,11 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
                         <td></td>
                         <td colSpan={5} className="py-1">
                           New monthly payment: {cashFormat(monthlyPaymentPerEvent[i + 1]["loan"] + monthlyPaymentPerEvent[i + 1]["extra"])}{" "}
-                          <small>
-                            <em>({cashFormat(monthlyPaymentPerEvent[i + 1]["loan"])} towards loan)</em>
-                          </small>
+                          {monthlyPaymentPerEvent[i + 1]["extra"] > 0 ? (
+                            <small>
+                              <em>({cashFormat(monthlyPaymentPerEvent[i + 1]["loan"])} towards loan)</em>
+                            </small>
+                          ) : null}
                         </td>
                       </tr>
                     ) : null}
