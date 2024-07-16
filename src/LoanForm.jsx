@@ -233,7 +233,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
       <div className="row shadow-sm border rounded py-2 mx-0">
         <div className="col-12 px-0">
           <div className="row mx-0">
-            <div className="col-xl-4 col-12">
+            <div className="col-xxl-4 col-12">
               <label>Property Tax</label>
               <div className="input-group mb-1">
                 <input
@@ -266,7 +266,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
               </div>
             </div>
 
-            <div className="col-xl-4 col-12">
+            <div className="col-xxl-4 col-12">
               <label>HoA</label>
               <div className="input-group mb-1">
                 <input
@@ -295,7 +295,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
               </div>
             </div>
 
-            <div className="col-xl-4 col-12">
+            <div className="col-xxl-4 col-12">
               <label>Insurance</label>
               <div className="input-group mb-1">
                 <input
@@ -324,7 +324,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
               </div>
             </div>
 
-            <div className="col-xl-4 col-12">
+            <div className="col-xxl-4 col-12">
               <label>
                 PMI <small>Private Mortgage Insurance</small>
               </label>

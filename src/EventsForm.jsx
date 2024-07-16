@@ -31,12 +31,7 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
 
   //prevent hanging when url params set up illegal state
   if (loanMonths.length < 2) return null;
-  if (monthlyPaymentPerEvent < 0) return null;
-
-  // console.log(monthlyPaymentPerEvent);
-
-  // const handleClose = () => setShow(false);
-  // const handleShow = () => setShow(true);
+  if (monthlyPaymentPerEvent.length < 0) return null;
 
   const eventList = ["Over-pay", "Recast", "Refinance"];
   const description = {
@@ -156,7 +151,7 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
           </div>
         </div>
         <div className="row">
-          <div className={chosenEvent == "Recast" ? "col-7" : "col-xl-4 col-6"}>
+          <div className="col-xl-4 col-6">
             <label>Date:</label>
             <select className="form-select mb-1" onChange={(e) => setChosenDate(e.target.value)} value={chosenDate}>
               {loanMonths.map((x) => (
@@ -166,30 +161,33 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
               ))}
             </select>
           </div>
-          {chosenEvent == "Recast" ? null : (
-            <div className="col-xl-3 col-6" key="col2">
-              <label>{chosenEvent == "Over-pay" ? "Amount" : "New rate"}</label>
-              <div className="input-group ">
-                <input
-                  type="text"
-                  className="form-control px-1"
-                  value={
-                    chosenEvent == "Over-pay"
-                      ? new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(
-                          newChange
-                        )
-                      : newChange
-                  }
-                  onChange={(e) => {
-                    var stripped = e.target.value.replace(/[^0-9.-]+/g, "");
-                    // console.log(stripped, e.target.value);
-                    setNewChange(stripped);
-                  }}
-                />
-                {chosenEvent == "Over-pay" ? null : <span className="input-group-text">%</span>}
-              </div>
-            </div>
-          )}
+
+          <div className="col-xl-3 col-6" key="col2">
+            {chosenEvent == "Recast" ? null : (
+              <>
+                <label>{chosenEvent == "Over-pay" ? "Amount" : "New rate"}</label>
+                <div className="input-group ">
+                  <input
+                    type="text"
+                    className="form-control px-1"
+                    value={
+                      chosenEvent == "Over-pay"
+                        ? new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(
+                            newChange
+                          )
+                        : newChange
+                    }
+                    onChange={(e) => {
+                      var stripped = e.target.value.replace(/[^0-9.-]+/g, "");
+                      // console.log(stripped, e.target.value);
+                      setNewChange(stripped);
+                    }}
+                  />
+                  {chosenEvent == "Over-pay" ? null : <span className="input-group-text">%</span>}
+                </div>
+              </>
+            )}
+          </div>
 
           <div className="col-xl-3 col-6">
             <label>Cost</label>
@@ -241,15 +239,17 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
         {chosenEvent == "Refinance" ? (
           // <div className="row pb-2" key="row1a">
           <div className="row">
-            <div className="col">
+            <div className="col-xl-4 col-12">
               <label>New loan length:</label>
-
-              <input
-                className="form-control px-1"
-                placeholder="unchanged..."
-                value={newLength == 0 ? "" : `${newLength}yr`}
-                onChange={(e) => setNewLength(Number(e.target.value.replace(/[^0-9.-]+/g, "")))}
-              />
+              <div className="input-group mb-1">
+                <input
+                  className="form-control"
+                  placeholder="unchanged..."
+                  value={newLength == 0 ? "" : newLength}
+                  onChange={(e) => setNewLength(Number(e.target.value.replace(/[^0-9.-]+/g, "")))}
+                />
+                <span className="input-group-text">years</span>
+              </div>
             </div>
           </div>
         ) : chosenEvent == "Over-pay" ? (
@@ -383,7 +383,10 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
                       <tr key={"refi2"}>
                         <td></td>
                         <td colSpan={5} className="py-1">
-                          New monthly payment: {cashFormat(monthlyPaymentPerEvent[i + 1])}
+                          New monthly payment: {cashFormat(monthlyPaymentPerEvent[i + 1]["loan"] + monthlyPaymentPerEvent[i + 1]["extra"])}{" "}
+                          <small>
+                            <em>({cashFormat(monthlyPaymentPerEvent[i + 1]["loan"])} towards loan)</em>
+                          </small>
                         </td>
                       </tr>
                     ) : null}

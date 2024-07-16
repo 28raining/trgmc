@@ -207,7 +207,7 @@ export function loanMaths(
     remaining[i + 1] -= overPay;
     extraPayments += overPay;
 
-    monthlyPaymentPerEvent[eventIndex] = loanData.monthly;
+    monthlyPaymentPerEvent[eventIndex] = { loan: loanData.monthly, extra: loanData.monthlyExta };
 
     if (remaining[i + 1] <= 0) {
       monthlyPrincipal[i] = monthlyPrincipal[i] + remaining[i + 1];

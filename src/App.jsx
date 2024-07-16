@@ -429,15 +429,15 @@ function App() {
           </div>
         </div>
         <div className="row">
-          <div className="col-md-7 col-12">
+          <div className="col-lg-7 col-12 mb-3">
             <LoanForm displayState={displayState} valid={valid} flash={flash} updateUserInput={(f, v) => updateUserInput(f, v)} />
           </div>
-          <div className="col-md-5 col-12">
+          <div className="col-lg-5 col-12">
             <div className="row">
               <div className="col-12 mb-3">
                 <LoanStats loanRes={loanRes} userInput={userInput} />
               </div>
-              <div className="col-12">
+              <div className="col-12 mb-3">
                 <EventsForm
                   loanMonths={loanRes["loanMonths"]}
                   loanEvent={loanEvent}

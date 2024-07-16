@@ -251,7 +251,7 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, pmi, insu
   };
 
   return (
-    <div className="row shadow-sm border rounded mb-3 py-1 mx-0 px-1 mt-3">
+    <div className="row shadow-sm border rounded mb-3 py-1 mx-0 px-1">
       <div className="col-12 px-0">
         <div className="row mx-0">
           <div className="col-12 px-0">
@@ -262,24 +262,24 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, pmi, insu
         </div>
 
         <div className="row mx-0">
-          <div className="col-12 px-3">
-            <div className="input-group ">
-              <span className="pe-3">Show: </span>
-              {["monthly payments", "yearly payments"].map((x) => (
-                <div className="form-check form-check-inline" key={x}>
-                  <input
-                    className="form-check-input"
-                    type="radio"
-                    name="numMonPlot"
-                    checked={monthsPerYearToPlot == x}
-                    value={x}
-                    onChange={() => setMonthsPerYearToPlot(x)}
-                  />
-                  <label className="form-check-label">{x}</label>
-                </div>
-              ))}
-            </div>
+          <div className="col-1">
+            <span>Show: </span>
           </div>
+          {["monthly payments", "yearly payments"].map((x) => (
+            <div className="col-xxl-2 col-md-4 col-sm-5 col-12">
+              <div className="form-check form-check-inline" key={x}>
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name="numMonPlot"
+                  checked={monthsPerYearToPlot == x}
+                  value={x}
+                  onChange={() => setMonthsPerYearToPlot(x)}
+                />
+                <label className="form-check-label">{x}</label>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
