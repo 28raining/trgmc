@@ -18,7 +18,8 @@ function ValidFbComp({ x }) {
 function LoanForm({ displayState, flash, updateUserInput, valid }) {
   const [show, setShow] = useState(false);
   const feeOptions = ["$ / year", "$ / month", "% / year", "% / month"];
-  const extraPayments = displayState["propertyTax"] > 0 || displayState["hoa"] > 0 || displayState["insurance"] > 0 || displayState["pmi"] > 0;
+  const extraPayments =
+    displayState["propertyTax"] > 0 || displayState["hoa"] > 0 || displayState["insurance"] > 0 || displayState["pmi"] || displayState["utilities"] > 0;
 
   //builds class for each input based on flash (whether it changed and should flash) and valid (if user input is valid)
   const startDateOptions = { month: "short", year: "numeric" };
@@ -34,6 +35,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
     "propertyTax",
     "hoa",
     "pmi",
+    "utilities",
     "insurance",
   ]) {
     inputClass[i] = "form-control";
@@ -233,7 +235,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
       <div className="row shadow-sm border rounded py-2 mx-0">
         <div className="col-12 px-0">
           <div className="row mx-0">
-            <div className="col-xxl-4 col-12">
+            <div className="col-xxl-4 col-sm-6 col-12">
               <label>Property Tax</label>
               <div className="input-group mb-1">
                 <input
@@ -266,8 +268,10 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
               </div>
             </div>
 
-            <div className="col-xxl-4 col-12">
-              <label>HoA</label>
+            <div className="col-xxl-4 col-sm-6 col-12">
+              <label>
+                HOA <small>Homeowners Association</small>
+              </label>
               <div className="input-group mb-1">
                 <input
                   type="text"
@@ -295,7 +299,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
               </div>
             </div>
 
-            <div className="col-xxl-4 col-12">
+            <div className="col-xxl-4 col-sm-6 col-12">
               <label>Insurance</label>
               <div className="input-group mb-1">
                 <input
@@ -324,7 +328,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
               </div>
             </div>
 
-            <div className="col-xxl-4 col-12">
+            <div className="col-xxl-4 col-sm-6 col-12">
               <label>
                 PMI <small>Private Mortgage Insurance</small>
               </label>
@@ -352,6 +356,42 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                   ))}
                 </select>
                 <ValidFbComp x={valid["pmi"]} />
+              </div>
+            </div>
+
+            <div className="col-xxl-4 col-sm-6 col-12">
+              <label>
+                Utilities{" "}
+                <small>
+                  <a href="https://www.forbes.com/home-improvement/living/monthly-utility-costs-by-state/">how much?</a>
+                </small>
+              </label>
+              <div className="input-group mb-1">
+                <input
+                  type="text"
+                  className={inputClass["utilities"]}
+                  value={
+                    displayState["utilitiesUnit"] == 0 || displayState["utilitiesUnit"] == 1 ? cashFormat(displayState["utilities"]) : displayState["utilities"]
+                  }
+                  onChange={(e) => {
+                    updateIfChanged(displayState["utilities"], e.target.value, "utilities");
+                  }}
+                />
+
+                <select
+                  className="form-select px-2 input-group-text"
+                  value={displayState["utilitiesUnit"]}
+                  onChange={(e) => {
+                    updateUserInput("utilitiesUnit", e.target.value);
+                  }}
+                >
+                  {feeOptions.map((x, i) => (
+                    <option value={i} key={i}>
+                      {x}
+                    </option>
+                  ))}
+                </select>
+                <ValidFbComp x={valid["utilities"]} />
               </div>
             </div>
           </div>

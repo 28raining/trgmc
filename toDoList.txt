@@ -3,15 +3,11 @@
 
 ## Important
 
-- allow recurring overpayments
--- make sure it saves in the URL properly
--- show repeatingness in the table
+
 - add country picker
 - add utilities
-- add school tax
-- county tax
 - upfront costs
-- refinance including taxes show costs
+-- add this as an event
 
 ## Later
 -- show standard loan types and autofill length
@@ -45,6 +41,10 @@
 - fix when loan is blank and when loan > 250
 
 # Done
+- allow recurring overpayments
+-- make sure it saves in the URL properly
+-- show repeatingness in the table
+- refinance including taxes show costs
 - pmi
 prevent overpayment larger than remaining
 toast saying event added?

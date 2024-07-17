@@ -17,8 +17,9 @@ function LoanStats({ loanRes, userInput }) {
   var totalTax = scaleMonthlyWUnit(userInput["propertyTax"], userInput["propertyTaxUnit"], loanRes["homeVal"], loanRes["monthlyInterest"].length);
   var totalHoA = scaleMonthlyWUnit(userInput["hoa"], userInput["hoaUnit"], loanRes["homeVal"], loanRes["monthlyInterest"].length);
   var totalpmi = scaleMonthlyWUnit(userInput["pmi"], userInput["pmiUnit"], loanRes["homeVal"], loanRes["monthlyInterest"].length);
+  var totalutilities = scaleMonthlyWUnit(userInput["utilities"], userInput["utilitiesUnit"], loanRes["homeVal"], loanRes["monthlyInterest"].length);
   var totalInsurance = scaleMonthlyWUnit(userInput["insurance"], userInput["insuranceUnit"], loanRes["homeVal"], loanRes["monthlyInterest"].length);
-  const thereWereExtraPayments = totalTax > 0 || totalHoA > 0 || totalpmi > 0 || totalInsurance > 0 || loanRes["extraPayments"] > 0;
+  const thereWereExtraPayments = totalTax > 0 || totalHoA > 0 || totalpmi > 0 || totalutilities > 0 || totalInsurance > 0 || loanRes["extraPayments"] > 0;
 
   return (
     <div className="row shadow-sm border rounded py-2 mx-0">
@@ -54,7 +55,7 @@ function LoanStats({ loanRes, userInput }) {
                 </span>
                 <output type="text" className="form-control bg-warning-subtle">
                   {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(
-                    totalPrincipal + totalInterest + loanRes["extraPayments"] + totalTax + totalHoA + totalpmi + totalInsurance
+                    totalPrincipal + totalInterest + loanRes["extraPayments"] + totalTax + totalHoA + totalpmi + totalutilities + totalInsurance
                   )}
                 </output>
               </div>
@@ -70,6 +71,7 @@ function LoanStats({ loanRes, userInput }) {
               {userInput["propertyTax"] > 0 ? <li>Tax: {cashFormat(totalTax)}</li> : null}
               {userInput["hoa"] > 0 ? <li>HoA: {cashFormat(totalHoA)}</li> : null}
               {userInput["pmi"] > 0 ? <li>PMI: {cashFormat(totalpmi)}</li> : null}
+              {userInput["utilities"] > 0 ? <li>Utilities: {cashFormat(totalutilities)}</li> : null}
               {userInput["insurance"] > 0 ? <li>Insurance: {cashFormat(totalInsurance)}</li> : null}
             </ul>
           </div>
