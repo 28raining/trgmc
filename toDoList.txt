@@ -4,6 +4,9 @@
 ## Important
 
 
+
+
+
 - add country picker
 - add utilities
 - upfront costs
@@ -39,6 +42,14 @@
 
 #Done since July 6th 2024
 - fix when loan is blank and when loan > 250
+- pad lock on down payment chosen
+- monthly payment and towards loan don't match
+- Fix PMI so it decreases over time
+-- pmi input feedback
+-- put note how pmi varies from bank to bank
+-- pmi stops when equity at 20%
+
+
 
 # Done
 - allow recurring overpayments

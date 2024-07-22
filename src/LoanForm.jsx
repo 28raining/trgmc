@@ -90,7 +90,6 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                 // key={homeVal}
                 type="text"
                 inputMode="numeric"
-                // className={flash["homeVal"] ? `form-control anim1 ${class_validHomeVal}` : `form-control anim2 ${class_validHomeVal}`}
                 className={inputClass["homeVal"]}
                 value={cashFormat(displayState["homeVal"])}
                 onChange={(e) => updateIfChanged(displayState["homeVal"], e.target.value, "homeVal")}
@@ -252,7 +251,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                 />
 
                 <select
-                  className="form-select px-2 input-group-text"
+                  className="form-select ps-2 input-group-text"
                   value={displayState["propertyTaxUnit"]}
                   onChange={(e) => {
                     updateUserInput("propertyTaxUnit", e.target.value);
@@ -270,7 +269,10 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
 
             <div className="col-xxl-4 col-sm-6 col-12">
               <label>
-                HOA <small>Homeowners Association</small>
+                HOA{" "}
+                <small>
+                  <em>Homeowners Association</em>
+                </small>
               </label>
               <div className="input-group mb-1">
                 <input
@@ -283,7 +285,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                 />
 
                 <select
-                  className="form-select px-2 input-group-text"
+                  className="form-select ps-2 input-group-text"
                   value={displayState["hoaUnit"]}
                   onChange={(e) => {
                     updateUserInput("hoaUnit", e.target.value);
@@ -312,7 +314,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                 />
 
                 <select
-                  className="form-select px-2 input-group-text"
+                  className="form-select ps-2 input-group-text"
                   value={displayState["insuranceUnit"]}
                   onChange={(e) => {
                     updateUserInput("insuranceUnit", e.target.value);
@@ -330,7 +332,10 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
 
             <div className="col-xxl-4 col-sm-6 col-12">
               <label>
-                PMI <small>Private Mortgage Insurance</small>
+                PMI{" "}
+                <small>
+                  <em>Private Mortgage Insurance</em>
+                </small>
               </label>
               <div className="input-group mb-1">
                 <input
@@ -342,11 +347,16 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                   }}
                 />
 
+                {/* Special treatiment for PMI because it's a % of loan amount, not of home value */}
                 <select
-                  className="form-select px-2 input-group-text"
-                  value={displayState["pmiUnit"]}
+                  className="form-select ps-2 input-group-text"
+                  value={displayState["pmiUnit"] == 4 ? 2 : displayState["pmiUnit"] == 5 ? 3 : displayState["pmiUnit"]}
                   onChange={(e) => {
-                    updateUserInput("pmiUnit", e.target.value);
+                    var pmiHack;
+                    if (e.target.value == 2) pmiHack = 4;
+                    else if (e.target.value == 3) pmiHack = 5;
+                    else pmiHack = e.target.value;
+                    updateUserInput("pmiUnit", pmiHack);
                   }}
                 >
                   {feeOptions.map((x, i) => (
@@ -363,7 +373,9 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
               <label>
                 Utilities{" "}
                 <small>
-                  <a href="https://www.forbes.com/home-improvement/living/monthly-utility-costs-by-state/">how much?</a>
+                  <a href="https://www.forbes.com/home-improvement/living/monthly-utility-costs-by-state/" target="_blank" rel="noopener noreferrer">
+                    how much?
+                  </a>
                 </small>
               </label>
               <div className="input-group mb-1">
@@ -379,7 +391,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                 />
 
                 <select
-                  className="form-select px-2 input-group-text"
+                  className="form-select ps-2 input-group-text"
                   value={displayState["utilitiesUnit"]}
                   onChange={(e) => {
                     updateUserInput("utilitiesUnit", e.target.value);

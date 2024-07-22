@@ -1,10 +1,12 @@
 import { cashFormat } from "./loanMaths.js";
 
-function scaleMonthlyWUnit(v, unit, homeVal, length) {
+function scaleMonthlyWUnit(v, unit, homeVal, length, loanAmount) {
   if (unit == 0) return (parseFloat(v) * length) / 12;
   else if (unit == 1) return parseFloat(v) * length;
   else if (unit == 2) return (parseFloat(v) * homeVal * length) / 1200;
   else if (unit == 3) return (parseFloat(v) * homeVal * length) / 100;
+  else if (unit == 4) return (parseFloat(v) * loanAmount * length) / 1200;
+  else if (unit == 5) return (parseFloat(v) * loanAmount * length) / 100;
 }
 
 function LoanStats({ loanRes, userInput }) {
@@ -14,11 +16,39 @@ function LoanStats({ loanRes, userInput }) {
   var totalInterest = 0;
   for (const i of loanRes["monthlyPrincipal"]) totalPrincipal = totalPrincipal + i;
   for (const i of loanRes["monthlyInterest"]) totalInterest = totalInterest + i;
-  var totalTax = scaleMonthlyWUnit(userInput["propertyTax"], userInput["propertyTaxUnit"], loanRes["homeVal"], loanRes["monthlyInterest"].length);
-  var totalHoA = scaleMonthlyWUnit(userInput["hoa"], userInput["hoaUnit"], loanRes["homeVal"], loanRes["monthlyInterest"].length);
-  var totalpmi = scaleMonthlyWUnit(userInput["pmi"], userInput["pmiUnit"], loanRes["homeVal"], loanRes["monthlyInterest"].length);
-  var totalutilities = scaleMonthlyWUnit(userInput["utilities"], userInput["utilitiesUnit"], loanRes["homeVal"], loanRes["monthlyInterest"].length);
-  var totalInsurance = scaleMonthlyWUnit(userInput["insurance"], userInput["insuranceUnit"], loanRes["homeVal"], loanRes["monthlyInterest"].length);
+  var totalTax = scaleMonthlyWUnit(
+    userInput["propertyTax"],
+    userInput["propertyTaxUnit"],
+    loanRes["homeVal"],
+    loanRes["monthlyInterest"].length,
+    loanRes["loanAmount"]
+  );
+  var totalHoA = scaleMonthlyWUnit(userInput["hoa"], userInput["hoaUnit"], loanRes["homeVal"], loanRes["monthlyInterest"].length, loanRes["loanAmount"]);
+  var totalpmi = 0;
+  var pmiPayments = 0;
+  if (userInput["pmiUnit"] == 0 || userInput["pmiUnit"] == 1) {
+    pmiPayments = loanRes["monthlyInterest"].length;
+    totalpmi = scaleMonthlyWUnit(userInput["pmi"], userInput["pmiUnit"], loanRes["homeVal"], loanRes["monthlyInterest"].length, loanRes["loanAmount"]);
+  } else {
+    for (var ii = 0; ii < loanRes["monthlyPMI"].length; ii++) {
+      totalpmi += loanRes["monthlyPMI"][ii];
+      if (loanRes["monthlyPMI"][ii] > 0) pmiPayments += 1;
+    }
+  }
+  var totalutilities = scaleMonthlyWUnit(
+    userInput["utilities"],
+    userInput["utilitiesUnit"],
+    loanRes["homeVal"],
+    loanRes["monthlyInterest"].length,
+    loanRes["loanAmount"]
+  );
+  var totalInsurance = scaleMonthlyWUnit(
+    userInput["insurance"],
+    userInput["insuranceUnit"],
+    loanRes["homeVal"],
+    loanRes["monthlyInterest"].length,
+    loanRes["loanAmount"]
+  );
   const thereWereExtraPayments = totalTax > 0 || totalHoA > 0 || totalpmi > 0 || totalutilities > 0 || totalInsurance > 0 || loanRes["extraPayments"] > 0;
 
   return (
@@ -70,7 +100,14 @@ function LoanStats({ loanRes, userInput }) {
               {loanRes["extraPayments"] > 0 ? <li>Overpayments & fees: {cashFormat(loanRes["extraPayments"])}</li> : null}
               {userInput["propertyTax"] > 0 ? <li>Tax: {cashFormat(totalTax)}</li> : null}
               {userInput["hoa"] > 0 ? <li>HoA: {cashFormat(totalHoA)}</li> : null}
-              {userInput["pmi"] > 0 ? <li>PMI: {cashFormat(totalpmi)}</li> : null}
+              {userInput["pmi"] > 0 ? (
+                <li>
+                  PMI: {cashFormat(totalpmi)}{" "}
+                  <small>
+                    <em>({pmiPayments} payments)</em>
+                  </small>
+                </li>
+              ) : null}
               {userInput["utilities"] > 0 ? <li>Utilities: {cashFormat(totalutilities)}</li> : null}
               {userInput["insurance"] > 0 ? <li>Insurance: {cashFormat(totalInsurance)}</li> : null}
             </ul>

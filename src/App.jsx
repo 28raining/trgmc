@@ -1,8 +1,6 @@
 import { useState } from "react";
-// import { PlusCircle } from "react-bootstrap-icons";
 import LoanForm from "./LoanForm.jsx";
 import { loanMaths, isNumber } from "./loanMaths.js";
-// import  from "./loanMaths.js";
 import LoanPlot from "./LoanPlot.jsx";
 import LoanStats from "./LoanStats.jsx";
 import EventsForm from "./EventsForm.jsx";
@@ -21,7 +19,6 @@ function runCalculations(userInput, loanEvent, chosenInput, userSetDownPercent) 
   for (const x of [
     { num: userInput["propertyTax"], unit: userInput["propertyTaxUnit"] },
     { num: userInput["hoa"], unit: userInput["hoaUnit"] },
-    { num: userInput["pmi"], unit: userInput["pmiUnit"] },
     { num: userInput["utilities"], unit: userInput["utilitiesUnit"] },
     { num: userInput["insurance"], unit: userInput["insuranceUnit"] },
   ]) {
@@ -29,6 +26,17 @@ function runCalculations(userInput, loanEvent, chosenInput, userSetDownPercent) 
     else if (x.unit == 1) monthlyExtraFee = monthlyExtraFee + parseFloat(x.num);
     else if (x.unit == 2) monthlyExtraPercent = monthlyExtraPercent + parseFloat(x.num) / 12;
     else if (x.unit == 3) monthlyExtraPercent = monthlyExtraPercent + parseFloat(x.num);
+  }
+  var PMI = 0;
+  for (const x of [{ num: userInput["pmi"], unit: userInput["pmiUnit"] }]) {
+    if (x.unit == 0) {
+      PMI = 0;
+      monthlyExtraFee = monthlyExtraFee + parseFloat(x.num) / 12;
+    } else if (x.unit == 1) {
+      PMI = 0;
+      monthlyExtraFee = monthlyExtraFee + parseFloat(x.num);
+    } else if (x.unit == 4) PMI = parseFloat(x.num) / 100;
+    else if (x.unit == 5) PMI = (parseFloat(x.num) * 12) / 100;
   }
 
   const loanAmount = userSetDownPercent
@@ -49,15 +57,17 @@ function runCalculations(userInput, loanEvent, chosenInput, userSetDownPercent) 
     userSetDownPercent,
     parseFloat(monthlyExtraPercent),
     parseFloat(monthlyExtraFee),
-    userInput["startDate"]
+    userInput["startDate"],
+    PMI,
+    parseFloat(userInput["homeVal"]) * 0.8
   );
 
   const homeVal = parseFloat(loanRes["homeVal"]);
 
   if (chosenInput == "monthlyPayment") {
-    displayState["monthlyPayment"] = parseInt(userInput["monthlyPayment"]).toString();
+    displayState["monthlyPayment"] = Math.round(userInput["monthlyPayment"]).toString();
   } else {
-    displayState["monthlyPayment"] = parseInt(loanRes["monthlyPayment"][0]).toString();
+    displayState["monthlyPayment"] = Math.round(loanRes["monthlyPayment"][0]).toString();
   }
   displayState["monthlyPaymentToLoan"] = parseFloat(loanRes["monthlyInterest"][0]) + parseFloat(loanRes["monthlyPrincipal"][0]);
   // console.log("homeVal",homeVal)
@@ -94,6 +104,8 @@ function runCalculations(userInput, loanEvent, chosenInput, userSetDownPercent) 
 
   displayState["lock"] = [];
   displayState["lock"].push(chosenInput);
+  if (userSetDownPercent) displayState["lock"].push("downPayPercent");
+  else displayState["lock"].push("downPayCash");
 
   return [displayState, loanRes];
 }
@@ -146,7 +158,7 @@ const initialState = {
   insurance: "0",
   propertyTaxUnit: 2,
   hoaUnit: 1,
-  pmiUnit: 1,
+  pmiUnit: 4,
   utilitiesUnit: 1,
   insuranceUnit: 0,
   startDate: coarseDate,
@@ -158,13 +170,15 @@ for (const [key, value] of searchParams.entries()) {
   if (key == "events") initialEvents = loanEventDecoder(value, initialEvents);
   else initialOverride[key] = value;
 }
+var initialUserSetDownPercent = true;
+if (searchParams.has("downPayCash")) initialUserSetDownPercent = false;
 
 // console.log(initialEvents)
 
 function App() {
   const [loanEvent, setLoanEvent] = useState(initialEvents);
   const [chosenInput, setChosenInput] = useState("homeVal");
-  const [userSetDownPercent, setUserSetDownPercent] = useState(true);
+  const [userSetDownPercent, setUserSetDownPercent] = useState(initialUserSetDownPercent);
 
   const [userInput, setUserInput] = useState({ ...initialState, ...initialOverride });
   const [flash, setFlash] = useState({
@@ -247,10 +261,12 @@ function App() {
     } else if (field == "downPayCash") {
       newUserSetDownPercent = false;
       newUserInput.downPayCash = value;
+      newUserInput.downPayPercent = initialState.downPayPercent;
       if (newChosenInput != "homeVal") newFlash["loanAmount"] = !flash["loanAmount"]; //stop it flashing
     } else if (field == "downPayPercent") {
       newUserSetDownPercent = true;
       newUserInput.downPayPercent = value;
+      newUserInput.downPayCash = initialState.downPayCash;
       if (newChosenInput != "homeVal") newFlash["loanAmount"] = !flash["loanAmount"]; //stop it flashing
 
       // newFlash["loanAmount"] = !flash["loanAmount"];
@@ -305,7 +321,7 @@ function App() {
       if (!isNumber(newUserInput[i])) {
         newValid[i] = "Must be a valid number";
       } else {
-        var inputNumber = parseInt(newUserInput[i]);
+        var inputNumber = parseFloat(newUserInput[i]);
         if (i == "homeVal" || i == "loanAmount" || i == "monthlyPayment") {
           if (inputNumber <= 0) {
             newValid[i] = "Must be a greater than 0";
@@ -357,6 +373,11 @@ function App() {
       setFlash(newFlash);
     }
 
+    //check if PMI is valid (has to go post-math)
+    if (parseFloat(newDisplayState["downPayPercent"]) >= 20 && parseFloat(newDisplayState["pmi"]) > 0) {
+      newValid["pmi"] = "PMI is only required when the loan is greater than 80% of the property value";
+    }
+
     setDisplayState(newDisplayState);
 
     setUserInput(newUserInput);
@@ -367,7 +388,19 @@ function App() {
   }
 
   function unitScaler(u) {
-    return u == 0 ? 1 / 12 : u == 1 ? 1 : u == 2 ? (displayState["homeVal"] * 0.01) / 12 : u == 3 ? displayState["homeVal"] * 0.01 : 0;
+    return u == 0
+      ? 1 / 12
+      : u == 1
+        ? 1
+        : u == 2
+          ? (displayState["homeVal"] * 0.01) / 12
+          : u == 3
+            ? displayState["homeVal"] * 0.01
+            : u == 4
+              ? (displayState["loanAmount"] * 0.01) / 12
+              : u == 5
+                ? displayState["loanAmount"] * 0.01
+                : 0.0;
   }
 
   // //Save any user inputs to the URL
@@ -480,7 +513,25 @@ function App() {
               utilities={userInput["utilities"] * unitScaler(userInput["utilitiesUnit"])}
               insurance={userInput["insurance"] * unitScaler(userInput["insuranceUnit"])}
               startDate={new Date(Number(userInput["startDate"]))}
+              pmiUnit={userInput["pmiUnit"]}
             />
+          </div>
+        </div>
+        <div className="row shadow-sm border rounded my-3 pt-2 mx-0 text-secondary">
+          <div className="col-12">
+            <p>
+              Note - PMI payments will vary depending how the compny implements it. Some companies adjust PMI payments once per year, others adjust it monthly.
+              Some companies will keep monthly payments fixed (mortgage + pmi), some will add pmi on top (payment changes every month)
+            </p>
+            <p>
+              This tool assumes that the PMI payment reduces every month, that monthly payments are fixed, and that PMI payments stop when the loan balance
+              falls below 80% of home value
+            </p>
+            <p>
+              Why does adding PMI change the amount of interest being paid? PMI is the same as increasing the interest rate. Higher interest rate means more of
+              the monthly payment goes to interest, and therefore less goes to principal. The next month has larger remaining balance, then more interest is
+              charged. It is not intuitive!
+            </p>
           </div>
         </div>
       </div>

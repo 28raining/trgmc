@@ -15,11 +15,10 @@ import { useState } from "react";
 //   BarController
 // );
 
-function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, pmi, utilities, insurance, startDate }) {
+function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, pmi, utilities, insurance, startDate, pmiUnit }) {
   const [monthsPerYearToPlot, setMonthsPerYearToPlot] = useState("yearly payments");
   const yTitle = monthsPerYearToPlot == "monthly payments" ? "Monthly Payments" : "Yearly Payments";
   const startMonth = startDate.getMonth();
-  // console.log(startDate, startMonth)
 
   // console.log('rem',loanRes["remaining"])
   var monthlyPrincipalFiltered;
@@ -37,10 +36,11 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, pmi, util
     monthlyPrincipalFiltered = loanRes["monthlyPrincipal"];
     monthlyInterestFiltered = loanRes["monthlyInterest"];
     remainingFiltered = loanRes["remaining"];
+    if (pmiUnit > 1) pmiPlot = loanRes["monthlyPMI"];
     for (var i = 0; i < loanMonthsFiltered.length; i++) {
+      if (pmiUnit < 2) pmiPlot[i] = pmi;
       taxPlot[i] = propertyTax;
       hoaPlot[i] = hoa;
-      pmiPlot[i] = pmi;
       utilitiesPlot[i] = utilities;
       insPlot[i] = insurance;
     }
@@ -88,9 +88,10 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, pmi, util
       if (yearIndex >= insPlot.length) insPlot.push(0);
       monthlyPrincipalFiltered[yearIndex] = monthlyPrincipalFiltered[yearIndex] + loanRes["monthlyPrincipal"][i];
       monthlyInterestFiltered[yearIndex] = monthlyInterestFiltered[yearIndex] + loanRes["monthlyInterest"][i];
+      if (pmiUnit > 1) pmiPlot[yearIndex] = pmiPlot[yearIndex] + loanRes["monthlyPMI"][i];
+      else pmiPlot[yearIndex] = pmiPlot[yearIndex] + pmi;
       taxPlot[yearIndex] = taxPlot[yearIndex] + propertyTax;
       hoaPlot[yearIndex] = hoaPlot[yearIndex] + hoa;
-      pmiPlot[yearIndex] = pmiPlot[yearIndex] + pmi;
       utilitiesPlot[yearIndex] = utilitiesPlot[yearIndex] + utilities;
       insPlot[yearIndex] = insPlot[yearIndex] + insurance;
     }
