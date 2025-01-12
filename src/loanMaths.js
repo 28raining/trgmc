@@ -135,8 +135,7 @@ export function loanMaths(
   monthlyExtraPercent,
   monthlyExtraFee,
   startDate,
-  PMI,
-  PMILimit
+  PMI
 ) {
   if (!isNumber(numYears) || numYears == 0) numYears = 1; //fix issue when loan length is blank
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -174,6 +173,7 @@ export function loanMaths(
   var monthlyPayment = new Array(numYears * 12).fill(0);
   var monthlyInterest = new Array(numYears * 12).fill(0);
   var monthlyPMI = new Array(numYears * 12).fill(0);
+  var equity = new Array(numYears * 12).fill(0);
   var monthlyPrincipal = new Array(numYears * 12).fill(0);
   var remaining = new Array(numYears * 12 + 1).fill(0);
   var repeatingOverpayments = new Array(numYears * 12 + 1).fill(0);
@@ -214,9 +214,9 @@ export function loanMaths(
       eventIndex = eventIndex + 1;
     }
 
-    //handle case when PMI payments stop due to <80% L2V
+    //handle case when PMI payments stop due to <80% L2V. This is like an event causing loan re-calculation
     if (PMI_int > 0) {
-      if (remaining[i] < PMILimit) {
+      if (remaining[i] < 0.8 * originalHomeVal) {
         // console.log("stopping PMI at month", i)
         PMI_int = 0;
         loanData = loanCalc(numMonths - i, interestRate, remaining[i], "homeVal", null, 0, 0, monthlyExtraPercent, monthlyExtraFee, PMI_int);
@@ -224,6 +224,7 @@ export function loanMaths(
     }
 
     //Calculate 'the numbers' for the month
+    equity[i] = `${Math.round((1000 * (originalHomeVal - remaining[i])) / originalHomeVal) / 10}%`;
     monthlyPMI[i] = (remaining[i] * PMI_int) / 12;
     monthlyInterest[i] = (remaining[i] * rate) / 12;
     monthlyPrincipal[i] = loanData.monthly - monthlyInterest[i] - monthlyPMI[i];
@@ -259,6 +260,7 @@ export function loanMaths(
   monthlyPrincipal.splice(i + 1, numMonths - i);
   remaining.splice(i + 1, numMonths - i);
   monthlyPMI.splice(i + 1, numMonths - i);
+  equity.splice(i + 1, numMonths - i);
   // console.log(i, numMonths, monthlyPayment.length,[...monthlyPayment]);
 
   return {
@@ -277,5 +279,6 @@ export function loanMaths(
     totalPrincipal: totalPrincipal,
     totalInterest: totalInterest,
     monthlyPMI: monthlyPMI,
+    equity: equity,
   };
 }

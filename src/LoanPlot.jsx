@@ -16,26 +16,28 @@ import { useState } from "react";
 // );
 
 function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, pmi, utilities, insurance, startDate, pmiUnit }) {
-  const [monthsPerYearToPlot, setMonthsPerYearToPlot] = useState("yearly payments");
-  const yTitle = monthsPerYearToPlot == "monthly payments" ? "Monthly Payments" : "Yearly Payments";
+  const [monthsPerYearToPlot, setMonthsPerYearToPlot] = useState("yearly breakdown");
+  const yTitle = monthsPerYearToPlot == "monthly breakdown" ? "Monthly Breakdown" : "Yearly Breakdown";
   const startMonth = startDate.getMonth();
 
-  // console.log('rem',loanRes["remaining"])
+  // console.log('rem',loanRes)
   var monthlyPrincipalFiltered;
   var monthlyInterestFiltered;
-  var loanMonthsFiltered;
-  var remainingFiltered;
+  var loanMonthsFiltered = [];
+  var remainingFiltered = [];
+  var equityFiltered = [];
   var taxPlot = [];
   var hoaPlot = [];
   var pmiPlot = [];
   var utilitiesPlot = [];
   var insPlot = [];
 
-  if (monthsPerYearToPlot == "monthly payments") {
+  if (monthsPerYearToPlot == "monthly breakdown") {
     loanMonthsFiltered = loanMonths;
     monthlyPrincipalFiltered = loanRes["monthlyPrincipal"];
     monthlyInterestFiltered = loanRes["monthlyInterest"];
     remainingFiltered = loanRes["remaining"];
+    equityFiltered = loanRes["equity"];
     if (pmiUnit > 1) pmiPlot = loanRes["monthlyPMI"];
     for (var i = 0; i < loanMonthsFiltered.length; i++) {
       if (pmiUnit < 2) pmiPlot[i] = pmi;
@@ -56,13 +58,13 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, pmi, util
     insPlot = [0];
     // var remainingFiltered = [0]
 
-    var loanMonthsFiltered_full = loanMonths.filter(function (element, index) {
-      return index % 12 === 0;
-    });
-    loanMonthsFiltered = loanMonthsFiltered_full.map((d) => d.substring(4, 8)); //get only the year, throw away the month
-    remainingFiltered = loanRes["remaining"].filter(function (element, index) {
-      return index % 12 === 0;
-    });
+    // var loanMonthsFiltered_full = loanMonths.filter(function (element, index) {
+    //   return index % 12 === 0;
+    // });
+    // loanMonthsFiltered = loanMonthsFiltered_full.map((d) => d.substring(4, 8)); //get only the year, throw away the month
+    // remainingFiltered = loanRes["remaining"].filter(function (element, index) {
+    //   return index % 12 === 0;
+    // });
 
     var prev_year;
     for (i = 0; i < loanMonths.length; i++) {
@@ -73,6 +75,7 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, pmi, util
         prev_year = year;
         loanMonthsFiltered[yearIndex] = loanMonths[i].substring(4, 8);
         remainingFiltered[yearIndex] = loanRes["remaining"][i];
+        equityFiltered[yearIndex] = loanRes["equity"][i];
       }
       // console.log(yearIndex)
       // if ((yearIndex==0) || (i==0)) {
@@ -250,6 +253,10 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, pmi, util
             }
             return label;
           },
+          footer: function (context) {
+            // Add an extra row in the tooltip
+            return `Equity: ${equityFiltered[context[0].dataIndex]}`;
+          },
         },
       },
     },
@@ -270,7 +277,7 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, pmi, util
           <div className="col-1">
             <span>Show: </span>
           </div>
-          {["monthly payments", "yearly payments"].map((x) => (
+          {["monthly breakdown", "yearly breakdown"].map((x) => (
             <div className="col-xxl-2 col-md-4 col-sm-5 col-12" key={x}>
               <div className="form-check form-check-inline">
                 <input

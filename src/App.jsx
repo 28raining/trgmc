@@ -7,6 +7,7 @@ import EventsForm from "./EventsForm.jsx";
 import { Comments } from "@hyvor/hyvor-talk-react";
 import { BoxArrowUp, Trash, Bank, CCircle, Github } from "react-bootstrap-icons";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Accordion from "react-bootstrap/Accordion";
 import Tooltip from "react-bootstrap/Tooltip";
 import { Modal } from "react-bootstrap";
 
@@ -58,8 +59,7 @@ function runCalculations(userInput, loanEvent, chosenInput, userSetDownPercent) 
     parseFloat(monthlyExtraPercent),
     parseFloat(monthlyExtraFee),
     userInput["startDate"],
-    PMI,
-    parseFloat(userInput["homeVal"]) * 0.8
+    PMI
   );
 
   const homeVal = parseFloat(loanRes["homeVal"]);
@@ -517,21 +517,28 @@ function App() {
             />
           </div>
         </div>
-        <div className="row shadow-sm border rounded my-3 pt-2 mx-0 text-secondary">
+        <div className="row shadow-sm border rounded my-3 mx-0 text-secondary">
           <div className="col-12">
-            <p>
-              Note - PMI payments will vary depending how the compny implements it. Some companies adjust PMI payments once per year, others adjust it monthly.
-              Some companies will keep monthly payments fixed (mortgage + pmi), some will add pmi on top (payment changes every month)
-            </p>
-            <p>
-              This tool assumes that the PMI payment reduces every month, that monthly payments are fixed, and that PMI payments stop when the loan balance
-              falls below 80% of home value
-            </p>
-            <p>
-              Why does adding PMI change the amount of interest being paid? PMI is the same as increasing the interest rate. Higher interest rate means more of
-              the monthly payment goes to interest, and therefore less goes to principal. The next month has larger remaining balance, then more interest is
-              charged. It is not intuitive!
-            </p>
+            <Accordion flush>
+              <Accordion.Item eventKey="0">
+                <Accordion.Header>Click to see notes on PMI...</Accordion.Header>
+                <Accordion.Body>
+                  <p>
+                    PMI payments will vary depending how the compny implements it. Some companies adjust PMI payments once per year, others adjust it monthly.
+                    Some companies will keep monthly payments fixed (mortgage + pmi), some will add pmi on top (payment changes every month)
+                  </p>
+                  <p>
+                    This tool assumes that the PMI payment reduces every month, that monthly payments are fixed, and that PMI payments stop when the loan
+                    balance falls below 80% of home value
+                  </p>
+                  <p>
+                    Why does adding PMI change the amount of interest being paid? PMI is the same as increasing the interest rate. Higher interest rate means
+                    more of the monthly payment goes to interest, and therefore less goes to principal. The next month has larger remaining balance, then more
+                    interest is charged. It is not intuitive!
+                  </p>
+                </Accordion.Body>
+              </Accordion.Item>
+            </Accordion>
           </div>
         </div>
       </div>
