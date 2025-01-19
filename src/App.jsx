@@ -375,7 +375,7 @@ function App() {
 
     //check if PMI is valid (has to go post-math)
     if (parseFloat(newDisplayState["downPayPercent"]) >= 20 && parseFloat(newDisplayState["pmi"]) > 0) {
-      newValid["pmi"] = "PMI is only required when the loan is greater than 80% of the property value";
+      newValid["pmi"] = "PMI is required while the loan amount is greater than 80% of the property value. Reduce down payment?";
     }
 
     setDisplayState(newDisplayState);

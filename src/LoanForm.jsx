@@ -410,6 +410,22 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                 <ValidFbComp x={valid["utilities"]} />
               </div>
             </div>
+            <div className="col-xxl-4 col-sm-6 col-12 d-flex align-items-center justify-content-center">
+              <button type="button" className="btn btn-link" onClick={()=>{
+                updateUserInput("propertyTaxUnit", 2);
+                updateUserInput("hoaUnit", 1);
+                updateUserInput("pmiUnit", 4);
+                updateUserInput("utilitiesUnit", 1);
+                updateUserInput("insuranceUnit", 0);
+
+                updateUserInput("propertyTax", "1.00");
+                updateUserInput("hoa", "300");
+                updateUserInput("pmi", "1.5");
+                updateUserInput("utilities", "120");
+                updateUserInput("insurance", "1000");
+
+              }}>Populate with estimates</button>
+            </div>
           </div>
         </div>
       </div>

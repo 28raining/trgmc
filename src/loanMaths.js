@@ -216,7 +216,7 @@ export function loanMaths(
 
     //handle case when PMI payments stop due to <80% L2V. This is like an event causing loan re-calculation
     if (PMI_int > 0) {
-      if (remaining[i] < 0.8 * originalHomeVal) {
+      if (remaining[i] <= 0.8 * originalHomeVal) {
         // console.log("stopping PMI at month", i)
         PMI_int = 0;
         loanData = loanCalc(numMonths - i, interestRate, remaining[i], "homeVal", null, 0, 0, monthlyExtraPercent, monthlyExtraFee, PMI_int);
