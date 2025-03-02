@@ -28,16 +28,18 @@ function runCalculations(userInput, loanEvent, chosenInput, userSetDownPercent) 
     else if (x.unit == 2) monthlyExtraPercent = monthlyExtraPercent + parseFloat(x.num) / 12;
     else if (x.unit == 3) monthlyExtraPercent = monthlyExtraPercent + parseFloat(x.num);
   }
-  var PMI = 0;
+  var PMI_percent = 0;
+  var PMI_fixed = 0;
   for (const x of [{ num: userInput["pmi"], unit: userInput["pmiUnit"] }]) {
     if (x.unit == 0) {
-      PMI = 0;
-      monthlyExtraFee = monthlyExtraFee + parseFloat(x.num) / 12;
+      PMI_fixed = parseFloat(x.num) / 12;
     } else if (x.unit == 1) {
-      PMI = 0;
-      monthlyExtraFee = monthlyExtraFee + parseFloat(x.num);
-    } else if (x.unit == 4) PMI = parseFloat(x.num) / 100;
-    else if (x.unit == 5) PMI = (parseFloat(x.num) * 12) / 100;
+      PMI_fixed = parseFloat(x.num);
+    } else if (x.unit == 4) {
+      PMI_percent = parseFloat(x.num) / 100;
+    } else if (x.unit == 5) {
+      PMI_percent = (parseFloat(x.num) * 12) / 100;
+    }
   }
 
   const loanAmount = userSetDownPercent
@@ -59,7 +61,8 @@ function runCalculations(userInput, loanEvent, chosenInput, userSetDownPercent) 
     parseFloat(monthlyExtraPercent),
     parseFloat(monthlyExtraFee),
     userInput["startDate"],
-    PMI
+    PMI_percent,
+    PMI_fixed
   );
 
   const homeVal = parseFloat(loanRes["homeVal"]);
@@ -513,7 +516,6 @@ function App() {
               utilities={userInput["utilities"] * unitScaler(userInput["utilitiesUnit"])}
               insurance={userInput["insurance"] * unitScaler(userInput["insuranceUnit"])}
               startDate={new Date(Number(userInput["startDate"]))}
-              pmiUnit={userInput["pmiUnit"]}
             />
           </div>
         </div>

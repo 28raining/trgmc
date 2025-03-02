@@ -15,7 +15,7 @@ import { useState } from "react";
 //   BarController
 // );
 
-function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, pmi, utilities, insurance, startDate, pmiUnit }) {
+function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, pmi, utilities, insurance, startDate }) {
   const [monthsPerYearToPlot, setMonthsPerYearToPlot] = useState("yearly breakdown");
   const yTitle = monthsPerYearToPlot == "monthly breakdown" ? "Monthly Breakdown" : "Yearly Breakdown";
   const startMonth = startDate.getMonth();
@@ -38,9 +38,9 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, pmi, util
     monthlyInterestFiltered = loanRes["monthlyInterest"];
     remainingFiltered = loanRes["remaining"];
     equityFiltered = loanRes["equity"];
-    if (pmiUnit > 1) pmiPlot = loanRes["monthlyPMI"];
+    pmiPlot = loanRes["monthlyPMI"];
     for (var i = 0; i < loanMonthsFiltered.length; i++) {
-      if (pmiUnit < 2) pmiPlot[i] = pmi;
+      // if (pmiUnit < 2) pmiPlot[i] = pmi;
       taxPlot[i] = propertyTax;
       hoaPlot[i] = hoa;
       utilitiesPlot[i] = utilities;
@@ -91,8 +91,8 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, pmi, util
       if (yearIndex >= insPlot.length) insPlot.push(0);
       monthlyPrincipalFiltered[yearIndex] = monthlyPrincipalFiltered[yearIndex] + loanRes["monthlyPrincipal"][i];
       monthlyInterestFiltered[yearIndex] = monthlyInterestFiltered[yearIndex] + loanRes["monthlyInterest"][i];
-      if (pmiUnit > 1) pmiPlot[yearIndex] = pmiPlot[yearIndex] + loanRes["monthlyPMI"][i];
-      else pmiPlot[yearIndex] = pmiPlot[yearIndex] + pmi;
+      pmiPlot[yearIndex] = pmiPlot[yearIndex] + loanRes["monthlyPMI"][i];
+      // else pmiPlot[yearIndex] = pmiPlot[yearIndex] + pmi;
       taxPlot[yearIndex] = taxPlot[yearIndex] + propertyTax;
       hoaPlot[yearIndex] = hoaPlot[yearIndex] + hoa;
       utilitiesPlot[yearIndex] = utilitiesPlot[yearIndex] + utilities;

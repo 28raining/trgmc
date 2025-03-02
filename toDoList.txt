@@ -2,13 +2,10 @@
 # Todo
 
 ## Important
-
-
-
+- when reload page, ask if they wanna keep the state
 
 
 - add country picker
-- add utilities
 - upfront costs
 -- add this as an event
 
@@ -39,6 +36,10 @@
 -- save it to cookie
 - show balance change for each overpayment
 
+#Done since Feb 2025
+- fix pmi with fixed amount, not percent
+- add utilities
+- add tests
 
 #Done since July 6th 2024
 - fix when loan is blank and when loan > 250

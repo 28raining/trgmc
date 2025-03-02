@@ -20,5 +20,10 @@ cd dist
 bun run serve
 ```
 
+## To test the project
+```
+bun test
+```
+
 ## github pages
 is pointing to the dist folder

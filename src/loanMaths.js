@@ -27,7 +27,8 @@ function loanCalc(
   userSetDownPercent,
   monthlyExtraPercent,
   monthlyExtraFee,
-  PMI
+  PMI,
+  PMI_fixed
 ) {
   // console.log('loanCalc', numMonths, interestRate, loanAmount, chosenInput, monthlyPaymentInput, downPayCash, monthlyExtraPercent, monthlyExtraFee)
   // console.log("chosenInput", chosenInput)
@@ -39,7 +40,7 @@ function loanCalc(
   var homeVal, loanAmount_new, interestPlusPrincipal, monthlyTax, totalRepay;
 
   if (chosenInput == "monthlyPayment") {
-    var actualMonthly = monthlyPaymentInput - monthlyExtraFee;
+    var actualMonthly = monthlyPaymentInput - monthlyExtraFee - PMI_fixed;
     interestPlusPrincipal = numMonths * actualMonthly;
     if (newInterest == 0) {
       loanAmount_new = interestPlusPrincipal;
@@ -61,7 +62,7 @@ function loanCalc(
       monthly: actualMonthly - monthlyTax,
       interestPlusPrincipal: interestPlusPrincipal,
       loanAmount: loanAmount_new,
-      monthlyExta: monthlyTax + monthlyExtraFee,
+      monthlyExta: monthlyTax + monthlyExtraFee + PMI_fixed,
       homeVal: homeVal,
     };
   } else {
@@ -84,7 +85,7 @@ function loanCalc(
       monthly: monthly,
       interestPlusPrincipal: interestPlusPrincipal,
       loanAmount: loanAmount,
-      monthlyExta: monthlyTax + monthlyExtraFee,
+      monthlyExta: monthlyTax + monthlyExtraFee + PMI_fixed,
       homeVal: homeVal,
     };
   }
@@ -135,8 +136,25 @@ export function loanMaths(
   monthlyExtraPercent,
   monthlyExtraFee,
   startDate,
-  PMI
+  PMI,
+  PMI_fixed
 ) {
+  //dump data for self testing
+  // console.log("start", {
+  //   loanAmount: loanAmount,
+  //   numYears: numYears,
+  //   interestRate: interestRate,
+  //   loanEvent: loanEvent,
+  //   chosenInput: chosenInput,
+  //   monthlyPaymentInput: monthlyPaymentInput,
+  //   downPay: downPay,
+  //   userSetDownPercent: userSetDownPercent,
+  //   monthlyExtraPercent: monthlyExtraPercent,
+  //   monthlyExtraFee: monthlyExtraFee,
+  //   startDate: startDate,
+  //   PMI: PMI,
+  //   PMI_fixed: PMI_fixed,
+  // });
   if (!isNumber(numYears) || numYears == 0) numYears = 1; //fix issue when loan length is blank
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   var stDate = new Date(Number(startDate));
@@ -163,7 +181,8 @@ export function loanMaths(
     userSetDownPercent,
     monthlyExtraPercent,
     monthlyExtraFee,
-    PMI_int
+    PMI_int,
+    PMI_fixed
   );
 
   var originalLoanAmount = loanData["loanAmount"];
@@ -204,30 +223,31 @@ export function loanMaths(
         remaining[i] = remaining[i] + parseFloat(loanEvent[eventIndex].cost);
         extraPayments += parseFloat(loanEvent[eventIndex].cost);
         if (loanEvent[eventIndex]["newLength"] != 0) numMonths = i + loanEvent[eventIndex]["newLength"] * 12;
-        loanData = loanCalc(numMonths - i, interestRate, remaining[i], "homeVal", null, 0, 0, monthlyExtraPercent, monthlyExtraFee, PMI_int);
+        loanData = loanCalc(numMonths - i, interestRate, remaining[i], "homeVal", null, 0, 0, monthlyExtraPercent, monthlyExtraFee, PMI_int, PMI_fixed);
       } else if (loanEvent[eventIndex]["event"] == "Recast") {
         // rate = loanEvent[eventIndex].change/100;
         remaining[i] = remaining[i] + parseFloat(loanEvent[eventIndex].cost);
         extraPayments += parseFloat(loanEvent[eventIndex].cost);
-        loanData = loanCalc(numMonths - i, interestRate, remaining[i], "homeVal", null, 0, 0, monthlyExtraPercent, monthlyExtraFee, PMI_int);
+        loanData = loanCalc(numMonths - i, interestRate, remaining[i], "homeVal", null, 0, 0, monthlyExtraPercent, monthlyExtraFee, PMI_int, PMI_fixed);
       }
       eventIndex = eventIndex + 1;
     }
 
     //handle case when PMI payments stop due to <80% L2V. This is like an event causing loan re-calculation
-    if (PMI_int > 0) {
+    if (PMI_int > 0 || PMI_fixed > 0) {
       if (remaining[i] <= 0.8 * originalHomeVal) {
         // console.log("stopping PMI at month", i)
         PMI_int = 0;
-        loanData = loanCalc(numMonths - i, interestRate, remaining[i], "homeVal", null, 0, 0, monthlyExtraPercent, monthlyExtraFee, PMI_int);
+        PMI_fixed = 0;
+        loanData = loanCalc(numMonths - i, interestRate, remaining[i], "homeVal", null, 0, 0, monthlyExtraPercent, monthlyExtraFee, PMI_int, PMI_fixed);
       }
     }
 
     //Calculate 'the numbers' for the month
     equity[i] = `${Math.round((1000 * (originalHomeVal - remaining[i])) / originalHomeVal) / 10}%`;
-    monthlyPMI[i] = (remaining[i] * PMI_int) / 12;
+    monthlyPMI[i] = PMI_fixed > 0 ? PMI_fixed : (remaining[i] * PMI_int) / 12;
     monthlyInterest[i] = (remaining[i] * rate) / 12;
-    monthlyPrincipal[i] = loanData.monthly - monthlyInterest[i] - monthlyPMI[i];
+    monthlyPrincipal[i] = PMI_int > 0 ? loanData.monthly - monthlyInterest[i] - monthlyPMI[i] : loanData.monthly - monthlyInterest[i];
     monthlyPayment[i] = loanData.monthly + loanData.monthlyExta;
     remaining[i + 1] = remaining[i] - monthlyPrincipal[i];
 
@@ -263,6 +283,37 @@ export function loanMaths(
   equity.splice(i + 1, numMonths - i);
   // console.log(i, numMonths, monthlyPayment.length,[...monthlyPayment]);
 
+  // function saveObjectToFileBrowser(obj, filename) {
+  //   const jsonString = JSON.stringify(obj);
+  //   const blob = new Blob([jsonString], { type: 'application/json' });
+  //   const url = URL.createObjectURL(blob);
+  //   const a = document.createElement('a');
+  //   a.href = url;
+  //   a.download = filename;
+  //   document.body.appendChild(a); // Required for Firefox
+  //   a.click();
+  //   document.body.removeChild(a);
+  //   URL.revokeObjectURL(url); // Clean up
+  // }
+  // var fin = {
+  //   loanAmount: originalLoanAmount,
+  //   endMonth: i,
+  //   loanMonths: loanMonths,
+  //   monthlyInterest: monthlyInterest,
+  //   monthlyPayment: monthlyPayment,
+  //   monthlyPrincipal: monthlyPrincipal,
+  //   numMonths: numMonths,
+  //   remaining: remaining,
+  //   interestPlusPrincipal: originalInterestPlusPrincipal,
+  //   homeVal: originalHomeVal,
+  //   extraPayments: extraPayments,
+  //   monthlyPaymentPerEvent: monthlyPaymentPerEvent,
+  //   totalPrincipal: totalPrincipal,
+  //   totalInterest: totalInterest,
+  //   monthlyPMI: monthlyPMI,
+  //   equity: equity,
+  // }
+  // saveObjectToFileBrowser(fin, 'fin.txt');
   return {
     loanAmount: originalLoanAmount,
     endMonth: i,

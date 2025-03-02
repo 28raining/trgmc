@@ -26,15 +26,15 @@ function LoanStats({ loanRes, userInput }) {
   var totalHoA = scaleMonthlyWUnit(userInput["hoa"], userInput["hoaUnit"], loanRes["homeVal"], loanRes["monthlyInterest"].length, loanRes["loanAmount"]);
   var totalpmi = 0;
   var pmiPayments = 0;
-  if (userInput["pmiUnit"] == 0 || userInput["pmiUnit"] == 1) {
-    pmiPayments = loanRes["monthlyInterest"].length;
-    totalpmi = scaleMonthlyWUnit(userInput["pmi"], userInput["pmiUnit"], loanRes["homeVal"], loanRes["monthlyInterest"].length, loanRes["loanAmount"]);
-  } else {
-    for (var ii = 0; ii < loanRes["monthlyPMI"].length; ii++) {
-      totalpmi += loanRes["monthlyPMI"][ii];
-      if (loanRes["monthlyPMI"][ii] > 0) pmiPayments += 1;
-    }
+  // if (userInput["pmiUnit"] == 0 || userInput["pmiUnit"] == 1) {
+  //   pmiPayments = loanRes["monthlyInterest"].length;
+  //   totalpmi = scaleMonthlyWUnit(userInput["pmi"], userInput["pmiUnit"], loanRes["homeVal"], loanRes["monthlyInterest"].length, loanRes["loanAmount"]);
+  // } else {
+  for (var ii = 0; ii < loanRes["monthlyPMI"].length; ii++) {
+    totalpmi += loanRes["monthlyPMI"][ii];
+    if (loanRes["monthlyPMI"][ii] > 0) pmiPayments += 1;
   }
+  // }
   var totalutilities = scaleMonthlyWUnit(
     userInput["utilities"],
     userInput["utilitiesUnit"],
