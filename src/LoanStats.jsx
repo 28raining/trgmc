@@ -9,46 +9,34 @@ function scaleMonthlyWUnit(v, unit, homeVal, length, loanAmount) {
   else if (unit == 5) return (parseFloat(v) * loanAmount * length) / 100;
 }
 
+function sumArray(arr) {
+  let sum = 0;
+  arr.forEach((number) => {
+    sum += number;
+  });
+  return sum;
+}
+
 function LoanStats({ loanRes, userInput }) {
   const lastMonth = loanRes["loanMonths"][loanRes["loanMonths"].length - 1];
+  const lengthWithInflation = sumArray(loanRes["inflation"]);
 
   var totalPrincipal = 0;
   var totalInterest = 0;
   for (const i of loanRes["monthlyPrincipal"]) totalPrincipal = totalPrincipal + i;
   for (const i of loanRes["monthlyInterest"]) totalInterest = totalInterest + i;
-  var totalTax = scaleMonthlyWUnit(
-    userInput["propertyTax"],
-    userInput["propertyTaxUnit"],
-    loanRes["homeVal"],
-    loanRes["monthlyInterest"].length,
-    loanRes["loanAmount"]
-  );
-  var totalHoA = scaleMonthlyWUnit(userInput["hoa"], userInput["hoaUnit"], loanRes["homeVal"], loanRes["monthlyInterest"].length, loanRes["loanAmount"]);
+  var totalTax = scaleMonthlyWUnit(userInput["propertyTax"], userInput["propertyTaxUnit"], loanRes["homeVal"], lengthWithInflation, loanRes["loanAmount"]);
+  var totalHoA = scaleMonthlyWUnit(userInput["hoa"], userInput["hoaUnit"], loanRes["homeVal"], lengthWithInflation, loanRes["loanAmount"]);
   var totalpmi = 0;
   var pmiPayments = 0;
-  // if (userInput["pmiUnit"] == 0 || userInput["pmiUnit"] == 1) {
-  //   pmiPayments = loanRes["monthlyInterest"].length;
-  //   totalpmi = scaleMonthlyWUnit(userInput["pmi"], userInput["pmiUnit"], loanRes["homeVal"], loanRes["monthlyInterest"].length, loanRes["loanAmount"]);
-  // } else {
+
   for (var ii = 0; ii < loanRes["monthlyPMI"].length; ii++) {
     totalpmi += loanRes["monthlyPMI"][ii];
     if (loanRes["monthlyPMI"][ii] > 0) pmiPayments += 1;
   }
   // }
-  var totalutilities = scaleMonthlyWUnit(
-    userInput["utilities"],
-    userInput["utilitiesUnit"],
-    loanRes["homeVal"],
-    loanRes["monthlyInterest"].length,
-    loanRes["loanAmount"]
-  );
-  var totalInsurance = scaleMonthlyWUnit(
-    userInput["insurance"],
-    userInput["insuranceUnit"],
-    loanRes["homeVal"],
-    loanRes["monthlyInterest"].length,
-    loanRes["loanAmount"]
-  );
+  var totalutilities = scaleMonthlyWUnit(userInput["utilities"], userInput["utilitiesUnit"], loanRes["homeVal"], lengthWithInflation, loanRes["loanAmount"]);
+  var totalInsurance = scaleMonthlyWUnit(userInput["insurance"], userInput["insuranceUnit"], loanRes["homeVal"], lengthWithInflation, loanRes["loanAmount"]);
   const thereWereExtraPayments = totalTax > 0 || totalHoA > 0 || totalpmi > 0 || totalutilities > 0 || totalInsurance > 0 || loanRes["extraPayments"] > 0;
 
   return (
@@ -93,25 +81,47 @@ function LoanStats({ loanRes, userInput }) {
           </div>
         )}
         <div className="row pt-2">
-          <div className="col-12">
-            <ul className="ps-5 mb-0">
-              <li>Principal: {cashFormat(totalPrincipal)}</li>
-              <li>Interest: {cashFormat(totalInterest)}</li>
-              {loanRes["extraPayments"] > 0 ? <li>Overpayments & fees: {cashFormat(loanRes["extraPayments"])}</li> : null}
-              {userInput["propertyTax"] > 0 ? <li>Tax: {cashFormat(totalTax)}</li> : null}
-              {userInput["hoa"] > 0 ? <li>HoA: {cashFormat(totalHoA)}</li> : null}
-              {userInput["pmi"] > 0 ? (
-                <li>
-                  PMI: {cashFormat(totalpmi)}{" "}
-                  <small>
-                    <em>({pmiPayments} payments)</em>
-                  </small>
-                </li>
-              ) : null}
-              {userInput["utilities"] > 0 ? <li>Utilities: {cashFormat(totalutilities)}</li> : null}
-              {userInput["insurance"] > 0 ? <li>Insurance: {cashFormat(totalInsurance)}</li> : null}
-            </ul>
+          <div className="col-6">
+            <li>Principal: {cashFormat(totalPrincipal)}</li>
           </div>
+          <div className="col-6">
+            <li>Interest: {cashFormat(totalInterest)}</li>
+          </div>
+          {loanRes["extraPayments"] > 0 ? (
+            <div className="col-6">
+              <li>Overpayments & fees: {cashFormat(loanRes["extraPayments"])}</li>
+            </div>
+          ) : null}
+          {userInput["propertyTax"] > 0 ? (
+            <div className="col-6">
+              <li>Tax: {cashFormat(totalTax)}</li>
+            </div>
+          ) : null}
+          {userInput["hoa"] > 0 ? (
+            <div className="col-6">
+              <li>HoA: {cashFormat(totalHoA)}</li>
+            </div>
+          ) : null}
+          {userInput["pmi"] > 0 ? (
+            <div className="col-6">
+              <li>
+                PMI: {cashFormat(totalpmi)}{" "}
+                <small>
+                  <em>({pmiPayments} payments)</em>
+                </small>
+              </li>
+            </div>
+          ) : null}
+          {userInput["utilities"] > 0 ? (
+            <div className="col-6">
+              <li>Utilities: {cashFormat(totalutilities)}</li>
+            </div>
+          ) : null}
+          {userInput["insurance"] > 0 ? (
+            <div className="col-6">
+              <li>Insurance: {cashFormat(totalInsurance)}</li>
+            </div>
+          ) : null}
         </div>
       </div>
     </div>

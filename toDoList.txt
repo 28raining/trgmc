@@ -1,5 +1,6 @@
 
 # Todo
+- inflation test
 
 ## Important
 - when reload page, ask if they wanna keep the state
@@ -40,6 +41,10 @@
 - fix pmi with fixed amount, not percent
 - add utilities
 - add tests
+Added inflation
+- repeating inflation fix
+- remove weekly and bi-weekly options
+- loan stats need to include inflation
 
 #Done since July 6th 2024
 - fix when loan is blank and when loan > 250

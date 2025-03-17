@@ -101,25 +101,47 @@ function loanCalc(
 //6 : "annualy"
 //7 : "bi-annually"]
 
+// function handleRepeatPayments(payArray, repeats, amount, month) {
+//   //it is more correct to count sundays in a month - that way every month would get exactly the right number of sundays (overpayments).
+//   //then the tool would be more accurate because the interest calculations are based on different remaining balances
+//   //however, I decided that was too complicated and only has a minor impact on the final numbers. And who knows exactly how banks calculate interest, is it accrued daily or at end of month... or varies by bank
+//   var i;
+//   if (repeats == 1) {
+//     for (i = month + 1; i < payArray.length; i += 12 / 52) payArray[Math.floor(i)] += amount;
+//   } else if (repeats == 2) {
+//     for (i = month + 1; i < payArray.length; i += 12 / 26) payArray[Math.floor(i)] += amount;
+//   } else if (repeats == 3) {
+//     for (i = month + 1; i < payArray.length; i++) payArray[i] += amount;
+//   } else if (repeats == 4) {
+//     for (i = month + 2; i < payArray.length; i += 2) payArray[i] += amount;
+//   } else if (repeats == 5) {
+//     for (i = month + 6; i < payArray.length; i += 6) payArray[i] += amount;
+//   } else if (repeats == 6) {
+//     for (i = month + 12; i < payArray.length; i += 12) payArray[i] += amount;
+//   } else if (repeats == 7) {
+//     for (i = month + 24; i < payArray.length; i += 24) payArray[i] += amount;
+//   }
+//   return payArray;
+// }
 function handleRepeatPayments(payArray, repeats, amount, month) {
   //it is more correct to count sundays in a month - that way every month would get exactly the right number of sundays (overpayments).
   //then the tool would be more accurate because the interest calculations are based on different remaining balances
   //however, I decided that was too complicated and only has a minor impact on the final numbers. And who knows exactly how banks calculate interest, is it accrued daily or at end of month... or varies by bank
   var i;
   if (repeats == 1) {
-    for (i = month + 1; i < payArray.length; i += 12 / 52) payArray[Math.floor(i)] += amount;
+    for (i = month + 1; i < payArray.length; i += 12 / 52) amount(payArray, i);
   } else if (repeats == 2) {
-    for (i = month + 1; i < payArray.length; i += 12 / 26) payArray[Math.floor(i)] += amount;
+    for (i = month + 1; i < payArray.length; i += 12 / 26) amount(payArray, i);
   } else if (repeats == 3) {
-    for (i = month + 1; i < payArray.length; i++) payArray[i] += amount;
+    for (i = month + 1; i < payArray.length; i++) amount(payArray, i);
   } else if (repeats == 4) {
-    for (i = month + 2; i < payArray.length; i += 2) payArray[i] += amount;
+    for (i = month + 2; i < payArray.length; i += 2) amount(payArray, i);
   } else if (repeats == 5) {
-    for (i = month + 6; i < payArray.length; i += 6) payArray[i] += amount;
+    for (i = month + 6; i < payArray.length; i += 6) amount(payArray, i);
   } else if (repeats == 6) {
-    for (i = month + 12; i < payArray.length; i += 12) payArray[i] += amount;
+    for (i = month + 12; i < payArray.length; i += 12) amount(payArray, i);
   } else if (repeats == 7) {
-    for (i = month + 24; i < payArray.length; i += 24) payArray[i] += amount;
+    for (i = month + 24; i < payArray.length; i += 24) amount(payArray, i);
   }
   return payArray;
 }
@@ -140,7 +162,7 @@ export function loanMaths(
   PMI_fixed
 ) {
   //dump data for self testing
-  // console.log("start", {
+  // var startObj = {
   //   loanAmount: loanAmount,
   //   numYears: numYears,
   //   interestRate: interestRate,
@@ -154,7 +176,7 @@ export function loanMaths(
   //   startDate: startDate,
   //   PMI: PMI,
   //   PMI_fixed: PMI_fixed,
-  // });
+  // };
   if (!isNumber(numYears) || numYears == 0) numYears = 1; //fix issue when loan length is blank
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   var stDate = new Date(Number(startDate));
@@ -196,6 +218,7 @@ export function loanMaths(
   var monthlyPrincipal = new Array(numYears * 12).fill(0);
   var remaining = new Array(numYears * 12 + 1).fill(0);
   var repeatingOverpayments = new Array(numYears * 12 + 1).fill(0);
+  var inflationScaler = new Array(numYears * 12).fill(1.0);
   // var loanCopy = { ...loanData };
   var totalPrincipal = 0;
   var totalInterest = 0;
@@ -216,7 +239,14 @@ export function loanMaths(
       if (loanEvent[eventIndex]["event"] == "Over-pay") {
         remaining[i] = remaining[i] + parseFloat(loanEvent[eventIndex]["cost"]) - parseFloat(loanEvent[eventIndex]["change"]);
         extraPayments += parseFloat(loanEvent[eventIndex].cost) + parseFloat(loanEvent[eventIndex]["change"]);
-        repeatingOverpayments = handleRepeatPayments(repeatingOverpayments, loanEvent[eventIndex]["repeats"], parseFloat(loanEvent[eventIndex]["change"]), i);
+        repeatingOverpayments = handleRepeatPayments(
+          repeatingOverpayments,
+          loanEvent[eventIndex]["repeats"],
+          (arr, i) => {
+            arr[Math.floor(i)] += parseFloat(loanEvent[eventIndex]["change"]);
+          },
+          i
+        );
       } else if (loanEvent[eventIndex]["event"] == "Refinance") {
         interestRate = Number(loanEvent[eventIndex].change);
         rate = interestRate / 100;
@@ -229,6 +259,16 @@ export function loanMaths(
         remaining[i] = remaining[i] + parseFloat(loanEvent[eventIndex].cost);
         extraPayments += parseFloat(loanEvent[eventIndex].cost);
         loanData = loanCalc(numMonths - i, interestRate, remaining[i], "homeVal", null, 0, 0, monthlyExtraPercent, monthlyExtraFee, PMI_int, PMI_fixed);
+      } else if (loanEvent[eventIndex]["event"] == "Inflation") {
+        inflationScaler = handleRepeatPayments(
+          inflationScaler,
+          loanEvent[eventIndex]["repeats"],
+          (arr, i) => {
+            for (let j = i; j < arr.length; j++) arr[j] *= 1 + parseFloat(loanEvent[eventIndex]["change"]) / 100;
+            return arr;
+          },
+          i
+        );
       }
       eventIndex = eventIndex + 1;
     }
@@ -281,6 +321,7 @@ export function loanMaths(
   remaining.splice(i + 1, numMonths - i);
   monthlyPMI.splice(i + 1, numMonths - i);
   equity.splice(i + 1, numMonths - i);
+  inflationScaler.splice(i + 1, numMonths - i);
   // console.log(i, numMonths, monthlyPayment.length,[...monthlyPayment]);
 
   // function saveObjectToFileBrowser(obj, filename) {
@@ -312,7 +353,9 @@ export function loanMaths(
   //   totalInterest: totalInterest,
   //   monthlyPMI: monthlyPMI,
   //   equity: equity,
+  //   inflation: inflationScaler,
   // }
+  // saveObjectToFileBrowser(startObj, 'start.txt');
   // saveObjectToFileBrowser(fin, 'fin.txt');
   return {
     loanAmount: originalLoanAmount,
@@ -331,5 +374,6 @@ export function loanMaths(
     totalInterest: totalInterest,
     monthlyPMI: monthlyPMI,
     equity: equity,
+    inflation: inflationScaler,
   };
 }

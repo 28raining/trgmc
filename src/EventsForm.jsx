@@ -12,7 +12,7 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
   const [chosenEvent, setChosenEvent] = useState("Over-pay");
   const [newChange, setNewChange] = useState(1000);
   const [chosenDate, setChosenDate] = useState(loanMonths[1]);
-  const [repeats, setRepeats] = useState(0);
+  const [repeats, setRepeats] = useState(6);
   const [newLength, setNewLength] = useState(0);
   const [cost, setCost] = useState(0);
 
@@ -33,11 +33,12 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
   if (loanMonths.length < 2) return null;
   if (monthlyPaymentPerEvent.length < 0) return null;
 
-  const eventList = ["Over-pay", "Recast", "Refinance"];
+  const eventList = ["Over-pay", "Recast", "Refinance", "Inflation"];
   const description = {
     "Over-pay": "Pay extra money into the loan",
     Recast: "Reduce the monthly payments after over-paying",
     Refinance: "Change the interest rate",
+    Inflation: "Increase Tax, HoA, Insurance & Utilities",
   };
 
   const repeatOptions = ["doesn't repeat", "weekly", "bi-weekly", "monthly", "bi-monthly", "every 6 months", "annualy", "bi-annually"];
@@ -98,7 +99,7 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
     if (chosenEvent == "Recast") newEvent["change"] = "-";
     else newEvent["change"] = newChange;
 
-    if (chosenEvent == "Over-pay") newEvent["repeats"] = repeats;
+    if (chosenEvent == "Over-pay" || chosenEvent == "Inflation") newEvent["repeats"] = repeats;
     else newEvent["repeats"] = "-";
 
     if (chosenEvent == "Refinance") newEvent["newLength"] = newLength;
@@ -140,6 +141,8 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
                       value={x}
                       onChange={(e) => {
                         if (e.target.value == "Refinance") setNewChange("5.00");
+                        if (e.target.value == "Inflation") setNewChange("1.00");
+                        if (e.target.value == "Inflation") setRepeats(6);
                         setChosenEvent(e.target.value);
                       }}
                     />
@@ -165,7 +168,7 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
           <div className="col-xl-3 col-6" key="col2">
             {chosenEvent == "Recast" ? null : (
               <>
-                <label>{chosenEvent == "Over-pay" ? "Amount" : "New rate"}</label>
+                <label>{chosenEvent == "Over-pay" ? "Amount" : chosenEvent == "Inflation" ? "Increase " : "New rate"}</label>
                 <div className="input-group ">
                   <input
                     type="text"
@@ -189,19 +192,23 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
             )}
           </div>
 
-          <div className="col-xl-3 col-6">
-            <label>Cost</label>
-            <div className="input-group ">
-              <input
-                type="text"
-                className="form-control"
-                value={new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(cost)}
-                onChange={(e) => {
-                  setCost(e.target.value.replace(/[^0-9.-]+/g, ""));
-                }}
-              />
+          {chosenEvent == "Inflation" ? null : (
+            <div className="col-xl-3 col-6">
+              <label>Cost</label>
+              <div className="input-group ">
+                <input
+                  type="text"
+                  className="form-control"
+                  value={new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(
+                    cost
+                  )}
+                  onChange={(e) => {
+                    setCost(e.target.value.replace(/[^0-9.-]+/g, ""));
+                  }}
+                />
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="col-xl-2 col-6">
             <label></label>
@@ -252,16 +259,18 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
               </div>
             </div>
           </div>
-        ) : chosenEvent == "Over-pay" ? (
+        ) : chosenEvent == "Over-pay" || chosenEvent == "Inflation" ? (
           <div className="row">
             <div className="col">
-              <label>Repeating payment?</label>
+              <label>{chosenEvent == "Inflation" ? "Repeats? (typically annualy)" : "Repeating payment?"}</label>
               <select className="form-select mb-1" onChange={(e) => setRepeats(e.target.value)} value={repeats}>
-                {repeatOptions.map((x, i) => (
-                  <option value={i} key={i}>
-                    {x}
-                  </option>
-                ))}
+                {repeatOptions.map((x, i) =>
+                  chosenEvent == "Inflation" && (i == 1 || i == 2) ? null : (
+                    <option value={i} key={i}>
+                      {x}
+                    </option>
+                  )
+                )}
               </select>
             </div>
           </div>

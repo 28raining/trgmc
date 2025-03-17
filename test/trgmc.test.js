@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 import { loanMaths } from "../src/loanMaths.js";
-import { res1, res2 } from "./exampleResults.js";
+import { res1, res2, res3 } from "./exampleResults.js";
 
 //case 1 - the default site after clicking "populate with estimates"
 var in_1 = {
@@ -33,13 +33,30 @@ var in_2 = {
   monthlyPaymentInput: 0,
   numYears: 30,
   startDate: 1736035200000,
-  userSetDownPercent: true
-}
+  userSetDownPercent: true,
+};
+
+//case 3 - Inflation @2% per year
+var in_3 = {
+  loanAmount: 400000,
+  numYears: 30,
+  interestRate: 5,
+  loanEvent: [{ event: "Inflation", date: "Feb 2026", cost: 0, change: 2, newLength: "-", repeats: 6 }],
+  chosenInput: "homeVal",
+  monthlyPaymentInput: 0,
+  downPay: 0.2,
+  userSetDownPercent: true,
+  monthlyExtraPercent: 0.08333333333333333,
+  monthlyExtraFee: 503.3333333333333,
+  startDate: 1736035200000,
+  PMI: 0,
+  PMI_fixed: 0,
+};
 
 //run the test scenarioes one by one
-testScenario('loanMaths: 1', in_1, res1);
-testScenario('loanMaths: 2', in_2, res2);
-
+testScenario("loanMaths: 1", in_1, res1);
+testScenario("loanMaths: 2", in_2, res2);
+testScenario("loanMaths: 3", in_3, res3);
 
 //convert from object input to ordered input
 function runLoanMaths(o) {
@@ -79,7 +96,9 @@ function testScenario(name, stimulus, expectedResult) {
     expect(measuredResult.totalInterest).toEqual(expectedResult.totalInterest);
     expect(measuredResult.monthlyPMI).toEqual(expectedResult.monthlyPMI);
     expect(measuredResult.equity).toEqual(expectedResult.equity);
+    if (name != "loanMaths: 1" && name != "loanMaths: 2") {
+      expect(measuredResult.inflation).toEqual(expectedResult.inflation);
+    }
     // expect(runLoanMaths(in_1)).toEqual(res1)
   });
 }
-

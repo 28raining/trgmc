@@ -516,6 +516,7 @@ function App() {
               utilities={userInput["utilities"] * unitScaler(userInput["utilitiesUnit"])}
               insurance={userInput["insurance"] * unitScaler(userInput["insuranceUnit"])}
               startDate={new Date(Number(userInput["startDate"]))}
+              inflation={loanRes["inflation"]}
             />
           </div>
         </div>
