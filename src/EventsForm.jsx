@@ -41,7 +41,7 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
     Inflation: "Increase Tax, HoA, Insurance & Utilities",
   };
 
-  const repeatOptions = ["doesn't repeat", "weekly", "bi-weekly", "monthly", "bi-monthly", "every 6 months", "annualy", "bi-annually"];
+  const repeatOptions = ["doesn't repeat", "weekly", "bi-weekly", "monthly", "bi-monthly", "every 6 months", "annually", "bi-annually"];
 
   function dateIsOlder(a, b) {
     return loanMonths.indexOf(a) > loanMonths.indexOf(b);
@@ -247,7 +247,7 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
           // <div className="row pb-2" key="row1a">
           <div className="row">
             <div className="col-xl-7 col-12">
-              <label>New loan length:</label>
+              <label>New Loan Length:</label>
               <div className="input-group mb-1">
                 <input
                   className="form-control"
@@ -262,7 +262,7 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
         ) : chosenEvent == "Over-pay" || chosenEvent == "Inflation" ? (
           <div className="row">
             <div className="col">
-              <label>{chosenEvent == "Inflation" ? "Repeats? (typically annualy)" : "Repeating payment?"}</label>
+              <label>{chosenEvent == "Inflation" ? "Repeats? (typically annually)" : "Repeating Payment?"}</label>
               <select className="form-select mb-1" onChange={(e) => setRepeats(e.target.value)} value={repeats}>
                 {repeatOptions.map((x, i) =>
                   chosenEvent == "Inflation" && (i == 1 || i == 2) ? null : (

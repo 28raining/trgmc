@@ -16,8 +16,8 @@ import { useState } from "react";
 // );
 
 function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, pmi, utilities, insurance, startDate, inflation }) {
-  const [monthsPerYearToPlot, setMonthsPerYearToPlot] = useState("yearly breakdown");
-  const yTitle = monthsPerYearToPlot == "monthly breakdown" ? "Monthly Breakdown" : "Yearly Breakdown";
+  const [monthsPerYearToPlot, setMonthsPerYearToPlot] = useState("Yearly Breakdown");
+  const yTitle = monthsPerYearToPlot == "Monthly Breakdown" ? "Monthly Breakdown" : "Yearly Breakdown";
   const startMonth = startDate.getMonth();
 
   // console.log('rem',loanRes)
@@ -32,7 +32,7 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, pmi, util
   var utilitiesPlot = [];
   var insPlot = [];
 
-  if (monthsPerYearToPlot == "monthly breakdown") {
+  if (monthsPerYearToPlot == "Monthly Breakdown") {
     loanMonthsFiltered = loanMonths;
     monthlyPrincipalFiltered = loanRes["monthlyPrincipal"];
     monthlyInterestFiltered = loanRes["monthlyInterest"];
@@ -258,7 +258,7 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, pmi, util
           <div className="col-1">
             <span>Show: </span>
           </div>
-          {["monthly breakdown", "yearly breakdown"].map((x) => (
+          {["Monthly Breakdown", "Yearly Breakdown"].map((x) => (
             <div className="col-xxl-2 col-md-4 col-sm-5 col-12" key={x}>
               <div className="form-check form-check-inline">
                 <input

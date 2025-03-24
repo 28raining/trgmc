@@ -429,7 +429,7 @@ function App() {
           <span className="navbar-brand titleSize">
             <Bank height="24" className="hideLogo me-2 align-text-bottom " />
             <span style={{ whiteSpace: "normal" }}>
-              the <b>R</b>eally <b>G</b>ood <b>M</b>ortgage <b>C</b>alculator
+              The <b>R</b>eally <b>G</b>ood <b>M</b>ortgage <b>C</b>alculator
             </span>
           </span>
           <span className="justify-content-end">
@@ -469,10 +469,10 @@ function App() {
             <div className="row shadow-sm border rounded mx-0 mb-3">
               <div className="col">
                 <p className="my-2">
-                  An easy to use mortgage calculator to find out exactly how much it will cost to buy a house. Or, enter a monthly budget and see how much you
-                  can afford
+                  An easy to use mortgage calculator to find out exactly how much it will cost to buy a house. Or, enter a monthly budget. How much can you
+                  afford?
                 </p>
-                <p className="mb-2">This tool is unique because it supports unlimited overpayment, re-finance and recast events</p>
+                <p className="mb-2">This tool supports unlimited overpayment, re-finance and recast events. Also, try adding inflation.</p>
               </div>
             </div>
           </div>
@@ -527,18 +527,14 @@ function App() {
                 <Accordion.Header>Click to see notes on PMI...</Accordion.Header>
                 <Accordion.Body>
                   <p>
-                    PMI payments will vary depending how the compny implements it. Some companies adjust PMI payments once per year, others adjust it monthly.
-                    Some companies will keep monthly payments fixed (mortgage + pmi), some will add pmi on top (payment changes every month)
+                    PMI payments implementation varies by bank. Some companies adjust PMI payments once per year, others adjust it monthly. Some companies will
+                    keep monthly payments fixed (mortgage + PMI), some will add PMI on top (payments change every month).
                   </p>
                   <p>
-                    This tool assumes that the PMI payment reduces every month, that monthly payments are fixed, and that PMI payments stop when the loan
-                    balance falls below 80% of home value
+                    This tool assumes that the PMI payments reduce every month, that monthly payments are fixed, and that PMI payments stop when the loan
+                    balance falls below 80% of home value.
                   </p>
-                  <p>
-                    Why does adding PMI change the amount of interest being paid? PMI is the same as increasing the interest rate. Higher interest rate means
-                    more of the monthly payment goes to interest, and therefore less goes to principal. The next month has larger remaining balance, then more
-                    interest is charged. It is not intuitive!
-                  </p>
+                  <p>Why does adding PMI also increase total interest? Because each month less money goes towards principal.</p>
                 </Accordion.Body>
               </Accordion.Item>
             </Accordion>

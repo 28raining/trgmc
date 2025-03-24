@@ -167,7 +167,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
           </div>
           <div className="row">
             <div className="col-xl-4 col-12">
-              <label>Interest rate</label>
+              <label>Interest Rate</label>
               <div className="input-group mb-1">
                 <input
                   type="text"
@@ -180,7 +180,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
               </div>
             </div>
             <div className="col-xl-4 col-12">
-              <label>Loan length</label>
+              <label>Loan Length</label>
               <div className="input-group mb-1">
                 <input
                   type="text"

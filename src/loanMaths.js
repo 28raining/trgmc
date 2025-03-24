@@ -98,7 +98,7 @@ function loanCalc(
 //3 : "monthly"
 //4 : "bi-monthly"
 //5 : "every 6 months"
-//6 : "annualy"
+//6 : "annually"
 //7 : "bi-annually"]
 
 // function handleRepeatPayments(payArray, repeats, amount, month) {
