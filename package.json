@@ -19,7 +19,9 @@
     "react-calendar": "^5.1.0",
     "react-chartjs-2": "^5.3.0",
     "react-dom": "^18.3.1",
-    "serve": "^14.2.4"
+    "serve": "^14.2.4",
+    "xlsx": "^0.18.5",
+    "xlsx-js-style": "^1.2.0"
   },
   "devDependencies": {
     "@eslint/compat": "^1.2.7",

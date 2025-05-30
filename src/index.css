@@ -62,6 +62,10 @@
   background-position: right 5px center;
 }
 
+.grayBackground {
+  background-color: rgb(248, 249, 250) !important;
+}
+
 @media (width <= 500px) {
   .hideLogo {
     display: none !important;

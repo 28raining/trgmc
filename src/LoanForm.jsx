@@ -255,7 +255,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                 />
 
                 <select
-                  className="form-select ps-2 input-group-text"
+                  className="form-select ps-2 grayBackground"
                   value={displayState["propertyTaxUnit"]}
                   onChange={(e) => {
                     updateUserInput("propertyTaxUnit", e.target.value);
@@ -289,7 +289,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                 />
 
                 <select
-                  className="form-select ps-2 input-group-text"
+                  className="form-select ps-2 grayBackground"
                   value={displayState["hoaUnit"]}
                   onChange={(e) => {
                     updateUserInput("hoaUnit", e.target.value);
@@ -318,7 +318,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                 />
 
                 <select
-                  className="form-select ps-2 input-group-text"
+                  className="form-select ps-2 grayBackground"
                   value={displayState["insuranceUnit"]}
                   onChange={(e) => {
                     updateUserInput("insuranceUnit", e.target.value);
@@ -353,7 +353,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
 
                 {/* Special treatiment for PMI because it's a % of loan amount, not of home value */}
                 <select
-                  className="form-select ps-2 input-group-text"
+                  className="form-select ps-2 grayBackground"
                   value={displayState["pmiUnit"] == 4 ? 2 : displayState["pmiUnit"] == 5 ? 3 : displayState["pmiUnit"]}
                   onChange={(e) => {
                     var pmiHack;
@@ -395,7 +395,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                 />
 
                 <select
-                  className="form-select ps-2 input-group-text"
+                  className="form-select ps-2 grayBackground"
                   value={displayState["utilitiesUnit"]}
                   onChange={(e) => {
                     updateUserInput("utilitiesUnit", e.target.value);
@@ -423,7 +423,8 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
 
                   updateUserInput("propertyTax", "1.00");
                   updateUserInput("hoa", "300");
-                  updateUserInput("pmi", "1.5");
+                  if (displayState["downPayPercent"] < 20) updateUserInput("pmi", "1.5");
+                  else updateUserInput("pmi", "0");
                   updateUserInput("utilities", "120");
                   updateUserInput("insurance", "1000");
                 }}

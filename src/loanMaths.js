@@ -91,57 +91,27 @@ function loanCalc(
   }
 }
 
-//function to handle recurring overpayments
-//0 : "doesn't repeat"
-//1 : "weekly"
-//2 : "bi-weekly"
-//3 : "monthly"
-//4 : "bi-monthly"
-//5 : "every 6 months"
-//6 : "annually"
-//7 : "bi-annually"]
-
-// function handleRepeatPayments(payArray, repeats, amount, month) {
-//   //it is more correct to count sundays in a month - that way every month would get exactly the right number of sundays (overpayments).
-//   //then the tool would be more accurate because the interest calculations are based on different remaining balances
-//   //however, I decided that was too complicated and only has a minor impact on the final numbers. And who knows exactly how banks calculate interest, is it accrued daily or at end of month... or varies by bank
-//   var i;
-//   if (repeats == 1) {
-//     for (i = month + 1; i < payArray.length; i += 12 / 52) payArray[Math.floor(i)] += amount;
-//   } else if (repeats == 2) {
-//     for (i = month + 1; i < payArray.length; i += 12 / 26) payArray[Math.floor(i)] += amount;
-//   } else if (repeats == 3) {
-//     for (i = month + 1; i < payArray.length; i++) payArray[i] += amount;
-//   } else if (repeats == 4) {
-//     for (i = month + 2; i < payArray.length; i += 2) payArray[i] += amount;
-//   } else if (repeats == 5) {
-//     for (i = month + 6; i < payArray.length; i += 6) payArray[i] += amount;
-//   } else if (repeats == 6) {
-//     for (i = month + 12; i < payArray.length; i += 12) payArray[i] += amount;
-//   } else if (repeats == 7) {
-//     for (i = month + 24; i < payArray.length; i += 24) payArray[i] += amount;
-//   }
-//   return payArray;
-// }
-function handleRepeatPayments(payArray, repeats, amount, month) {
+function handleRepeatPayments(payArray, repeats, addPaymentToExistingPayments, month) {
   //it is more correct to count sundays in a month - that way every month would get exactly the right number of sundays (overpayments).
   //then the tool would be more accurate because the interest calculations are based on different remaining balances
   //however, I decided that was too complicated and only has a minor impact on the final numbers. And who knows exactly how banks calculate interest, is it accrued daily or at end of month... or varies by bank
   var i;
+  //firstly add for the current month
+  addPaymentToExistingPayments(payArray, month);
   if (repeats == 1) {
-    for (i = month + 1; i < payArray.length; i += 12 / 52) amount(payArray, i);
+    for (i = month + 1; i < payArray.length; i += 12 / 52) addPaymentToExistingPayments(payArray, i);
   } else if (repeats == 2) {
-    for (i = month + 1; i < payArray.length; i += 12 / 26) amount(payArray, i);
+    for (i = month + 1; i < payArray.length; i += 12 / 26) addPaymentToExistingPayments(payArray, i);
   } else if (repeats == 3) {
-    for (i = month + 1; i < payArray.length; i++) amount(payArray, i);
+    for (i = month + 1; i < payArray.length; i++) addPaymentToExistingPayments(payArray, i);
   } else if (repeats == 4) {
-    for (i = month + 2; i < payArray.length; i += 2) amount(payArray, i);
+    for (i = month + 2; i < payArray.length; i += 2) addPaymentToExistingPayments(payArray, i);
   } else if (repeats == 5) {
-    for (i = month + 6; i < payArray.length; i += 6) amount(payArray, i);
+    for (i = month + 6; i < payArray.length; i += 6) addPaymentToExistingPayments(payArray, i);
   } else if (repeats == 6) {
-    for (i = month + 12; i < payArray.length; i += 12) amount(payArray, i);
+    for (i = month + 12; i < payArray.length; i += 12) addPaymentToExistingPayments(payArray, i);
   } else if (repeats == 7) {
-    for (i = month + 24; i < payArray.length; i += 24) amount(payArray, i);
+    for (i = month + 24; i < payArray.length; i += 24) addPaymentToExistingPayments(payArray, i);
   }
   return payArray;
 }
@@ -219,6 +189,7 @@ export function loanMaths(
   var remaining = new Array(numYears * 12 + 1).fill(0);
   var repeatingOverpayments = new Array(numYears * 12 + 1).fill(0);
   var inflationScaler = new Array(numYears * 12).fill(1.0);
+  var refinanceEvents = new Array(numYears * 12).fill(null);
   // var loanCopy = { ...loanData };
   var totalPrincipal = 0;
   var totalInterest = 0;
@@ -237,8 +208,8 @@ export function loanMaths(
     //Check if any events happening this month
     while (loanEvent.length > eventIndex && thisMonth == loanEvent[eventIndex]["date"]) {
       if (loanEvent[eventIndex]["event"] == "Over-pay") {
-        remaining[i] = remaining[i] + parseFloat(loanEvent[eventIndex]["cost"]) - parseFloat(loanEvent[eventIndex]["change"]);
-        extraPayments += parseFloat(loanEvent[eventIndex].cost) + parseFloat(loanEvent[eventIndex]["change"]);
+        remaining[i] = remaining[i] + parseFloat(loanEvent[eventIndex]["cost"]);
+        extraPayments += parseFloat(loanEvent[eventIndex].cost);
         repeatingOverpayments = handleRepeatPayments(
           repeatingOverpayments,
           loanEvent[eventIndex]["repeats"],
@@ -254,6 +225,10 @@ export function loanMaths(
         extraPayments += parseFloat(loanEvent[eventIndex].cost);
         if (loanEvent[eventIndex]["newLength"] != 0) numMonths = i + loanEvent[eventIndex]["newLength"] * 12;
         loanData = loanCalc(numMonths - i, interestRate, remaining[i], "homeVal", null, 0, 0, monthlyExtraPercent, monthlyExtraFee, PMI_int, PMI_fixed);
+        refinanceEvents[i] = {
+          interestRate: rate,
+          newLength: loanEvent[eventIndex]["newLength"],
+        };
       } else if (loanEvent[eventIndex]["event"] == "Recast") {
         // rate = loanEvent[eventIndex].change/100;
         remaining[i] = remaining[i] + parseFloat(loanEvent[eventIndex].cost);
@@ -322,6 +297,7 @@ export function loanMaths(
   monthlyPMI.splice(i + 1, numMonths - i);
   equity.splice(i + 1, numMonths - i);
   inflationScaler.splice(i + 1, numMonths - i);
+  loanMonths.splice(i + 1, numMonths - i);
   // console.log(i, numMonths, monthlyPayment.length,[...monthlyPayment]);
 
   // function saveObjectToFileBrowser(obj, filename) {
@@ -375,5 +351,7 @@ export function loanMaths(
     monthlyPMI: monthlyPMI,
     equity: equity,
     inflation: inflationScaler,
+    overPayments: repeatingOverpayments,
+    refinanceEvents: refinanceEvents,
   };
 }

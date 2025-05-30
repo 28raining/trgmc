@@ -12,7 +12,7 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
   const [chosenEvent, setChosenEvent] = useState("Over-pay");
   const [newChange, setNewChange] = useState(1000);
   const [chosenDate, setChosenDate] = useState(loanMonths[1]);
-  const [repeats, setRepeats] = useState(6);
+  const [repeats, setRepeats] = useState(0);
   const [newLength, setNewLength] = useState(0);
   const [cost, setCost] = useState(0);
 

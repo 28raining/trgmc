@@ -41,7 +41,7 @@ var in_3 = {
   loanAmount: 400000,
   numYears: 30,
   interestRate: 5,
-  loanEvent: [{ event: "Inflation", date: "Feb 2026", cost: 0, change: 2, newLength: "-", repeats: 6 }],
+  loanEvent: [{ event: "Inflation", date: "Feb 2027", cost: 0, change: 2, newLength: "-", repeats: 6 }],
   chosenInput: "homeVal",
   monthlyPaymentInput: 0,
   downPay: 0.2,

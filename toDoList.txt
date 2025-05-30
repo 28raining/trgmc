@@ -1,16 +1,17 @@
 
 # Todo
-- inflation test
-
-## Important
-- when reload page, ask if they wanna keep the state
-
-
-- add country picker
+- Make it clearer at the top the resulting monthly payment
+- don't push in dist, instead use the github pages workflow
+- add a toast to reset the site on load
+-- - when reload page, ask if they wanna keep the state
+- when refi makes the loan longer then the extra costs break
+- separate overpay & fees
+- unit testing on spreadsheet generation
 - upfront costs
 -- add this as an event
 
 ## Later
+- add country picker
 -- show standard loan types and autofill length
 - hover over explains how th eboxes were calculated
 - refinance has option to change loan length
@@ -36,6 +37,15 @@
 - setting downpay cash to 15%, make homeValue big, make homeValue small
 -- save it to cookie
 - show balance change for each overpayment
+
+#Done May 2025
+- Allow user to download as an xlsx!
+--  load xlsx later than the original page loads - this 500kb addon only loaded once user clicks it
+--  add overpayments and refinance to xlsx
+--  beautify the spreadshset
+--  Fix PMI in spreadsheet
+- unit testing covers inflation
+- don't put pmi if auto-pop and <20%
 
 #Done since Feb 2025
 - fix pmi with fixed amount, not percent

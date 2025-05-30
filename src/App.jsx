@@ -10,6 +10,8 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Accordion from "react-bootstrap/Accordion";
 import Tooltip from "react-bootstrap/Tooltip";
 import { Modal } from "react-bootstrap";
+import { createXlsx } from "./createXlsx.js";
+import spreadsheetIcon from "./assets/spreadsheet.svg";
 
 // import MonthlyPayment from "./MonthlyPayment.jsx";
 
@@ -420,7 +422,9 @@ function App() {
       urlParams.append("events", loanEventEncoder(loanEvent[o]));
     }
   }
-  window.history.replaceState(null, null, "?" + urlParams.toString());
+  const paramsString = urlParams.toString();
+  const newUrl = paramsString ? "?" + paramsString : window.location.pathname;
+  window.history.replaceState(null, null, newUrl);
 
   return (
     <>
@@ -431,6 +435,35 @@ function App() {
             <span style={{ whiteSpace: "normal" }}>
               The <b>R</b>eally <b>G</b>ood <b>M</b>ortgage <b>C</b>alculator
             </span>
+          </span>
+          <span className="justify-content-center">
+            <OverlayTrigger overlay={<Tooltip>{"Download as spreadsheet"}</Tooltip>} placement="bottom">
+              <button
+                type="button"
+                className="btn btn-outline-secondary"
+                aria-label="Download spreadhseet"
+                onClick={async () => {
+                  const XLSX = await import("xlsx-js-style");
+                  createXlsx({
+                    XLSX: XLSX,
+                    homeVal: displayState["homeVal"],
+                    downPayCash: displayState["downPayCash"],
+                    loanMonths: loanRes["loanMonths"],
+                    interestRate: parseFloat(userInput["interestRate"]),
+                    loanLength: parseFloat(userInput["loanLength"]),
+                    propertyTax: userInput["propertyTax"] * unitScaler(userInput["propertyTaxUnit"]),
+                    hoa: userInput["hoa"] * unitScaler(userInput["hoaUnit"]),
+                    pmi: loanRes["monthlyPMI"],
+                    utilities: userInput["utilities"] * unitScaler(userInput["utilitiesUnit"]),
+                    insurance: userInput["insurance"] * unitScaler(userInput["insuranceUnit"]),
+                    overPayments: loanRes["overPayments"],
+                    refinanceEvents: loanRes["refinanceEvents"],
+                  });
+                }}
+              >
+                <img src={spreadsheetIcon} alt="Dowload as spreadsheet" width="20px" />
+              </button>
+            </OverlayTrigger>
           </span>
           <span className="justify-content-end">
             <span className="me-3 align-middle" style={{ fontSize: "16px" }}>
@@ -546,9 +579,7 @@ function App() {
           <div className="row pt-5 pb-3">
             <p>It would be great to hear your feedback!</p>
           </div>
-          <div className="row">
-            <Comments website-id={11189} page-id="" />
-          </div>
+          <div className="row">{!import.meta.env.DEV && <Comments website-id={11189} page-id="" />}</div>
           <div className="row pt-3 px-3 ">
             <div className="col-6 text-start">
               <a href="https://github.com/28raining/trgmc" style={{ color: "black" }}>
