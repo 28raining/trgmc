@@ -1,7 +1,10 @@
 import { expect, test } from "bun:test";
 import { loanMaths } from "../src/loanMaths.js";
 import { res1, res2, res3, res4, res5 } from "./exampleResults.js";
-import { writeFileSync } from "fs";
+import { xlsx_1 } from "./xlsxGenInput.js";
+import { writeFileSync, unlinkSync } from "fs";
+import { utils, writeFile, readFile } from "xlsx-js-style"; // Importing xlsx-style for styling support
+import { createXlsx } from "../src/createXlsx.js";
 
 //case 1 - the default site after clicking "populate with estimates"
 var in_1 = {
@@ -88,13 +91,6 @@ var in_5 = {
   PMI_fixed: 0,
 };
 
-//run the test scenarioes one by one
-testScenario("loanMaths: 1", in_1, res1);
-testScenario("loanMaths: 2", in_2, res2);
-testScenario("loanMaths: 3", in_3, res3);
-testScenario("loanMaths: 4", in_4, res4);
-testScenario("loanMaths: 5", in_5, res5);
-
 //convert from object input to ordered input
 function runLoanMaths(o) {
   return loanMaths(
@@ -145,3 +141,12 @@ function testScenario(name, stimulus, expectedResult) {
     // expect(runLoanMaths(in_1)).toEqual(res1)
   });
 }
+
+//run the test scenarioes one by one
+testScenario("loanMaths: 1", in_1, res1);
+testScenario("loanMaths: 2", in_2, res2);
+testScenario("loanMaths: 3", in_3, res3);
+testScenario("loanMaths: 4", in_4, res4);
+testScenario("loanMaths: 5", in_5, res5);
+//had trouble testing xlsx generation because the sheets contain formulas, which get corrupted in sheet read
+

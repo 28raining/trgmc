@@ -1,6 +1,5 @@
 
 # Todo
-- don't push in dist, instead use the github pages workflow
 - add a toast to reset the site on load
 -- - when reload page, ask if they wanna keep the state
 - separate overpay & fees (it wraps on small screens)
@@ -8,10 +7,7 @@
 - upfront costs
 -- add this as an event
 - store yearly / monthyl breaksown in the url
-- fix the flashing.... 
-- fix dns complaints form git
-
-- build on git pages
+- fix dns complaints from git
 
 ## Later
 - add country picker
@@ -51,7 +47,9 @@
 - don't put pmi if auto-pop and <20%
 - Make it clearer at the top the resulting monthly payment
 - when refi makes the loan longer then the extra costs break
-
+- don't push in dist, instead use the github pages workflow
+- build on git pages
+- Fix google blurb
 
 
 #Done since Feb 2025

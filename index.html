@@ -1,28 +1,40 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="./bank.svg" />
+    <link rel="canonical" href="https://trgmc.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Calculate your monthly mortgage payments instantly with our free, easy-to-use mortgage calculator. Add repeating overpayments, refinance, recast, even add inflation to your property tax. Download to spreadsheet. Enter your budget or home price to see how much house you can afford"
+    />
+    <title>the Really Good Mortgage Calculator</title>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "The Really Good Mortgage Calculator",
+        "url": "https://trgmc.net/",
+        "description": "Calculate your monthly mortgage payments instantly with our free, easy-to-use mortgage calculator. Add repeating overpayments, refinance, recast, even add inflation to your property tax. Download to spreadsheet. Enter your budget or home price to see how much house you can afford"
+      }
+    </script>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="./bank.svg" />
-  <link rel="canonical" href="https://trgmc.net/" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-J73R16D0HH"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
 
-  <title>the Really Good Mortgage Calculator</title>
-</head>
+    gtag("config", "G-J73R16D0HH");
+  </script>
 
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-J73R16D0HH"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag() { dataLayer.push(arguments); }
-  gtag('js', new Date());
-
-  gtag('config', 'G-J73R16D0HH');
-</script>
-
-<body>
-  <div id="root"></div>
-  <script type="module" src="/src/main.jsx"></script>
-</body>
-
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>
