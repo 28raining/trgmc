@@ -1,10 +1,8 @@
 
 # Todo
-- Make it clearer at the top the resulting monthly payment
 - don't push in dist, instead use the github pages workflow
 - add a toast to reset the site on load
 -- - when reload page, ask if they wanna keep the state
-- when refi makes the loan longer then the extra costs break
 - separate overpay & fees (it wraps on small screens)
 - unit testing on spreadsheet generation
 - upfront costs
@@ -50,6 +48,10 @@
 --  Fix PMI in spreadsheet
 - unit testing covers inflation
 - don't put pmi if auto-pop and <20%
+- Make it clearer at the top the resulting monthly payment
+- when refi makes the loan longer then the extra costs break
+
+
 
 #Done since Feb 2025
 - fix pmi with fixed amount, not percent

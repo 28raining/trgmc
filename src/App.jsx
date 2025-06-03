@@ -428,7 +428,7 @@ function App() {
 
   return (
     <>
-      <nav className="navbar bg-body-tertiary mb-3">
+      <nav className="navbar bg-body-tertiary">
         <div className="container-xxl">
           <span className="navbar-brand titleSize">
             <Bank height="24" className="hideLogo me-2 align-text-bottom " />
@@ -496,10 +496,10 @@ function App() {
           </Modal.Body>
         </Modal>
       </nav>
-      <div className="container-xxl">
+      <div className="container-xxl py-3 rounded">
         <div className="row">
           <div className="col-12">
-            <div className="row shadow-sm border rounded mx-0 mb-3">
+            <div className="row shadow-sm border rounded mx-0 mb-3" style={{ backgroundColor: "white" }}>
               <div className="col">
                 <p className="my-2">
                   An easy to use mortgage calculator to find out exactly how much it will cost to buy a house. Or, enter a monthly budget. How much can you
@@ -553,7 +553,7 @@ function App() {
             />
           </div>
         </div>
-        <div className="row shadow-sm border rounded my-3 mx-0 text-secondary">
+        <div className="row shadow-sm border rounded my-3 mx-0 text-secondary" style={{ backgroundColor: "white" }}>
           <div className="col-12">
             <Accordion flush>
               <Accordion.Item eventKey="0">
@@ -574,7 +574,7 @@ function App() {
           </div>
         </div>
       </div>
-      <footer className="bg-body-tertiary mt-5">
+      <footer className="bg-body-tertiary">
         <div className="container-xxl">
           <div className="row pt-5 pb-3">
             <p>It would be great to hear your feedback!</p>

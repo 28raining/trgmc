@@ -40,7 +40,7 @@ function LoanStats({ loanRes, userInput }) {
   const thereWereExtraPayments = totalTax > 0 || totalHoA > 0 || totalpmi > 0 || totalutilities > 0 || totalInsurance > 0 || loanRes["extraPayments"] > 0;
 
   return (
-    <div className="row shadow-sm border rounded py-2 mx-0">
+    <div className="row shadow-sm border rounded py-2 mx-0" style={{ backgroundColor: "white" }}>
       <div className="col-12">
         <div className="row pb-2">
           <div className="col-12">

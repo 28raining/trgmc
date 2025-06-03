@@ -116,7 +116,7 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
   }
 
   return (
-    <div className="row shadow-sm border rounded py-2 mx-0" key="row0">
+    <div className="row shadow-sm border rounded py-2 mx-0" key="row0" style={{ backgroundColor: "white" }}>
       <ToastContainer position="top-end" className="pt-4">
         <Toast show={showEventToast} onClose={() => setShowEventToast(false)} delay={3000} autohide bg="info">
           <Toast.Header>
@@ -323,88 +323,90 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
                     <th scope="col"></th>
                   </tr>
                 </thead>
-                {loanEvent.map((x, i) => 
-                  loanMonths.includes(x.date) && (
-                  <tbody key={i}>
-                    <tr key={i}>
-                      <th scope="row">{i + 1}</th>
-                      <td>{x["event"]}</td>
-                      <td>{x["date"]}</td>
-                      <td>
-                        {new Intl.NumberFormat("en-US", {
-                          style: "currency",
-                          currency: "USD",
-                          maximumFractionDigits: 0,
-                        }).format(x["cost"])}
-                      </td>
-                      <td>{x["event"] == "Refinance" ? `${x["change"]}%` : x["event"] == "Over-pay" ? cashFormat(x["change"]) : x["change"]}</td>
-                      <td key="pen">
-                        <span
-                          style={{ cursor: "pointer" }}
-                          className="mx-1"
-                          onClick={() => {
-                            var newEventObj = [...loanEvent];
-                            var oldEvent = newEventObj.splice(i, 1);
-                            // console.log(oldEvent)
-                            setChosenEvent(oldEvent[0]["event"]);
-                            setChosenDate(oldEvent[0]["date"]);
-                            setCost(oldEvent[0]["cost"]);
-                            setNewChange(oldEvent[0]["change"]);
-                            setRepeats(oldEvent[0]["repeats"]);
-                            setLoanEvent(newEventObj);
-                            setNewLength(oldEvent[0]["newLength"] == "-" ? 0 : oldEvent[0]["newLength"]);
-                          }}
-                        >
-                          <OverlayTrigger key={`overlay_edit_${i}`} overlay={<Tooltip key={`overlay_edit_tt_${i}`}>{"Edit"}</Tooltip>}>
-                            <Pen color="blue" size={16} key="iconPen" />
-                          </OverlayTrigger>
-                        </span>
+                {loanEvent.map(
+                  (x, i) =>
+                    loanMonths.includes(x.date) && (
+                      <tbody key={i}>
+                        <tr key={i}>
+                          <th scope="row">{i + 1}</th>
+                          <td>{x["event"]}</td>
+                          <td>{x["date"]}</td>
+                          <td>
+                            {new Intl.NumberFormat("en-US", {
+                              style: "currency",
+                              currency: "USD",
+                              maximumFractionDigits: 0,
+                            }).format(x["cost"])}
+                          </td>
+                          <td>{x["event"] == "Refinance" ? `${x["change"]}%` : x["event"] == "Over-pay" ? cashFormat(x["change"]) : x["change"]}</td>
+                          <td key="pen">
+                            <span
+                              style={{ cursor: "pointer" }}
+                              className="mx-1"
+                              onClick={() => {
+                                var newEventObj = [...loanEvent];
+                                var oldEvent = newEventObj.splice(i, 1);
+                                // console.log(oldEvent)
+                                setChosenEvent(oldEvent[0]["event"]);
+                                setChosenDate(oldEvent[0]["date"]);
+                                setCost(oldEvent[0]["cost"]);
+                                setNewChange(oldEvent[0]["change"]);
+                                setRepeats(oldEvent[0]["repeats"]);
+                                setLoanEvent(newEventObj);
+                                setNewLength(oldEvent[0]["newLength"] == "-" ? 0 : oldEvent[0]["newLength"]);
+                              }}
+                            >
+                              <OverlayTrigger key={`overlay_edit_${i}`} overlay={<Tooltip key={`overlay_edit_tt_${i}`}>{"Edit"}</Tooltip>}>
+                                <Pen color="blue" size={16} key="iconPen" />
+                              </OverlayTrigger>
+                            </span>
 
-                        <span
-                          style={{ cursor: "pointer" }}
-                          className="mx-1"
-                          onClick={() => {
-                            var newEventObj = [...loanEvent];
-                            newEventObj.splice(i, 1);
-                            setLoanEvent(newEventObj);
-                          }}
-                        >
-                          <OverlayTrigger key={`overlay_rm_${i}`} overlay={<Tooltip key={`overlay_rm_tt_${i}`}>{"Remove"}</Tooltip>}>
-                            <DashCircle color="blue" size={16} key="iconCircle" />
-                          </OverlayTrigger>
-                        </span>
-                      </td>
-                    </tr>
-                    {x["event"] == "Refinance" ? (
-                      <tr key={"refi1"}>
-                        <td></td>
-                        <td colSpan={5} className="py-1">
-                          New loan length: {x["newLength"] == "" ? <em>unchanged</em> : `${x["newLength"]}yr`}
-                        </td>
-                      </tr>
-                    ) : x["event"] == "Over-pay" && x["repeats"] != 0 ? (
-                      <tr key={"overpayRep"}>
-                        <td></td>
-                        <td colSpan={5} className="py-1">
-                          Payment repeats: {repeatOptions[x["repeats"]]}
-                        </td>
-                      </tr>
-                    ) : null}
-                    {x["event"] == "Refinance" || x["event"] == "Recast" ? (
-                      <tr key={"refi2"}>
-                        <td></td>
-                        <td colSpan={5} className="py-1">
-                          New monthly payment: {cashFormat(monthlyPaymentPerEvent[i + 1]["loan"] + monthlyPaymentPerEvent[i + 1]["extra"])}{" "}
-                          {monthlyPaymentPerEvent[i + 1]["extra"] > 0 ? (
-                            <small>
-                              <em>({cashFormat(monthlyPaymentPerEvent[i + 1]["loan"])} towards loan)</em>
-                            </small>
-                          ) : null}
-                        </td>
-                      </tr>
-                    ) : null}
-                  </tbody>
-                ))}
+                            <span
+                              style={{ cursor: "pointer" }}
+                              className="mx-1"
+                              onClick={() => {
+                                var newEventObj = [...loanEvent];
+                                newEventObj.splice(i, 1);
+                                setLoanEvent(newEventObj);
+                              }}
+                            >
+                              <OverlayTrigger key={`overlay_rm_${i}`} overlay={<Tooltip key={`overlay_rm_tt_${i}`}>{"Remove"}</Tooltip>}>
+                                <DashCircle color="blue" size={16} key="iconCircle" />
+                              </OverlayTrigger>
+                            </span>
+                          </td>
+                        </tr>
+                        {x["event"] == "Refinance" ? (
+                          <tr key={"refi1"}>
+                            <td></td>
+                            <td colSpan={5} className="py-1">
+                              New loan length: {x["newLength"] == "" ? <em>unchanged</em> : `${x["newLength"]}yr`}
+                            </td>
+                          </tr>
+                        ) : x["event"] == "Over-pay" && x["repeats"] != 0 ? (
+                          <tr key={"overpayRep"}>
+                            <td></td>
+                            <td colSpan={5} className="py-1">
+                              Payment repeats: {repeatOptions[x["repeats"]]}
+                            </td>
+                          </tr>
+                        ) : null}
+                        {x["event"] == "Refinance" || x["event"] == "Recast" ? (
+                          <tr key={"refi2"}>
+                            <td></td>
+                            <td colSpan={5} className="py-1">
+                              New monthly payment: {cashFormat(monthlyPaymentPerEvent[i + 1]["loan"] + monthlyPaymentPerEvent[i + 1]["extra"])}{" "}
+                              {monthlyPaymentPerEvent[i + 1]["extra"] > 0 ? (
+                                <small>
+                                  <em>({cashFormat(monthlyPaymentPerEvent[i + 1]["loan"])} towards loan)</em>
+                                </small>
+                              ) : null}
+                            </td>
+                          </tr>
+                        ) : null}
+                      </tbody>
+                    )
+                )}
               </table>
             )}
           </div>

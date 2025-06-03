@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "prettier src --write && eslint src && vite build  --base=./",
-    "lint": "eslint src",
+    "lint": "eslint src && prettier src --check",
     "preview": "vite preview"
   },
   "dependencies": {

@@ -120,7 +120,7 @@ function testScenario(name, stimulus, expectedResult) {
     //USE THIS TO CREATE THE TEST PATTERNS
     if (name == "loanMaths: 3") {
       // writeFileSync("stimulus.json", JSON.stringify(stimulus, null, 2), "utf8");
-      writeFileSync("measuredResult.json", JSON.stringify(measuredResult, null, 2), "utf8");
+      // writeFileSync("measuredResult.json", JSON.stringify(measuredResult, null, 2), "utf8");
     }
     expect(measuredResult.loanAmount).toEqual(expectedResult.loanAmount);
     expect(measuredResult.endMonth).toEqual(expectedResult.endMonth);

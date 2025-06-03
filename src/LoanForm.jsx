@@ -55,7 +55,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
     if (i in flash) inputClass[i] += flash[i] ? " anim1" : " anim2";
     else console.log(`${i} missing from flash`);
 
-    if (displayState["lock"].includes(i)) inputClass[i] += " lock";
+    if (displayState["lock"].includes(i)) inputClass[i] += " lock lockBG";
   }
   // console.log('inputClass', inputClass)
 
@@ -85,7 +85,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
   // console.log("displayState", displayState["monthlyPayment"], cashFormat(displayState["monthlyPayment"]));
   return (
     <div>
-      <div className="row shadow-sm border rounded mb-3 py-2 mx-0">
+      <div className="row shadow-sm border rounded mb-3 py-2 mx-0" style={{ backgroundColor: "white" }}>
         <div className="col-12">
           <div className="row">
             <div className="col-5 pe-0">
@@ -126,7 +126,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
           </div>
         </div>
       </div>
-      <div className="row shadow-sm border rounded mb-3 py-2 mx-0">
+      <div className="row shadow-sm border rounded mb-3 py-2 mx-0" style={{ backgroundColor: "white" }}>
         <div className="col-12">
           <div className="row">
             <div className="col-12">
@@ -235,7 +235,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
         </div>
       </div>
 
-      <div className="row shadow-sm border rounded py-2 mx-0">
+      <div className="row shadow-sm border rounded py-2 mx-0" style={{ backgroundColor: "white" }}>
         <div className="col-12 px-0">
           <div className="row mx-0">
             <div className="col-xxl-4 col-sm-6 col-12">

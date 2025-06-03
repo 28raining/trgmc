@@ -244,7 +244,7 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, pmi, util
   };
 
   return (
-    <div className="row shadow-sm border rounded mb-3 py-1 mx-0 px-1">
+    <div className="row shadow-sm border rounded mb-3 py-1 mx-0 px-1" style={{ backgroundColor: "white" }}>
       <div className="col-12 px-0">
         <div className="row mx-0">
           <div className="col-12 px-0">
