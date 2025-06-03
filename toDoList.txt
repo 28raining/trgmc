@@ -9,6 +9,7 @@
 -- add this as an event
 - store yearly / monthyl breaksown in the url
 - fix the flashing.... 
+- fix dns complaints form git
 
 - build on git pages
 
