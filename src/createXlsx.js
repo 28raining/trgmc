@@ -165,7 +165,7 @@ export async function createXlsx({
     prevCellMonthlyPayment = `${col}${row - 1}`;
     if (i == 0)
       ws[cellMonthlyPayment] = { f: `${cellMonthlyPaymentInitial}` }; // Loan payment formula
-    else if (refinanceEvents[i] !== null)
+    else if (refinanceEvents[i] !== null && refinanceEvents[i] !== undefined)
       ws[cellMonthlyPayment] = { f: `PMT(${refinanceEvents[i].interestRate / 12}, ${refinanceEvents[i].newLength * 12}, -${nextCellRemainingBalance})` }; // Formula for Monthly Payment { v: `${refinanceEvents[i].interestRate/12}` };
     else ws[cellMonthlyPayment] = { f: `${col}${row - 1}` };
     ws[`${col}${row}`].z = "$#,##0.00";
@@ -213,7 +213,7 @@ export async function createXlsx({
 
     if (i == 0)
       ws[cellInterest] = { f: `${cellMonthlyInterestRate}` }; // Remaining balance
-    else if (refinanceEvents[i] !== null) ws[cellInterest] = { f: `${refinanceEvents[i].interestRate / 12}` };
+    else if (refinanceEvents[i] !== null && refinanceEvents[i] !== undefined) ws[cellInterest] = { f: `${refinanceEvents[i].interestRate / 12}` };
     else ws[cellInterest] = { f: `${col}${row - 1}` }; // Remaining balance formula
     ws[cellInterest].z = "0.00%";
   }

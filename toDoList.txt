@@ -5,10 +5,14 @@
 - add a toast to reset the site on load
 -- - when reload page, ask if they wanna keep the state
 - when refi makes the loan longer then the extra costs break
-- separate overpay & fees
+- separate overpay & fees (it wraps on small screens)
 - unit testing on spreadsheet generation
 - upfront costs
 -- add this as an event
+- store yearly / monthyl breaksown in the url
+- fix the flashing.... 
+
+- build on git pages
 
 ## Later
 - add country picker

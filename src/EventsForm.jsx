@@ -323,7 +323,8 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
                     <th scope="col"></th>
                   </tr>
                 </thead>
-                {loanEvent.map((x, i) => (
+                {loanEvent.map((x, i) => 
+                  loanMonths.includes(x.date) && (
                   <tbody key={i}>
                     <tr key={i}>
                       <th scope="row">{i + 1}</th>
@@ -351,6 +352,7 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
                             setNewChange(oldEvent[0]["change"]);
                             setRepeats(oldEvent[0]["repeats"]);
                             setLoanEvent(newEventObj);
+                            setNewLength(oldEvent[0]["newLength"] == "-" ? 0 : oldEvent[0]["newLength"]);
                           }}
                         >
                           <OverlayTrigger key={`overlay_edit_${i}`} overlay={<Tooltip key={`overlay_edit_tt_${i}`}>{"Edit"}</Tooltip>}>

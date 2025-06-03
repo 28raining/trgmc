@@ -131,22 +131,6 @@ export function loanMaths(
   PMI,
   PMI_fixed
 ) {
-  //dump data for self testing
-  // var startObj = {
-  //   loanAmount: loanAmount,
-  //   numYears: numYears,
-  //   interestRate: interestRate,
-  //   loanEvent: loanEvent,
-  //   chosenInput: chosenInput,
-  //   monthlyPaymentInput: monthlyPaymentInput,
-  //   downPay: downPay,
-  //   userSetDownPercent: userSetDownPercent,
-  //   monthlyExtraPercent: monthlyExtraPercent,
-  //   monthlyExtraFee: monthlyExtraFee,
-  //   startDate: startDate,
-  //   PMI: PMI,
-  //   PMI_fixed: PMI_fixed,
-  // };
   if (!isNumber(numYears) || numYears == 0) numYears = 1; //fix issue when loan length is blank
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   var stDate = new Date(Number(startDate));
@@ -187,8 +171,8 @@ export function loanMaths(
   var equity = new Array(numYears * 12).fill(0);
   var monthlyPrincipal = new Array(numYears * 12).fill(0);
   var remaining = new Array(numYears * 12 + 1).fill(0);
-  var repeatingOverpayments = new Array(numYears * 12 + 1).fill(0);
-  var inflationScaler = new Array(numYears * 12).fill(1.0);
+  var repeatingOverpayments = new Array(numYears * 12 * 2).fill(0);
+  var inflationScaler = new Array(numYears * 12 * 2).fill(1.0); //make this (2x) longer so if they refinance and make the load longer the site still works
   var refinanceEvents = new Array(numYears * 12).fill(null);
   // var loanCopy = { ...loanData };
   var totalPrincipal = 0;
@@ -290,49 +274,15 @@ export function loanMaths(
   // console.log('ex', extraPayments)
 
   // console.log(i, numMonths, monthlyPayment.length,[...monthlyPayment]);
-  monthlyPayment.splice(i + 1, numMonths - i);
-  monthlyInterest.splice(i + 1, numMonths - i);
-  monthlyPrincipal.splice(i + 1, numMonths - i);
-  remaining.splice(i + 1, numMonths - i);
-  monthlyPMI.splice(i + 1, numMonths - i);
-  equity.splice(i + 1, numMonths - i);
-  inflationScaler.splice(i + 1, numMonths - i);
-  loanMonths.splice(i + 1, numMonths - i);
-  // console.log(i, numMonths, monthlyPayment.length,[...monthlyPayment]);
-
-  // function saveObjectToFileBrowser(obj, filename) {
-  //   const jsonString = JSON.stringify(obj);
-  //   const blob = new Blob([jsonString], { type: 'application/json' });
-  //   const url = URL.createObjectURL(blob);
-  //   const a = document.createElement('a');
-  //   a.href = url;
-  //   a.download = filename;
-  //   document.body.appendChild(a); // Required for Firefox
-  //   a.click();
-  //   document.body.removeChild(a);
-  //   URL.revokeObjectURL(url); // Clean up
-  // }
-  // var fin = {
-  //   loanAmount: originalLoanAmount,
-  //   endMonth: i,
-  //   loanMonths: loanMonths,
-  //   monthlyInterest: monthlyInterest,
-  //   monthlyPayment: monthlyPayment,
-  //   monthlyPrincipal: monthlyPrincipal,
-  //   numMonths: numMonths,
-  //   remaining: remaining,
-  //   interestPlusPrincipal: originalInterestPlusPrincipal,
-  //   homeVal: originalHomeVal,
-  //   extraPayments: extraPayments,
-  //   monthlyPaymentPerEvent: monthlyPaymentPerEvent,
-  //   totalPrincipal: totalPrincipal,
-  //   totalInterest: totalInterest,
-  //   monthlyPMI: monthlyPMI,
-  //   equity: equity,
-  //   inflation: inflationScaler,
-  // }
-  // saveObjectToFileBrowser(startObj, 'start.txt');
-  // saveObjectToFileBrowser(fin, 'fin.txt');
+  monthlyPayment.splice(i + 1);
+  monthlyInterest.splice(i + 1);
+  monthlyPrincipal.splice(i + 1);
+  remaining.splice(i + 1);
+  monthlyPMI.splice(i + 1);
+  equity.splice(i + 1);
+  inflationScaler.splice(i + 1);
+  loanMonths.splice(i + 1);
+  repeatingOverpayments.splice(i + 1);
   return {
     loanAmount: originalLoanAmount,
     endMonth: i,
