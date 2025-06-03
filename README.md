@@ -27,3 +27,5 @@ bun test
 
 ## github pages
 is pointing to the dist folder
+
+test the gitactions with a push
