@@ -3,7 +3,7 @@
 - add a toast to reset the site on load
 -- - when reload page, ask if they wanna keep the state
 - separate overpay & fees (it wraps on small screens)
-- unit testing on spreadsheet generation
+- unit testing on spreadsheet generation - probably don't save it to a file, just save it to binary
 - upfront costs
 -- add this as an event
 - store yearly / monthyl breaksown in the url
@@ -50,6 +50,7 @@
 - don't push in dist, instead use the github pages workflow
 - build on git pages
 - Fix google blurb
+- make the buttons at the top consistent
 
 
 #Done since Feb 2025

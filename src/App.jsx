@@ -436,11 +436,15 @@ function App() {
               The <b>R</b>eally <b>G</b>ood <b>M</b>ortgage <b>C</b>alculator
             </span>
           </span>
-          <span className="justify-content-center">
+          <span className="justify-content-center"></span>
+          <span className="justify-content-end">
+            <span className="me-3 align-middle" style={{ fontSize: "16px" }}>
+              🇺🇸
+            </span>
             <OverlayTrigger overlay={<Tooltip>{"Download as spreadsheet"}</Tooltip>} placement="bottom">
               <button
                 type="button"
-                className="btn btn-outline-secondary"
+                className="btn btn-outline-secondary me-1"
                 aria-label="Download spreadhseet"
                 onClick={async () => {
                   const XLSX = await import("xlsx-js-style");
@@ -464,25 +468,23 @@ function App() {
                 <img src={spreadsheetIcon} alt="Dowload as spreadsheet" width="20px" />
               </button>
             </OverlayTrigger>
-          </span>
-          <span className="justify-content-end">
-            <span className="me-3 align-middle" style={{ fontSize: "16px" }}>
-              🇺🇸
-            </span>
             <OverlayTrigger overlay={<Tooltip>{"share"}</Tooltip>} placement="bottom">
-              <BoxArrowUp
-                key="BoxArrowUp"
+              <button
+                type="button"
+                className="btn btn-outline-secondary me-1"
+                aria-label="Shareable link"
                 onClick={() => {
                   setShowShareModal(true);
                   navigator.clipboard.writeText(window.location.href);
                 }}
-                className="me-2"
-                style={{ cursor: "pointer" }}
-                size={20}
-              />
+              >
+                <BoxArrowUp key="BoxArrowUp" size={20} style={{color:"black"}} />
+              </button>
             </OverlayTrigger>
-            <OverlayTrigger overlay={<Tooltip>{"reset"}</Tooltip>} placement="bottom">
-              <Trash key="Trash" onClick={() => updateUserInput("reset")} style={{ cursor: "pointer" }} size={20} className="me-3" />
+            <OverlayTrigger overlay={<Tooltip>{"Re-start from scratch"}</Tooltip>} placement="bottom">
+              <button type="button" className="btn btn-outline-secondary" aria-label="Start fresh" onClick={() => updateUserInput("reset")}>
+              <Trash key="Trash" size={20} style={{color:"black"}} />
+              </button>
             </OverlayTrigger>
           </span>
         </div>

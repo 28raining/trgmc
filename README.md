@@ -13,12 +13,15 @@ bun install
 bun run dev
 ```
 
-## To build the project (to update trgmc.net)
+## To build the project
 ```
 bun run build
 cd dist
 bun run serve
 ```
+
+## To update trgmc.net
+Just push to git main. There is a workflow that deploys the site
 
 ## To test the project
 ```
