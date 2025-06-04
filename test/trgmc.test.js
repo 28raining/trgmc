@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 import { loanMaths } from "../src/loanMaths.js";
-import { res1, res2, res3, res4, res5 } from "./exampleResults.js";
+import { res1, res2, res3, res4, res5 , res6} from "./exampleResults.js";
 import { xlsx_1 } from "./xlsxGenInput.js";
 import { writeFileSync, unlinkSync } from "fs";
 import { utils, writeFile, readFile } from "xlsx-js-style"; // Importing xlsx-style for styling support
@@ -91,6 +91,23 @@ var in_5 = {
   PMI_fixed: 0,
 };
 
+//case 5 - Add an initial expece
+var in_6 = {
+  loanAmount: 400000,
+  numYears: 2,
+  interestRate: 5,
+  loanEvent: [{ event: "Expense", date: "Jan 2025", cost: 0, change: 3000, newLength: 0, repeats: 0 }],
+  chosenInput: "homeVal",
+  monthlyPaymentInput: 0,
+  downPay: 0.2,
+  userSetDownPercent: true,
+  monthlyExtraPercent: 0.08333333333333333,
+  monthlyExtraFee: 503.3333333333333,
+  startDate: 1736035200000,
+  PMI: 0,
+  PMI_fixed: 0,
+};
+
 //convert from object input to ordered input
 function runLoanMaths(o) {
   return loanMaths(
@@ -137,6 +154,9 @@ function testScenario(name, stimulus, expectedResult) {
     if (name != "loanMaths: 1" && name != "loanMaths: 2") {
       expect(measuredResult.inflation).toEqual(expectedResult.inflation);
     }
+    if (name != "loanMaths: 1" && name != "loanMaths: 2" && name != "loanMaths: 3" && name != "loanMaths: 4" && name != "loanMaths: 5") {
+      expect(measuredResult.totalFees).toEqual(expectedResult.totalFees);
+    }
 
     // expect(runLoanMaths(in_1)).toEqual(res1)
   });
@@ -148,5 +168,6 @@ testScenario("loanMaths: 2", in_2, res2);
 testScenario("loanMaths: 3", in_3, res3);
 testScenario("loanMaths: 4", in_4, res4);
 testScenario("loanMaths: 5", in_5, res5);
+testScenario("loanMaths: 6", in_6, res6);
 //had trouble testing xlsx generation because the sheets contain formulas, which get corrupted in sheet read
 

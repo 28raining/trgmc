@@ -12,6 +12,8 @@ import Tooltip from "react-bootstrap/Tooltip";
 import { Modal } from "react-bootstrap";
 import { createXlsx } from "./createXlsx.js";
 import spreadsheetIcon from "./assets/spreadsheet.svg";
+import Toast from "react-bootstrap/Toast";
+import ToastContainer from "react-bootstrap/ToastContainer";
 
 // import MonthlyPayment from "./MonthlyPayment.jsx";
 
@@ -171,19 +173,20 @@ const initialState = {
 const searchParams = new URLSearchParams(window.location.search);
 const initialOverride = {};
 var initialEvents = [];
+var gotStuffFromURL = false;
 for (const [key, value] of searchParams.entries()) {
+  gotStuffFromURL = true;
   if (key == "events") initialEvents = loanEventDecoder(value, initialEvents);
   else initialOverride[key] = value;
 }
 var initialUserSetDownPercent = true;
 if (searchParams.has("downPayCash")) initialUserSetDownPercent = false;
 
-// console.log(initialEvents)
-
 function App() {
   const [loanEvent, setLoanEvent] = useState(initialEvents);
   const [chosenInput, setChosenInput] = useState("homeVal");
   const [userSetDownPercent, setUserSetDownPercent] = useState(initialUserSetDownPercent);
+  const [showURLToast, setShowURLToast] = useState(gotStuffFromURL);
 
   const [userInput, setUserInput] = useState({ ...initialState, ...initialOverride });
   const [flash, setFlash] = useState({
@@ -428,6 +431,14 @@ function App() {
 
   return (
     <>
+      <ToastContainer position="top-end" className="pt-4 me-3">
+        <Toast show={showURLToast} onClose={() => setShowURLToast(false)} delay={10000} autohide bg="info">
+          <Toast.Header>
+            <strong className="me-auto">Loaded</strong>
+          </Toast.Header>
+          <Toast.Body>Some previous data was loaded from your URL. Click reset (trash) at the top right to start from scratch</Toast.Body>
+        </Toast>
+      </ToastContainer>
       <nav className="navbar bg-body-tertiary">
         <div className="container-xxl">
           <span className="navbar-brand titleSize">
@@ -478,12 +489,12 @@ function App() {
                   navigator.clipboard.writeText(window.location.href);
                 }}
               >
-                <BoxArrowUp key="BoxArrowUp" size={20} style={{color:"black"}} />
+                <BoxArrowUp key="BoxArrowUp" size={20} style={{ color: "black" }} />
               </button>
             </OverlayTrigger>
             <OverlayTrigger overlay={<Tooltip>{"Re-start from scratch"}</Tooltip>} placement="bottom">
               <button type="button" className="btn btn-outline-secondary" aria-label="Start fresh" onClick={() => updateUserInput("reset")}>
-              <Trash key="Trash" size={20} style={{color:"black"}} />
+                <Trash key="Trash" size={20} style={{ color: "black" }} />
               </button>
             </OverlayTrigger>
           </span>
@@ -555,7 +566,7 @@ function App() {
             />
           </div>
         </div>
-        <div className="row shadow-sm border rounded my-3 mx-0 text-secondary" style={{ backgroundColor: "white" }}>
+        <div className="row shadow-sm border rounded mx-0 text-secondary" style={{ backgroundColor: "white" }}>
           <div className="col-12">
             <Accordion flush>
               <Accordion.Item eventKey="0">
@@ -575,13 +586,12 @@ function App() {
             </Accordion>
           </div>
         </div>
+        <div className="row mx-0 mt-3 py-3 shadow-sm border rounded" style={{ backgroundColor: "white" }}>
+          <div className="col-12">{!import.meta.env.DEV && <Comments website-id={11189} page-id="" />}</div>
+        </div>
       </div>
       <footer className="bg-body-tertiary">
         <div className="container-xxl">
-          <div className="row pt-5 pb-3">
-            <p>It would be great to hear your feedback!</p>
-          </div>
-          <div className="row">{!import.meta.env.DEV && <Comments website-id={11189} page-id="" />}</div>
           <div className="row pt-3 px-3 ">
             <div className="col-6 text-start">
               <a href="https://github.com/28raining/trgmc" style={{ color: "black" }}>

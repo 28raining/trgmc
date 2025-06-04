@@ -18,7 +18,7 @@ function ValidFbComp({ x }) {
 function LoanForm({ displayState, flash, updateUserInput, valid }) {
   const [show, setShow] = useState(false);
   const feeOptions = ["$ / year", "$ / month", "% / year", "% / month"];
-  const extraPayments =
+  const additionalPayments =
     Number(displayState["propertyTax"]) > 0 ||
     Number(displayState["hoa"]) > 0 ||
     Number(displayState["insurance"]) > 0 ||
@@ -99,7 +99,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                 onChange={(e) => updateIfChanged(displayState["homeVal"], e.target.value, "homeVal")}
               />
               <ValidFbComp x={valid["homeVal"]} />
-              {extraPayments ? (
+              {additionalPayments ? (
                 <label>
                   <small></small>
                 </label>
@@ -117,7 +117,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
               />
 
               <ValidFbComp x={valid["monthlyPayment"]} />
-              {extraPayments ? (
+              {additionalPayments ? (
                 <label>
                   <small>{cashFormat(displayState["monthlyPaymentToLoan"])} towards loan</small>
                 </label>

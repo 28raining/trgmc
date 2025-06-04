@@ -17,7 +17,7 @@ import { useState } from "react";
 
 function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, pmi, utilities, insurance, startDate, inflation }) {
   const [monthsPerYearToPlot, setMonthsPerYearToPlot] = useState("Yearly Breakdown");
-  const yTitle = monthsPerYearToPlot == "Monthly Breakdown" ? "Monthly Breakdown" : "Yearly Breakdown";
+  const yTitle = monthsPerYearToPlot == "Monthly Breakdown" ? "Monthly Payment" : "Yearly Payment";
   const startMonth = startDate.getMonth();
 
   // console.log('rem',loanRes)

@@ -33,12 +33,13 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
   if (loanMonths.length < 2) return null;
   if (monthlyPaymentPerEvent.length < 0) return null;
 
-  const eventList = ["Over-pay", "Recast", "Refinance", "Inflation"];
+  const eventList = ["Over-pay", "Recast", "Refinance", "Inflation", "Expense"];
   const description = {
     "Over-pay": "Pay extra money into the loan",
     Recast: "Reduce the monthly payments after over-paying",
     Refinance: "Change the interest rate",
     Inflation: "Increase Tax, HoA, Insurance & Utilities",
+    Expense: "A one-off expense, e.g. loan origination fee, a new roof, etc.",
   };
 
   const repeatOptions = ["doesn't repeat", "weekly", "bi-weekly", "monthly", "bi-monthly", "every 6 months", "annually", "bi-annually"];
@@ -99,7 +100,7 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
     if (chosenEvent == "Recast") newEvent["change"] = "-";
     else newEvent["change"] = newChange;
 
-    if (chosenEvent == "Over-pay" || chosenEvent == "Inflation") newEvent["repeats"] = repeats;
+    if (chosenEvent == "Over-pay" || chosenEvent == "Inflation" || chosenEvent == "Expense") newEvent["repeats"] = repeats;
     else newEvent["repeats"] = "-";
 
     if (chosenEvent == "Refinance") newEvent["newLength"] = newLength;
@@ -129,10 +130,10 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
       <div className="col-12" key="col0">
         <div className="row">
           <div className="col-12" key="col1">
-            <div className="input-group ">
+            <div className="input-group" style={{ justifyContent: "space-between" }}>
               {eventList.map((x, i) => (
                 <OverlayTrigger overlay={<Tooltip key={`evDescTool_${i}`}>{description[x]}</Tooltip>} key={`evDesc_${i}`}>
-                  <div className="form-check form-check-inline" key={x}>
+                  <div className="form-check form-check-inline mx-0" key={x}>
                     <input
                       className="form-check-input"
                       type="radio"
@@ -143,6 +144,7 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
                         if (e.target.value == "Refinance") setNewChange("5.00");
                         if (e.target.value == "Inflation") setNewChange("1.00");
                         if (e.target.value == "Inflation") setRepeats(6);
+                        if (e.target.value == "Expense") setRepeats(0);
                         setChosenEvent(e.target.value);
                       }}
                     />
@@ -168,13 +170,13 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
           <div className="col-xl-3 col-6" key="col2">
             {chosenEvent == "Recast" ? null : (
               <>
-                <label>{chosenEvent == "Over-pay" ? "Amount" : chosenEvent == "Inflation" ? "Increase " : "New rate"}</label>
+                <label>{chosenEvent == "Over-pay" || chosenEvent == "Expense" ? "Amount" : chosenEvent == "Inflation" ? "Increase " : "New rate"}</label>
                 <div className="input-group ">
                   <input
                     type="text"
                     className="form-control px-1"
                     value={
-                      chosenEvent == "Over-pay"
+                      chosenEvent == "Over-pay" || chosenEvent == "Expense"
                         ? new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(
                             newChange
                           )
@@ -186,15 +188,15 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
                       setNewChange(stripped);
                     }}
                   />
-                  {chosenEvent == "Over-pay" ? null : <span className="input-group-text">%</span>}
+                  {chosenEvent == "Over-pay" || chosenEvent == "Expense" ? null : <span className="input-group-text">%</span>}
                 </div>
               </>
             )}
           </div>
 
-          {chosenEvent == "Inflation" ? null : (
+          {chosenEvent == "Inflation" || chosenEvent == "Expense" ? null : (
             <div className="col-xl-3 col-6">
-              <label>Cost</label>
+              <label>Fee</label>
               <div className="input-group ">
                 <input
                   type="text"
@@ -259,7 +261,7 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
               </div>
             </div>
           </div>
-        ) : chosenEvent == "Over-pay" || chosenEvent == "Inflation" ? (
+        ) : chosenEvent == "Over-pay" || chosenEvent == "Inflation" || chosenEvent == "Expense" ? (
           <div className="row">
             <div className="col">
               <label>{chosenEvent == "Inflation" ? "Repeats? (typically annually)" : "Repeating Payment?"}</label>
@@ -318,7 +320,7 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
                     <th scope="col">#</th>
                     <th scope="col">Event</th>
                     <th scope="col">Date</th>
-                    <th scope="col">Cost</th>
+                    <th scope="col">Fee</th>
                     <th scope="col">Change</th>
                     <th scope="col"></th>
                   </tr>
@@ -338,7 +340,13 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
                               maximumFractionDigits: 0,
                             }).format(x["cost"])}
                           </td>
-                          <td>{x["event"] == "Refinance" ? `${x["change"]}%` : x["event"] == "Over-pay" ? cashFormat(x["change"]) : x["change"]}</td>
+                          <td>
+                            {x["event"] == "Refinance"
+                              ? `${x["change"]}%`
+                              : x["event"] == "Over-pay" || x["event"] == "Expense"
+                                ? cashFormat(x["change"])
+                                : x["change"]}
+                          </td>
                           <td key="pen">
                             <span
                               style={{ cursor: "pointer" }}
@@ -383,7 +391,7 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
                               New loan length: {x["newLength"] == "" ? <em>unchanged</em> : `${x["newLength"]}yr`}
                             </td>
                           </tr>
-                        ) : x["event"] == "Over-pay" && x["repeats"] != 0 ? (
+                        ) : (x["event"] == "Over-pay" || x["event"] == "Expense") && x["repeats"] != 0 ? (
                           <tr key={"overpayRep"}>
                             <td></td>
                             <td colSpan={5} className="py-1">

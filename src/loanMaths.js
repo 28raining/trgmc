@@ -174,6 +174,7 @@ export function loanMaths(
   var repeatingOverpayments = new Array(numYears * 12 * 2).fill(0);
   var inflationScaler = new Array(numYears * 12 * 2).fill(1.0); //make this (2x) longer so if they refinance and make the load longer the site still works
   var refinanceEvents = new Array(numYears * 12).fill(null);
+  var fees = new Array(numYears * 12).fill(0);
   // var loanCopy = { ...loanData };
   var totalPrincipal = 0;
   var totalInterest = 0;
@@ -192,10 +193,19 @@ export function loanMaths(
     //Check if any events happening this month
     while (loanEvent.length > eventIndex && thisMonth == loanEvent[eventIndex]["date"]) {
       if (loanEvent[eventIndex]["event"] == "Over-pay") {
-        remaining[i] = remaining[i] + parseFloat(loanEvent[eventIndex]["cost"]);
-        extraPayments += parseFloat(loanEvent[eventIndex].cost);
+        fees[i] = fees[i] + parseFloat(loanEvent[eventIndex]["cost"]);
+        // extraPayments += parseFloat(loanEvent[eventIndex].cost);
         repeatingOverpayments = handleRepeatPayments(
           repeatingOverpayments,
+          loanEvent[eventIndex]["repeats"],
+          (arr, i) => {
+            arr[Math.floor(i)] += parseFloat(loanEvent[eventIndex]["change"]);
+          },
+          i
+        );
+      } else if (loanEvent[eventIndex]["event"] == "Expense") {
+        fees = handleRepeatPayments(
+          fees,
           loanEvent[eventIndex]["repeats"],
           (arr, i) => {
             arr[Math.floor(i)] += parseFloat(loanEvent[eventIndex]["change"]);
@@ -205,8 +215,8 @@ export function loanMaths(
       } else if (loanEvent[eventIndex]["event"] == "Refinance") {
         interestRate = Number(loanEvent[eventIndex].change);
         rate = interestRate / 100;
-        remaining[i] = remaining[i] + parseFloat(loanEvent[eventIndex].cost);
-        extraPayments += parseFloat(loanEvent[eventIndex].cost);
+        fees[i] = fees[i] + parseFloat(loanEvent[eventIndex].cost);
+        // extraPayments += parseFloat(loanEvent[eventIndex].cost);
         if (loanEvent[eventIndex]["newLength"] != 0) numMonths = i + loanEvent[eventIndex]["newLength"] * 12;
         loanData = loanCalc(numMonths - i, interestRate, remaining[i], "homeVal", null, 0, 0, monthlyExtraPercent, monthlyExtraFee, PMI_int, PMI_fixed);
         refinanceEvents[i] = {
@@ -215,8 +225,8 @@ export function loanMaths(
         };
       } else if (loanEvent[eventIndex]["event"] == "Recast") {
         // rate = loanEvent[eventIndex].change/100;
-        remaining[i] = remaining[i] + parseFloat(loanEvent[eventIndex].cost);
-        extraPayments += parseFloat(loanEvent[eventIndex].cost);
+        fees[i] = fees[i] + parseFloat(loanEvent[eventIndex].cost);
+        // extraPayments += parseFloat(loanEvent[eventIndex].cost);
         loanData = loanCalc(numMonths - i, interestRate, remaining[i], "homeVal", null, 0, 0, monthlyExtraPercent, monthlyExtraFee, PMI_int, PMI_fixed);
       } else if (loanEvent[eventIndex]["event"] == "Inflation") {
         inflationScaler = handleRepeatPayments(
@@ -255,6 +265,7 @@ export function loanMaths(
     remaining[i + 1] -= overPay;
     extraPayments += overPay;
 
+    if (i == 0) monthlyPaymentPerEvent[0] = { loan: loanData.monthly, extra: loanData.monthlyExta }; //in case the event is on day 1 of the loan
     monthlyPaymentPerEvent[eventIndex] = { loan: loanData.monthly, extra: loanData.monthlyExta };
 
     if (remaining[i + 1] <= 0) {
@@ -271,7 +282,7 @@ export function loanMaths(
     }
   }
 
-  // console.log('ex', extraPayments)
+  console.log("extraPayments", extraPayments);
 
   // console.log(i, numMonths, monthlyPayment.length,[...monthlyPayment]);
   monthlyPayment.splice(i + 1);
@@ -295,6 +306,7 @@ export function loanMaths(
     interestPlusPrincipal: originalInterestPlusPrincipal,
     homeVal: originalHomeVal,
     extraPayments: extraPayments,
+    totalFees: fees.reduce((a, b) => a + b, 0),
     monthlyPaymentPerEvent: monthlyPaymentPerEvent,
     totalPrincipal: totalPrincipal,
     totalInterest: totalInterest,
