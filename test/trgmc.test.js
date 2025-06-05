@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 import { loanMaths } from "../src/loanMaths.js";
-import { res1, res2, res3, res4, res5 , res6} from "./exampleResults.js";
+import { res1, res2, res3, res4, res5 , res6, res7} from "./exampleResults.js";
 import { xlsx_1 } from "./xlsxGenInput.js";
 import { writeFileSync, unlinkSync } from "fs";
 import { utils, writeFile, readFile } from "xlsx-js-style"; // Importing xlsx-style for styling support
@@ -108,6 +108,24 @@ var in_6 = {
   PMI_fixed: 0,
 };
 
+//case 7 - adding appraisal value
+var in_7 = {
+  PMI: 0,
+  PMI_fixed: 200,
+  chosenInput: "homeVal",
+  downPay: 0.1,
+  interestRate: 5,
+  loanAmount: 450000,
+  loanEvent: [],
+  monthlyExtraFee: 0,
+  monthlyExtraPercent: 0,
+  monthlyPaymentInput: 0,
+  numYears: 3,
+  startDate: 1736035200000,
+  userSetDownPercent: true,
+  appraisal: 410000
+};
+
 //convert from object input to ordered input
 function runLoanMaths(o) {
   return loanMaths(
@@ -123,7 +141,8 @@ function runLoanMaths(o) {
     o.monthlyExtraFee,
     o.startDate,
     o.PMI,
-    o.PMI_fixed
+    o.PMI_fixed,
+    o.appraisal
   );
 }
 
@@ -169,5 +188,6 @@ testScenario("loanMaths: 3", in_3, res3);
 testScenario("loanMaths: 4", in_4, res4);
 testScenario("loanMaths: 5", in_5, res5);
 testScenario("loanMaths: 6", in_6, res6);
+testScenario("loanMaths: 7", in_7, res7);
 //had trouble testing xlsx generation because the sheets contain formulas, which get corrupted in sheet read
 

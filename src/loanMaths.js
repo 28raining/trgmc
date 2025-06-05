@@ -129,8 +129,11 @@ export function loanMaths(
   monthlyExtraFee,
   startDate,
   PMI,
-  PMI_fixed
+  PMI_fixed,
+  appraisal
 ) {
+  const appraisalIsSet = appraisal !== undefined && appraisal !== null && appraisal !== "" && appraisal !== 0;
+  // console.log(appraisal,'appraisal', appraisalIsSet, PMI, PMI_fixed);
   if (!isNumber(numYears) || numYears == 0) numYears = 1; //fix issue when loan length is blank
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   var stDate = new Date(Number(startDate));
@@ -244,8 +247,8 @@ export function loanMaths(
 
     //handle case when PMI payments stop due to <80% L2V. This is like an event causing loan re-calculation
     if (PMI_int > 0 || PMI_fixed > 0) {
-      if (remaining[i] <= 0.8 * originalHomeVal) {
-        // console.log("stopping PMI at month", i)
+      if ((!appraisalIsSet && remaining[i] <= 0.8 * originalHomeVal) || (appraisalIsSet && remaining[i] <= 0.8 * appraisal)) {
+        // console.log("stopping PMI at month", i, appraisalIsSet)
         PMI_int = 0;
         PMI_fixed = 0;
         loanData = loanCalc(numMonths - i, interestRate, remaining[i], "homeVal", null, 0, 0, monthlyExtraPercent, monthlyExtraFee, PMI_int, PMI_fixed);
@@ -281,10 +284,8 @@ export function loanMaths(
       break;
     }
   }
+  // console.log("monthlyPMI", monthlyPMI)
 
-  console.log("extraPayments", extraPayments);
-
-  // console.log(i, numMonths, monthlyPayment.length,[...monthlyPayment]);
   monthlyPayment.splice(i + 1);
   monthlyInterest.splice(i + 1);
   monthlyPrincipal.splice(i + 1);

@@ -66,7 +66,8 @@ function runCalculations(userInput, loanEvent, chosenInput, userSetDownPercent) 
     parseFloat(monthlyExtraFee),
     userInput["startDate"],
     PMI_percent,
-    PMI_fixed
+    PMI_fixed,
+    userInput["appraisal"]
   );
 
   const homeVal = parseFloat(loanRes["homeVal"]);
@@ -100,6 +101,7 @@ function runCalculations(userInput, loanEvent, chosenInput, userSetDownPercent) 
   displayState["propertyTax"] = userInput["propertyTax"];
   displayState["hoa"] = userInput["hoa"];
   displayState["pmi"] = userInput["pmi"];
+  displayState["appraisal"] = userInput["appraisal"];
   displayState["utilities"] = userInput["utilities"];
   displayState["insurance"] = userInput["insurance"];
   displayState["propertyTaxUnit"] = userInput["propertyTaxUnit"];
@@ -169,6 +171,7 @@ const initialState = {
   utilitiesUnit: 1,
   insuranceUnit: 0,
   startDate: coarseDate,
+  appraisal: 0,
 };
 const searchParams = new URLSearchParams(window.location.search);
 const initialOverride = {};
@@ -284,6 +287,8 @@ function App() {
     } else if (field == "insuranceUnit") {
       newUserInput.insuranceUnit = value;
       if (newChosenInput == "homeVal") newFlash["loanAmount"] = !newFlash["loanAmount"];
+    } else if (field == "appraisal") {
+      newUserInput.appraisal = value;
     } else if (field == "hoa") {
       newUserInput.hoa = value;
       if (newChosenInput == "homeVal") newFlash["loanAmount"] = !newFlash["loanAmount"];
@@ -310,7 +315,7 @@ function App() {
       newUserInput.startDate = value;
     } else if (field == "reset") {
       newChosenInput = "homeVal";
-      newUserInput = initialState;
+      newUserInput = { ...initialState };
       newUserSetDownPercent = true;
       newLoanEvent = [];
     }
@@ -327,7 +332,7 @@ function App() {
     for (const i in newUserInput) {
       newValid[i] = null;
       if (!isNumber(newUserInput[i])) {
-        newValid[i] = "Must be a valid number";
+        if (i != "appraisal") newValid[i] = "Must be a valid number";
       } else {
         var inputNumber = parseFloat(newUserInput[i]);
         if (i == "homeVal" || i == "loanAmount" || i == "monthlyPayment") {
@@ -382,7 +387,13 @@ function App() {
     }
 
     //check if PMI is valid (has to go post-math)
-    if (parseFloat(newDisplayState["downPayPercent"]) >= 20 && parseFloat(newDisplayState["pmi"]) > 0) {
+    const appraisalIsSet =
+      newUserInput.appraisal !== undefined && newUserInput.appraisal !== null && newUserInput.appraisal !== "" && newUserInput.appraisal !== 0;
+
+    if (
+      (parseFloat(newDisplayState["pmi"]) > 0 && !appraisalIsSet && parseFloat(newDisplayState["downPayPercent"]) >= 20) ||
+      (appraisalIsSet && parseFloat(newDisplayState["downPayCash"]) >= newUserInput.appraisal * 0.2)
+    ) {
       newValid["pmi"] = "PMI is required while the loan amount is greater than 80% of the property value. Reduce down payment?";
     }
 

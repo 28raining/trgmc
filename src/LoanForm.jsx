@@ -15,6 +15,17 @@ function ValidFbComp({ x }) {
   }
 }
 
+function FbComp({ x }) {
+  if (x === null) return null;
+  else {
+    return (
+      <div className="valid-feedback" style={{ display: "initial" }}>
+        {x}
+      </div>
+    );
+  }
+}
+
 function LoanForm({ displayState, flash, updateUserInput, valid }) {
   const [show, setShow] = useState(false);
   const feeOptions = ["$ / year", "$ / month", "% / year", "% / month"];
@@ -410,6 +421,24 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                 <ValidFbComp x={valid["utilities"]} />
               </div>
             </div>
+            {displayState["pmi"] != 0 && (
+              <div className="col-xxl-8 col-sm-6 col-12">
+                <label>Appraisal Value </label>
+                <div className="input-group mb-1">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    className="form-control"
+                    value={displayState["appraisal"] == 0 ? "" : cashFormat(displayState["appraisal"])}
+                    placeholder="Defaults to Home Value"
+                    onChange={(e) => {
+                      updateIfChanged(displayState["appraisal"], e.target.value, "appraisal");
+                    }}
+                  />
+                  <FbComp x={"PMI will cease when equity reaches 20% of appraisal"} />
+                </div>
+              </div>
+            )}
             <div className="col-xxl-4 col-sm-6 col-12 d-flex align-items-center justify-content-center">
               <button
                 type="button"

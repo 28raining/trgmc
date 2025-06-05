@@ -1,7 +1,8 @@
 
 # Todo
 - unit testing on spreadsheet generation - probably don't save it to a file, just save it to binary
-
+- add appraisal
+- clicking trash doesn't reset loan length?
 
 ## Later
 - add country picker
