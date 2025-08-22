@@ -28,7 +28,8 @@ function loanCalc(
   monthlyExtraPercent,
   monthlyExtraFee,
   PMI,
-  PMI_fixed
+  PMI_fixed,
+  interestOnly
 ) {
   // console.log('loanCalc', numMonths, interestRate, loanAmount, chosenInput, monthlyPaymentInput, downPayCash, monthlyExtraPercent, monthlyExtraFee)
   // console.log("chosenInput", chosenInput)
@@ -41,23 +42,33 @@ function loanCalc(
 
   if (chosenInput == "monthlyPayment") {
     var actualMonthly = monthlyPaymentInput - monthlyExtraFee - PMI_fixed;
-    interestPlusPrincipal = numMonths * actualMonthly;
-    if (newInterest == 0) {
-      loanAmount_new = interestPlusPrincipal;
-      homeVal = userSetDownPercent ? loanAmount_new / (1 - downPay) : loanAmount_new + downPay;
+
+    if (interestOnly) {
+      homeVal = actualMonthly / (newInterest / 12 + T); //home value * (monthly_interest + monthly_tax) = actualMonthly
+      interestPlusPrincipal = (homeVal * newInterest) / 12;
+      if (userSetDownPercent) loanAmount_new = homeVal * (1 - downPay);
+      else loanAmount_new = homeVal - downPay;
     } else {
-      if (userSetDownPercent) {
-        // console.log('bp8',actualMonthly,T,ZPMI,downPay)
-        homeVal = actualMonthly / (T + 1 / Z - downPay / Z);
-        // homeVal = actualMonthly / (T + 1/Z) / (1 - downPay / (T * Z + 1));
-        loanAmount_new = homeVal * (1 - downPay);
+      interestPlusPrincipal = numMonths * actualMonthly;
+      if (newInterest == 0) {
+        //if user wants a 0% interest loan...
+        loanAmount_new = interestPlusPrincipal;
+        homeVal = userSetDownPercent ? loanAmount_new / (1 - downPay) : loanAmount_new + downPay;
       } else {
-        // console.log('bp9',actualMonthly,T,ZPMI,downPay)
-        homeVal = (actualMonthly + downPay * (1 / Z)) / (1 / Z + T);
-        loanAmount_new = homeVal - downPay;
+        if (userSetDownPercent) {
+          // console.log('bp8',actualMonthly,T,ZPMI,downPay)
+          homeVal = actualMonthly / (T + 1 / Z - downPay / Z);
+          // homeVal = actualMonthly / (T + 1/Z) / (1 - downPay / (T * Z + 1));
+          loanAmount_new = homeVal * (1 - downPay);
+        } else {
+          // console.log('bp9',actualMonthly,T,ZPMI,downPay)
+          homeVal = (actualMonthly + downPay * (1 / Z)) / (1 / Z + T);
+          loanAmount_new = homeVal - downPay;
+        }
       }
-      monthlyTax = homeVal * T;
     }
+    monthlyTax = homeVal * T; //FIXME - I moved this down one line, test it didn't break anything
+    // monthly = actualMonthly - monthlyTax;
     return {
       monthly: actualMonthly - monthlyTax,
       interestPlusPrincipal: interestPlusPrincipal,
@@ -67,20 +78,21 @@ function loanCalc(
     };
   } else {
     var monthly;
-    totalRepay = loanAmount * interestScalar;
-    // console.log("bpd", totalRepay, loanAmount, Z)
-    if (interestRate == 0) {
-      monthly = totalRepay / numMonths;
-      interestPlusPrincipal = loanAmount;
-    } else {
-      monthly = loanAmount / Z;
-      interestPlusPrincipal = monthly * numMonths;
-    }
     homeVal = userSetDownPercent ? loanAmount / (1 - downPay) : loanAmount + downPay;
     monthlyTax = T * homeVal;
-    // console.log('bp85', homeVal)
-
-    // console.log(interestPlusPrincipal);
+    if (interestOnly) {
+      monthly = (loanAmount * newInterest) / 12;
+      interestPlusPrincipal = loanAmount;
+    } else {
+      totalRepay = loanAmount * interestScalar;
+      if (interestRate == 0) {
+        monthly = totalRepay / numMonths;
+        interestPlusPrincipal = loanAmount;
+      } else {
+        monthly = loanAmount / Z;
+        interestPlusPrincipal = monthly * numMonths;
+      }
+    }
     return {
       monthly: monthly,
       interestPlusPrincipal: interestPlusPrincipal,
@@ -130,7 +142,8 @@ export function loanMaths(
   startDate,
   PMI,
   PMI_fixed,
-  appraisal
+  appraisal,
+  interestOnly
 ) {
   const appraisalIsSet = appraisal !== undefined && appraisal !== null && appraisal !== "" && appraisal !== 0;
   // console.log(appraisal,'appraisal', appraisalIsSet, PMI, PMI_fixed);
@@ -161,7 +174,8 @@ export function loanMaths(
     monthlyExtraPercent,
     monthlyExtraFee,
     PMI_int,
-    PMI_fixed
+    PMI_fixed,
+    interestOnly
   );
 
   var originalLoanAmount = loanData["loanAmount"];
@@ -185,8 +199,10 @@ export function loanMaths(
   remaining[0] = loanData["loanAmount"];
 
   var rate = interestRate / 100;
+  var lastMonth = 0;
 
   for (var i = 0; i < numMonths; i++) {
+    lastMonth=i;
     //Create a month label, i.e May 24
     monthIndex = (start + i) % 12;
     if (monthIndex == 0 && i > 0) year = year + 1;
@@ -221,16 +237,39 @@ export function loanMaths(
         fees[i] = fees[i] + parseFloat(loanEvent[eventIndex].cost);
         // extraPayments += parseFloat(loanEvent[eventIndex].cost);
         if (loanEvent[eventIndex]["newLength"] != 0) numMonths = i + loanEvent[eventIndex]["newLength"] * 12;
-        loanData = loanCalc(numMonths - i, interestRate, remaining[i], "homeVal", null, 0, 0, monthlyExtraPercent, monthlyExtraFee, PMI_int, PMI_fixed);
-        refinanceEvents[i] = {
-          interestRate: rate,
-          newLength: loanEvent[eventIndex]["newLength"],
-        };
+        loanData = loanCalc(
+          numMonths - i,
+          interestRate,
+          remaining[i],
+          "homeVal",
+          null,
+          0,
+          0,
+          monthlyExtraPercent,
+          monthlyExtraFee,
+          PMI_int,
+          PMI_fixed,
+          interestOnly
+        );
+        refinanceEvents[i] = { interestRate: rate, newLength: loanEvent[eventIndex]["newLength"] };
       } else if (loanEvent[eventIndex]["event"] == "Recast") {
         // rate = loanEvent[eventIndex].change/100;
         fees[i] = fees[i] + parseFloat(loanEvent[eventIndex].cost);
         // extraPayments += parseFloat(loanEvent[eventIndex].cost);
-        loanData = loanCalc(numMonths - i, interestRate, remaining[i], "homeVal", null, 0, 0, monthlyExtraPercent, monthlyExtraFee, PMI_int, PMI_fixed);
+        loanData = loanCalc(
+          numMonths - i,
+          interestRate,
+          remaining[i],
+          "homeVal",
+          null,
+          0,
+          0,
+          monthlyExtraPercent,
+          monthlyExtraFee,
+          PMI_int,
+          PMI_fixed,
+          interestOnly
+        );
       } else if (loanEvent[eventIndex]["event"] == "Inflation") {
         inflationScaler = handleRepeatPayments(
           inflationScaler,
@@ -251,7 +290,20 @@ export function loanMaths(
         // console.log("stopping PMI at month", i, appraisalIsSet)
         PMI_int = 0;
         PMI_fixed = 0;
-        loanData = loanCalc(numMonths - i, interestRate, remaining[i], "homeVal", null, 0, 0, monthlyExtraPercent, monthlyExtraFee, PMI_int, PMI_fixed);
+        loanData = loanCalc(
+          numMonths - i,
+          interestRate,
+          remaining[i],
+          "homeVal",
+          null,
+          0,
+          0,
+          monthlyExtraPercent,
+          monthlyExtraFee,
+          PMI_int,
+          PMI_fixed,
+          interestOnly
+        );
       }
     }
 
@@ -259,7 +311,7 @@ export function loanMaths(
     equity[i] = `${Math.round((1000 * (originalHomeVal - remaining[i])) / originalHomeVal) / 10}%`;
     monthlyPMI[i] = PMI_fixed > 0 ? PMI_fixed : (remaining[i] * PMI_int) / 12;
     monthlyInterest[i] = (remaining[i] * rate) / 12;
-    monthlyPrincipal[i] = PMI_int > 0 ? loanData.monthly - monthlyInterest[i] - monthlyPMI[i] : loanData.monthly - monthlyInterest[i];
+    monthlyPrincipal[i] = interestOnly ? 0 : PMI_int > 0 ? loanData.monthly - monthlyInterest[i] - monthlyPMI[i] : loanData.monthly - monthlyInterest[i];
     monthlyPayment[i] = loanData.monthly + loanData.monthlyExta;
     remaining[i + 1] = remaining[i] - monthlyPrincipal[i];
 
@@ -286,18 +338,18 @@ export function loanMaths(
   }
   // console.log("monthlyPMI", monthlyPMI)
 
-  monthlyPayment.splice(i + 1);
-  monthlyInterest.splice(i + 1);
-  monthlyPrincipal.splice(i + 1);
-  remaining.splice(i + 1);
-  monthlyPMI.splice(i + 1);
-  equity.splice(i + 1);
-  inflationScaler.splice(i + 1);
-  loanMonths.splice(i + 1);
-  repeatingOverpayments.splice(i + 1);
+  monthlyPayment.splice(lastMonth + 1);
+  monthlyInterest.splice(lastMonth + 1);
+  monthlyPrincipal.splice(lastMonth + 1);
+  remaining.splice(lastMonth + 1);
+  monthlyPMI.splice(lastMonth + 1);
+  equity.splice(lastMonth + 1);
+  inflationScaler.splice(lastMonth + 1);
+  loanMonths.splice(lastMonth + 1);
+  repeatingOverpayments.splice(lastMonth + 1);
   return {
     loanAmount: originalLoanAmount,
-    endMonth: i,
+    endMonth: lastMonth,
     loanMonths: loanMonths,
     monthlyInterest: monthlyInterest,
     monthlyPayment: monthlyPayment,

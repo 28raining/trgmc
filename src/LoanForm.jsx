@@ -93,7 +93,6 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
     updateUserInput("startDate", newDate.getTime());
   }
 
-  // console.log("displayState", displayState["monthlyPayment"], cashFormat(displayState["monthlyPayment"]));
   return (
     <div>
       <div className="row shadow-sm border rounded mb-3 py-2 mx-0" style={{ backgroundColor: "white" }}>
@@ -139,109 +138,98 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
       </div>
       <div className="row shadow-sm border rounded mb-3 py-2 mx-0" style={{ backgroundColor: "white" }}>
         <div className="col-12">
-          <div className="row">
-            <div className="col-12">
-              <label>Down Payment</label>
+          <label>Down Payment</label>
+          <div className="input-group mb-1">
+            <input
+              type="text"
+              inputMode="numeric"
+              className={inputClass["downPayCash"]}
+              // className={userSetDownPercent ? (flash["downPay"] ? "form-control anim1" : "form-control anim2") : "form-control"}
+              style={{ width: "70px" }}
+              value={cashFormat(displayState["downPayCash"])}
+              onChange={(e) => {
+                updateIfChanged(displayState["downPayCash"], e.target.value, "downPayCash");
 
-              <div className="input-group mb-1">
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  className={inputClass["downPayCash"]}
-                  // className={userSetDownPercent ? (flash["downPay"] ? "form-control anim1" : "form-control anim2") : "form-control"}
-                  style={{ width: "70px" }}
-                  value={cashFormat(displayState["downPayCash"])}
-                  onChange={(e) => {
-                    updateIfChanged(displayState["downPayCash"], e.target.value, "downPayCash");
+                // updateUserInput("downPayCash", e.target.value.replace(/[^0-9.]+/g, ""))
+                // updateDownPayCash(e.target.value.replace(/[^0-9.]+/g, ""));
+              }}
+            />
+            <span className="input-group-text">or</span>
+            <input
+              type="text"
+              inputMode="numeric"
+              className={inputClass["downPayPercent"]}
+              // className={userSetDownPercent ? "form-control" : flash["downPay"] ? "form-control anim1" : "form-control anim2"}
+              value={displayState["downPayPercent"]}
+              onChange={(e) => {
+                updateIfChanged(displayState["downPayPercent"], e.target.value, "downPayPercent");
+                // updateUserInput("downPayPercent", e.target.value)
 
-                    // updateUserInput("downPayCash", e.target.value.replace(/[^0-9.]+/g, ""))
-                    // updateDownPayCash(e.target.value.replace(/[^0-9.]+/g, ""));
-                  }}
-                />
-                <span className="input-group-text">or</span>
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  className={inputClass["downPayPercent"]}
-                  // className={userSetDownPercent ? "form-control" : flash["downPay"] ? "form-control anim1" : "form-control anim2"}
-                  value={displayState["downPayPercent"]}
-                  onChange={(e) => {
-                    updateIfChanged(displayState["downPayPercent"], e.target.value, "downPayPercent");
-                    // updateUserInput("downPayPercent", e.target.value)
-
-                    // updateDownPayPercent(e.target.value);
-                  }}
-                />
-                <span className="input-group-text">%</span>
-              </div>
-            </div>
+                // updateDownPayPercent(e.target.value);
+              }}
+            />
+            <span className="input-group-text">%</span>
           </div>
-          <div className="row">
-            <div className="col-xl-4 col-12">
-              <label>Interest Rate</label>
-              <div className="input-group mb-1">
-                <input
-                  type="text"
-                  // className="form-control"
-                  className={inputClass["interestRate"]}
-                  value={displayState["interestRate"]}
-                  onChange={(e) => updateIfChanged(displayState["interestRate"], e.target.value, "interestRate")}
-                />
-                <span className="input-group-text">%</span>
-              </div>
-            </div>
-            <div className="col-xl-4 col-12">
-              <label>Loan Length</label>
-              <div className="input-group mb-1">
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  className={inputClass["loanLength"]}
-                  value={displayState["loanLength"]}
-                  onChange={(e) => {
-                    updateIfChanged(displayState["loanLength"], e.target.value, "loanLength");
-                    // updateUserInput("loanLength", e.target.value.replace(/[^0-9.]+/g, ""));
-                  }}
-                />
-                <span className="input-group-text">years</span>
-              </div>
-              <ValidFbComp x={valid["loanLength"]} />
-            </div>
+        </div>
+        <div className="col-xl-4 col-12">
+          <label>Interest Rate</label>
+          <div className="input-group mb-1">
+            <input
+              type="text"
+              // className="form-control"
+              className={inputClass["interestRate"]}
+              value={displayState["interestRate"]}
+              onChange={(e) => updateIfChanged(displayState["interestRate"], e.target.value, "interestRate")}
+            />
+            <span className="input-group-text">%</span>
+          </div>
+        </div>
+        <div className="col-xl-4 col-12">
+          <label>Loan Length</label>
+          <div className="input-group mb-1">
+            <input
+              type="text"
+              inputMode="numeric"
+              className={inputClass["loanLength"]}
+              value={displayState["loanLength"]}
+              onChange={(e) => {
+                updateIfChanged(displayState["loanLength"], e.target.value, "loanLength");
+                // updateUserInput("loanLength", e.target.value.replace(/[^0-9.]+/g, ""));
+              }}
+            />
+            <span className="input-group-text">years</span>
+          </div>
+          <ValidFbComp x={valid["loanLength"]} />
+        </div>
 
-            <div className="col-xl-4 col-12">
-              <label>Start Date</label>
-              <output type="text" className="form-control" value="may" onClick={() => setShow(true)}>
-                {new Intl.DateTimeFormat("en-US", startDateOptions).format(displayState["startDate"])}
-              </output>
+        <div className="col-xl-4 col-12">
+          <label>Start Date</label>
+          <output type="text" className="form-control" value="may" onClick={() => setShow(true)}>
+            {new Intl.DateTimeFormat("en-US", startDateOptions).format(displayState["startDate"])}
+          </output>
 
-              <Modal show={show} onHide={() => setShow(false)}>
-                <Modal.Header closeButton>
-                  <Modal.Title>Chose the starting month</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                  <Calendar maxDetail="year" onClickMonth={(v) => calToMonth(v)} />
-                </Modal.Body>
-              </Modal>
-            </div>
-            {/* <div className="col-xl-6 col-12">
-              <label>Loan Amount</label>
-
-              <input
-                type="text"
-                inputMode="numeric"
-                className={inputClass["loanAmount"]}
-                // className={flash["loanAmount"] ? "form-control anim1" : "form-control anim2"}
-                value={cashFormat(displayState["loanAmount"])}
-                onChange={
-                  (e) =>
-                    // console.log("triggered loanAmount Change");
-                    updateIfChanged(displayState["loanAmount"], e.target.value, "loanAmount")
-                  // updateUserInput("loanAmount", e.target.value.replace(/[^0-9.]+/g, ""))
-
-                  // setLoanAmount(e.target.value.replace(/[^0-9.]+/g, ""));
-                }
-              />
-            </div> */}
+          <Modal show={show} onHide={() => setShow(false)}>
+            <Modal.Header closeButton>
+              <Modal.Title>Chose the starting month</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <Calendar maxDetail="year" onClickMonth={(v) => calToMonth(v)} />
+            </Modal.Body>
+          </Modal>
+        </div>
+        <div className="col-12">
+          <div className="form-check mt-2">
+            <input
+              className="form-check-input"
+              type="checkbox"
+              checked={displayState["interestOnly"]}
+              onChange={(e) => {
+                updateUserInput("interestOnly", e.target.checked);
+              }}
+            />
+            <label className="form-check-label">
+              Interest-Only Loan
+            </label>
           </div>
         </div>
       </div>

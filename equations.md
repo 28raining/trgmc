@@ -1,7 +1,5 @@
 ## Monthly Loan Repayment
 
-FIXME -> ZPMI like this does not work - it is not a real loan there is no principal
-
 Every month the amount you owe the bank increases because of interest, and decreases because of your monthly payments
 
 interest rate, $i$, is for example = 5  

@@ -67,7 +67,8 @@ function runCalculations(userInput, loanEvent, chosenInput, userSetDownPercent) 
     userInput["startDate"],
     PMI_percent,
     PMI_fixed,
-    userInput["appraisal"]
+    userInput["appraisal"],
+    userInput["interestOnly"]
   );
 
   const homeVal = parseFloat(loanRes["homeVal"]);
@@ -105,6 +106,7 @@ function runCalculations(userInput, loanEvent, chosenInput, userSetDownPercent) 
   displayState["utilities"] = userInput["utilities"];
   displayState["insurance"] = userInput["insurance"];
   displayState["propertyTaxUnit"] = userInput["propertyTaxUnit"];
+  displayState["interestOnly"] = userInput["interestOnly"];
   displayState["hoaUnit"] = userInput["hoaUnit"];
   displayState["pmiUnit"] = userInput["pmiUnit"];
   displayState["utilitiesUnit"] = userInput["utilitiesUnit"];
@@ -166,6 +168,7 @@ const initialState = {
   utilities: "0",
   insurance: "0",
   propertyTaxUnit: 2,
+  interestOnly: false,
   hoaUnit: 1,
   pmiUnit: 4,
   utilitiesUnit: 1,
@@ -180,6 +183,8 @@ var gotStuffFromURL = false;
 for (const [key, value] of searchParams.entries()) {
   gotStuffFromURL = true;
   if (key == "events") initialEvents = loanEventDecoder(value, initialEvents);
+  else if (value == "true") initialOverride[key] = true;
+  else if (value == "false") initialOverride[key] = false;
   else initialOverride[key] = value;
 }
 var initialUserSetDownPercent = true;
@@ -310,6 +315,8 @@ function App() {
       if (newChosenInput == "homeVal") newFlash["loanAmount"] = !newFlash["loanAmount"];
     } else if (field == "propertyTaxUnit") {
       newUserInput.propertyTaxUnit = value;
+    } else if (field == "interestOnly") {
+      newUserInput.interestOnly = value;
       if (newChosenInput == "homeVal") newFlash["loanAmount"] = !newFlash["loanAmount"];
     } else if (field == "startDate") {
       newUserInput.startDate = value;
@@ -450,7 +457,7 @@ function App() {
           <Toast.Body>Some previous data was loaded from your URL. Click reset (trash) at the top right to start from scratch</Toast.Body>
         </Toast>
       </ToastContainer>
-      <nav className="navbar bg-body-tertiary">
+      <nav className="navbar bg-white shadow-sm">
         <div className="container-xxl">
           <span className="navbar-brand titleSize">
             <Bank height="24" className="hideLogo me-2 align-text-bottom " />
@@ -601,7 +608,9 @@ function App() {
           <div className="col-12">{!import.meta.env.DEV && <Comments website-id={11189} page-id="" />}</div>
         </div>
       </div>
-      <footer className="bg-body-tertiary">
+      <footer
+        className="bg-white shadow-sm"
+      >
         <div className="container-xxl">
           <div className="row pt-3 px-3 ">
             <div className="col-6 text-start">

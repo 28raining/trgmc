@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 import { loanMaths } from "../src/loanMaths.js";
-import { res1, res2, res3, res4, res5 , res6, res7} from "./exampleResults.js";
+import { res1, res2, res3, res4, res5 , res6, res7, res8} from "./exampleResults.js";
 import { xlsx_1 } from "./xlsxGenInput.js";
 import { writeFileSync, unlinkSync } from "fs";
 import { utils, writeFile, readFile } from "xlsx-js-style"; // Importing xlsx-style for styling support
@@ -126,6 +126,25 @@ var in_7 = {
   appraisal: 410000
 };
 
+//case 8 - interest only
+var in_8 = {
+  PMI: 0,
+  PMI_fixed: 0,
+  chosenInput: "homeVal",
+  downPay: 0.3,
+  interestRate: 5,
+  loanAmount: 450000,
+  loanEvent: [],
+  monthlyExtraFee: 0,
+  monthlyExtraPercent: 0,
+  monthlyPaymentInput: 0,
+  numYears: 4,
+  startDate: 1736035200000,
+  userSetDownPercent: true,
+  appraisal: null,
+  interestOnly: true
+};
+
 //convert from object input to ordered input
 function runLoanMaths(o) {
   return loanMaths(
@@ -142,7 +161,8 @@ function runLoanMaths(o) {
     o.startDate,
     o.PMI,
     o.PMI_fixed,
-    o.appraisal
+    o.appraisal,
+    o.interestOnly,
   );
 }
 
@@ -150,7 +170,7 @@ function testScenario(name, stimulus, expectedResult) {
   test(name, () => {
     var measuredResult = runLoanMaths(stimulus);
     //USE THIS TO CREATE THE TEST PATTERNS
-    if (name == "loanMaths: 3") {
+    if (name == "loanMaths: 8") {
       // writeFileSync("stimulus.json", JSON.stringify(stimulus, null, 2), "utf8");
       // writeFileSync("measuredResult.json", JSON.stringify(measuredResult, null, 2), "utf8");
     }
@@ -189,5 +209,6 @@ testScenario("loanMaths: 4", in_4, res4);
 testScenario("loanMaths: 5", in_5, res5);
 testScenario("loanMaths: 6", in_6, res6);
 testScenario("loanMaths: 7", in_7, res7);
+testScenario("loanMaths: 8", in_8, res8);
 //had trouble testing xlsx generation because the sheets contain formulas, which get corrupted in sheet read
 
