@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 import { loanMaths } from "../src/loanMaths.js";
-import { res1, res2, res3, res4, res5 , res6, res7, res8} from "./exampleResults.js";
+import { res1, res2, res3, res4, res5, res6, res7, res8 } from "./exampleResults.js";
 import { xlsx_1 } from "./xlsxGenInput.js";
 import { writeFileSync, unlinkSync } from "fs";
 import { utils, writeFile, readFile } from "xlsx-js-style"; // Importing xlsx-style for styling support
@@ -123,7 +123,7 @@ var in_7 = {
   numYears: 3,
   startDate: 1736035200000,
   userSetDownPercent: true,
-  appraisal: 410000
+  appraisal: 410000,
 };
 
 //case 8 - interest only
@@ -142,7 +142,7 @@ var in_8 = {
   startDate: 1736035200000,
   userSetDownPercent: true,
   appraisal: null,
-  interestOnly: true
+  interestOnly: true,
 };
 
 //convert from object input to ordered input
@@ -162,7 +162,7 @@ function runLoanMaths(o) {
     o.PMI,
     o.PMI_fixed,
     o.appraisal,
-    o.interestOnly,
+    o.interestOnly
   );
 }
 
@@ -211,4 +211,3 @@ testScenario("loanMaths: 6", in_6, res6);
 testScenario("loanMaths: 7", in_7, res7);
 testScenario("loanMaths: 8", in_8, res8);
 //had trouble testing xlsx generation because the sheets contain formulas, which get corrupted in sheet read
-

@@ -4,7 +4,7 @@ Every month the amount you owe the bank increases because of interest, and decre
 
 interest rate, $i$, is for example = 5  
 Monthly payment towards loan = $M_{loan}$  
-Loan amount = $homeValue - downPayment$   
+Loan amount = $homeValue - downPayment$  
 $$Monthly Interest = 1 + \frac{i}{(12 * 100)}$$
 $$Z = \frac{MonthlyInterest ^ {numberMonths} - 1}{MonthlyInterest ^ {numberMonths} \cdot \frac{i}{(12 * 100)}}$$
 $$M_{loan} = \frac{loanAmount}{Z} = \frac{homeValue - downPayment}{Z}$$
@@ -27,5 +27,6 @@ re-arranging the equation above
 $$homeVal = \frac{monthly + downPayment(\frac{1}{Z})}{T + \frac{1}{Z}}$$
 
 ## What if downPayment is a fixed percentage of homeValue
+
 $$downPayment = homeValue \cdot P$$
 $$monthly = homeValue(T + \frac{1}{Z} - \frac{P}{Z})$$

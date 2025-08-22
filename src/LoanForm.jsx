@@ -227,9 +227,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                 updateUserInput("interestOnly", e.target.checked);
               }}
             />
-            <label className="form-check-label">
-              Interest-Only Loan
-            </label>
+            <label className="form-check-label">Interest-Only Loan</label>
           </div>
         </div>
       </div>

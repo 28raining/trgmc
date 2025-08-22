@@ -608,9 +608,7 @@ function App() {
           <div className="col-12">{!import.meta.env.DEV && <Comments website-id={11189} page-id="" />}</div>
         </div>
       </div>
-      <footer
-        className="bg-white shadow-sm"
-      >
+      <footer className="bg-white shadow-sm">
         <div className="container-xxl">
           <div className="row pt-3 px-3 ">
             <div className="col-6 text-start">

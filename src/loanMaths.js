@@ -202,7 +202,7 @@ export function loanMaths(
   var lastMonth = 0;
 
   for (var i = 0; i < numMonths; i++) {
-    lastMonth=i;
+    lastMonth = i;
     //Create a month label, i.e May 24
     monthIndex = (start + i) % 12;
     if (monthIndex == 0 && i > 0) year = year + 1;
