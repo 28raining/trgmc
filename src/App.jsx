@@ -134,9 +134,9 @@ function loanEventDecoder(e, initialEvents) {
     var items = e.split("_");
     newEvent["event"] = items[0];
     newEvent["date"] = `${items[1].substring(0, 3)} ${items[1].substring(3, 7)}`;
-    newEvent["cost"] = parseInt(items[2]);
+    newEvent["cost"] = parseFloat(items[2]);
     if (items[3] == "-") newEvent["change"] = "-";
-    else newEvent["change"] = parseInt(items[3]);
+    else newEvent["change"] = parseFloat(items[3]); //using parseFloat because new refinance interest is in this field
     if (items[4] == "-") newEvent["newLength"] = "-";
     else newEvent["newLength"] = parseInt(items[4]);
     if (items[5] == "-") newEvent["repeats"] = "-";
