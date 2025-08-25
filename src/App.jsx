@@ -373,11 +373,11 @@ function App() {
         }
         if ((i == "propertyTax" || i == "hoa" || i == "pmi" || i == "utilities" || i == "insurance") && newChosenInput == "monthlyPayment") {
           var unit;
-          if (i=="propertyTax") unit = newUserInput.propertyTaxUnit;
-          else if (i=="hoa") unit = newUserInput.hoaUnit;
-          else if (i=="pmi") unit = newUserInput.pmiUnit;
-          else if (i=="utilities") unit = newUserInput.utilitiesUnit;
-          else if (i=="insurance") unit = newUserInput.insuranceUnit;
+          if (i == "propertyTax") unit = newUserInput.propertyTaxUnit;
+          else if (i == "hoa") unit = newUserInput.hoaUnit;
+          else if (i == "pmi") unit = newUserInput.pmiUnit;
+          else if (i == "utilities") unit = newUserInput.utilitiesUnit;
+          else if (i == "insurance") unit = newUserInput.insuranceUnit;
           if (inputNumber * unitScaler(unit) > newUserInput.monthlyPayment) {
             newValid[i] = "Must be < than monthly payment";
           }
