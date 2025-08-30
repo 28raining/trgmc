@@ -34,6 +34,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
     Number(displayState["hoa"]) > 0 ||
     Number(displayState["insurance"]) > 0 ||
     Number(displayState["pmi"]) ||
+    Number(displayState["maintenance"]) > 0 ||
     Number(displayState["utilities"]) > 0;
 
   //builds class for each input based on flash (whether it changed and should flash) and valid (if user input is valid)
@@ -51,6 +52,7 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
     "hoa",
     "pmi",
     "utilities",
+    "maintenance",
     "insurance",
   ]) {
     inputClass[i] = "form-control";
@@ -96,8 +98,6 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
   return (
     <div>
       <div className="row shadow-sm border rounded mb-3 py-2 mx-0" style={{ backgroundColor: "white" }}>
-        <div className="col-12">
-          <div className="row">
             <div className="col-5 pe-0">
               <label>Home Value</label>
               <input
@@ -133,8 +133,6 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                 </label>
               ) : null}
             </div>
-          </div>
-        </div>
       </div>
       <div className="row shadow-sm border rounded mb-3 py-2 mx-0" style={{ backgroundColor: "white" }}>
         <div className="col-12">
@@ -233,8 +231,30 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
       </div>
 
       <div className="row shadow-sm border rounded py-2 mx-0" style={{ backgroundColor: "white" }}>
-        <div className="col-12 px-0">
-          <div className="row mx-0">
+            <div className="col-12 d-flex align-items-end justify-content-end">
+              <button
+                type="button"
+                className="btn btn-link py-0"
+                onClick={() => {
+                  updateUserInput("propertyTaxUnit", 2);
+                  updateUserInput("hoaUnit", 1);
+                  updateUserInput("pmiUnit", 4);
+                  updateUserInput("utilitiesUnit", 1);
+                  updateUserInput("maintenanceUnit", 1);
+                  updateUserInput("insuranceUnit", 0);
+
+                  updateUserInput("propertyTax", "1.00");
+                  updateUserInput("hoa", "300");
+                  if (displayState["downPayPercent"] < 20) updateUserInput("pmi", "1.5");
+                  else updateUserInput("pmi", "0");
+                  updateUserInput("utilities", "120");
+                  updateUserInput("maintenance", "300");
+                  updateUserInput("insurance", "1000");
+                }}
+              >
+                Populate with estimates
+              </button>
+            </div>
             <div className="col-xxl-4 col-sm-6 col-12">
               <label>Property Tax</label>
               <div className="input-group mb-1">
@@ -407,6 +427,38 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                 <ValidFbComp x={valid["utilities"]} />
               </div>
             </div>
+            <div className="col-xxl-4 col-sm-6 col-12">
+              <label>
+                Maintenance
+              </label>
+              <div className="input-group mb-1">
+                <input
+                  type="text"
+                  className={inputClass["maintenance"]}
+                  value={
+                    displayState["maintenanceUnit"] == 0 || displayState["maintenanceUnit"] == 1 ? cashFormat(displayState["maintenance"]) : displayState["maintenance"]
+                  }
+                  onChange={(e) => {
+                    updateIfChanged(displayState["maintenance"], e.target.value, "maintenance");
+                  }}
+                />
+
+                <select
+                  className="form-select ps-2 grayBackground"
+                  value={displayState["maintenanceUnit"]}
+                  onChange={(e) => {
+                    updateUserInput("maintenanceUnit", e.target.value);
+                  }}
+                >
+                  {feeOptions.map((x, i) => (
+                    <option value={i} key={i}>
+                      {x}
+                    </option>
+                  ))}
+                </select>
+                <ValidFbComp x={valid["maintenance"]} />
+              </div>
+            </div>
             {displayState["pmi"] != 0 && (
               <div className="col-xxl-8 col-sm-6 col-12">
                 <label>Appraisal Value </label>
@@ -425,30 +477,8 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
                 </div>
               </div>
             )}
-            <div className="col-xxl-4 col-sm-6 col-12 d-flex align-items-center justify-content-center">
-              <button
-                type="button"
-                className="btn btn-link"
-                onClick={() => {
-                  updateUserInput("propertyTaxUnit", 2);
-                  updateUserInput("hoaUnit", 1);
-                  updateUserInput("pmiUnit", 4);
-                  updateUserInput("utilitiesUnit", 1);
-                  updateUserInput("insuranceUnit", 0);
 
-                  updateUserInput("propertyTax", "1.00");
-                  updateUserInput("hoa", "300");
-                  if (displayState["downPayPercent"] < 20) updateUserInput("pmi", "1.5");
-                  else updateUserInput("pmi", "0");
-                  updateUserInput("utilities", "120");
-                  updateUserInput("insurance", "1000");
-                }}
-              >
-                Populate with estimates
-              </button>
-            </div>
-          </div>
-        </div>
+
       </div>
     </div>
   );

@@ -36,9 +36,10 @@ function LoanStats({ loanRes, userInput }) {
   }
   // }
   var totalutilities = scaleMonthlyWUnit(userInput["utilities"], userInput["utilitiesUnit"], loanRes["homeVal"], lengthWithInflation, loanRes["loanAmount"]);
+  var totalmaintenance = scaleMonthlyWUnit(userInput["maintenance"], userInput["maintenanceUnit"], loanRes["homeVal"], lengthWithInflation, loanRes["loanAmount"]);
   var totalInsurance = scaleMonthlyWUnit(userInput["insurance"], userInput["insuranceUnit"], loanRes["homeVal"], lengthWithInflation, loanRes["loanAmount"]);
   const thereWereExtraPayments =
-    totalTax > 0 || totalHoA > 0 || totalpmi > 0 || totalutilities > 0 || totalInsurance > 0 || loanRes["extraPayments"] > 0 || loanRes["totalFees"] > 0;
+    totalTax > 0 || totalHoA > 0 || totalpmi > 0 || totalutilities > 0 || totalmaintenance > 0 || totalInsurance > 0 || loanRes["extraPayments"] > 0 || loanRes["totalFees"] > 0;
 
   return (
     <div className="row shadow-sm border rounded py-2 mx-0" style={{ backgroundColor: "white" }}>
@@ -81,6 +82,7 @@ function LoanStats({ loanRes, userInput }) {
                       totalHoA +
                       totalpmi +
                       totalutilities +
+                      totalmaintenance +
                       totalInsurance +
                       loanRes["totalFees"]
                   )}
@@ -129,6 +131,11 @@ function LoanStats({ loanRes, userInput }) {
           {userInput["utilities"] > 0 ? (
             <div className="col-xxl-6 col-sm-12">
               <li>Utilities: {cashFormat(totalutilities)}</li>
+            </div>
+          ) : null}
+          {userInput["maintenance"] > 0 ? (
+            <div className="col-xxl-6 col-sm-12">
+              <li>Maintenance: {cashFormat(totalmaintenance)}</li>
             </div>
           ) : null}
           {userInput["insurance"] > 0 ? (

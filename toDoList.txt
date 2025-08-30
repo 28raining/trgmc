@@ -1,8 +1,7 @@
 
 # Todo
-- unit testing on spreadsheet generation - probably don't save it to a file, just save it to binary
-- add appraisal
-- clicking trash doesn't reset loan length?
+- equity to be % of appraisal. Make apprasial make sense!
+- Add rent cost comparisson
 
 ## Later
 - add country picker
@@ -32,6 +31,11 @@
 -- save it to cookie
 - show balance change for each overpayment
 - if refinance makes the loan 10x longer then handle it!
+
+#Done Aug 2026
+- Add Maintenance
+- add appraisal
+
 
 #Done May 2025
 - Allow user to download as an xlsx!

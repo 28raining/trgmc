@@ -15,6 +15,7 @@ export async function createXlsx({
   hoa,
   pmi,
   utilities,
+  maintenance,
   insurance,
   overPayments,
   refinanceEvents,
@@ -142,6 +143,8 @@ export async function createXlsx({
   nextCol();
   ws[`${col}${row}`] = { v: "Utilities" };
   nextCol();
+  ws[`${col}${row}`] = { v: "Maintenance" };
+  nextCol();
   ws[`${col}${row}`] = { v: "Insurance" };
   nextCol();
   ws[`${col}${row}`] = { v: "Remaining Balance" };
@@ -158,7 +161,7 @@ export async function createXlsx({
     nextCol();
     ws[`${col}${row}`] = { v: `${loanMonths[i]}` }; // Date formula
     nextCol();
-    ws[`${col}${row}`] = { f: `SUM(${colOffset(col, 1)}${row}:${colOffset(col, 6)}${row})` }; // Monthly Payment formula
+    ws[`${col}${row}`] = { f: `SUM(${colOffset(col, 1)}${row}:${colOffset(col, 7)}${row})` }; // Monthly Payment formula
     ws[`${col}${row}`].z = "$#,##0.00";
     nextCol();
     cellMonthlyPayment = `${col}${row}`;
@@ -181,6 +184,10 @@ export async function createXlsx({
 
     nextCol();
     ws[`${col}${row}`] = { f: `${utilities}` }; // Utilities formula
+    ws[`${col}${row}`].z = "$#,##0.00";
+
+    nextCol();
+    ws[`${col}${row}`] = { f: `${maintenance}` }; // Maintenance formula
     ws[`${col}${row}`].z = "$#,##0.00";
 
     nextCol();
@@ -243,6 +250,7 @@ export async function createXlsx({
     { wch: 10 }, // Column B width
     { wch: 10 }, // Column B width
     { wch: 10 }, // Column B width
+    { wch: 10 }, // Column B width
     { wch: 18 }, // Column B width Remaining Balance
     { wch: 12 }, // Column B width Remaining Balance
     { wch: 18 }, // Column B width Remaining Balance
@@ -280,7 +288,7 @@ export async function createXlsx({
 
   // Make the cost columns a tan background
   for (let i = 12; i <= row; ++i) {
-    ["D", "E", "F", "G", "H", "I"].forEach((col) => {
+    ["D", "E", "F", "G", "H", "I", "J"].forEach((col) => {
       const cell = ws[`${col}${i}`];
       if (cell) {
         cell.s = cell.s || {};

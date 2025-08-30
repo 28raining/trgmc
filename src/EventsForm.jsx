@@ -38,7 +38,7 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
     "Over-pay": "Pay extra money into the loan",
     Recast: "Reduce the monthly payments after over-paying",
     Refinance: "Change the interest rate",
-    Inflation: "Increase Tax, HoA, Insurance & Utilities",
+    Inflation: "Increase Tax, HoA, Insurance, Utilities & Maintenance",
     Expense: "A one-off expense, e.g. loan origination fee, a new roof, etc.",
   };
 
