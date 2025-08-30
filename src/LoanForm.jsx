@@ -98,41 +98,41 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
   return (
     <div>
       <div className="row shadow-sm border rounded mb-3 py-2 mx-0" style={{ backgroundColor: "white" }}>
-            <div className="col-5 pe-0">
-              <label>Home Value</label>
-              <input
-                // key={homeVal}
-                type="text"
-                inputMode="numeric"
-                className={inputClass["homeVal"]}
-                value={cashFormat(displayState["homeVal"])}
-                onChange={(e) => updateIfChanged(displayState["homeVal"], e.target.value, "homeVal")}
-              />
-              <ValidFbComp x={valid["homeVal"]} />
-              {additionalPayments ? (
-                <label>
-                  <small></small>
-                </label>
-              ) : null}
-            </div>
-            <div className="col-2 text-center align-self-center">or</div>
-            <div className="col-5 ps-0">
-              <label>Monthly Payment</label>
-              <input
-                type="text"
-                inputMode="numeric"
-                className={inputClass["monthlyPayment"]}
-                onChange={(e) => updateIfChanged(displayState["monthlyPayment"], e.target.value, "monthlyPayment")}
-                value={cashFormat(displayState["monthlyPayment"])}
-              />
+        <div className="col-5 pe-0">
+          <label>Home Value</label>
+          <input
+            // key={homeVal}
+            type="text"
+            inputMode="numeric"
+            className={inputClass["homeVal"]}
+            value={cashFormat(displayState["homeVal"])}
+            onChange={(e) => updateIfChanged(displayState["homeVal"], e.target.value, "homeVal")}
+          />
+          <ValidFbComp x={valid["homeVal"]} />
+          {additionalPayments ? (
+            <label>
+              <small></small>
+            </label>
+          ) : null}
+        </div>
+        <div className="col-2 text-center align-self-center">or</div>
+        <div className="col-5 ps-0">
+          <label>Monthly Payment</label>
+          <input
+            type="text"
+            inputMode="numeric"
+            className={inputClass["monthlyPayment"]}
+            onChange={(e) => updateIfChanged(displayState["monthlyPayment"], e.target.value, "monthlyPayment")}
+            value={cashFormat(displayState["monthlyPayment"])}
+          />
 
-              <ValidFbComp x={valid["monthlyPayment"]} />
-              {additionalPayments ? (
-                <label>
-                  <small>{cashFormat(displayState["monthlyPaymentToLoan"])} towards loan</small>
-                </label>
-              ) : null}
-            </div>
+          <ValidFbComp x={valid["monthlyPayment"]} />
+          {additionalPayments ? (
+            <label>
+              <small>{cashFormat(displayState["monthlyPaymentToLoan"])} towards loan</small>
+            </label>
+          ) : null}
+        </div>
       </div>
       <div className="row shadow-sm border rounded mb-3 py-2 mx-0" style={{ backgroundColor: "white" }}>
         <div className="col-12">
@@ -231,254 +231,252 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
       </div>
 
       <div className="row shadow-sm border rounded py-2 mx-0" style={{ backgroundColor: "white" }}>
-            <div className="col-12 d-flex align-items-end justify-content-end">
-              <button
-                type="button"
-                className="btn btn-link py-0"
-                onClick={() => {
-                  updateUserInput("propertyTaxUnit", 2);
-                  updateUserInput("hoaUnit", 1);
-                  updateUserInput("pmiUnit", 4);
-                  updateUserInput("utilitiesUnit", 1);
-                  updateUserInput("maintenanceUnit", 1);
-                  updateUserInput("insuranceUnit", 0);
+        <div className="col-12 d-flex align-items-end justify-content-end">
+          <button
+            type="button"
+            className="btn btn-link py-0"
+            onClick={() => {
+              updateUserInput("propertyTaxUnit", 2);
+              updateUserInput("hoaUnit", 1);
+              updateUserInput("pmiUnit", 4);
+              updateUserInput("utilitiesUnit", 1);
+              updateUserInput("maintenanceUnit", 1);
+              updateUserInput("insuranceUnit", 0);
 
-                  updateUserInput("propertyTax", "1.00");
-                  updateUserInput("hoa", "300");
-                  if (displayState["downPayPercent"] < 20) updateUserInput("pmi", "1.5");
-                  else updateUserInput("pmi", "0");
-                  updateUserInput("utilities", "120");
-                  updateUserInput("maintenance", "300");
-                  updateUserInput("insurance", "1000");
+              updateUserInput("propertyTax", "1.00");
+              updateUserInput("hoa", "300");
+              if (displayState["downPayPercent"] < 20) updateUserInput("pmi", "1.5");
+              else updateUserInput("pmi", "0");
+              updateUserInput("utilities", "120");
+              updateUserInput("maintenance", "300");
+              updateUserInput("insurance", "1000");
+            }}
+          >
+            Populate with estimates
+          </button>
+        </div>
+        <div className="col-xxl-4 col-sm-6 col-12">
+          <label>Property Tax</label>
+          <div className="input-group mb-1">
+            <input
+              type="text"
+              className={inputClass["propertyTax"]}
+              value={
+                displayState["propertyTaxUnit"] == 0 || displayState["propertyTaxUnit"] == 1
+                  ? cashFormat(displayState["propertyTax"])
+                  : displayState["propertyTax"]
+              }
+              onChange={(e) => {
+                updateIfChanged(displayState["propertyTax"], e.target.value, "propertyTax");
+              }}
+            />
+
+            <select
+              className="form-select ps-2 grayBackground"
+              value={displayState["propertyTaxUnit"]}
+              onChange={(e) => {
+                updateUserInput("propertyTaxUnit", e.target.value);
+              }}
+            >
+              {feeOptions.map((x, i) => (
+                <option value={i} key={i}>
+                  {x}
+                </option>
+              ))}
+            </select>
+            <ValidFbComp x={valid["propertyTax"]} />
+          </div>
+        </div>
+
+        <div className="col-xxl-4 col-sm-6 col-12">
+          <label>
+            HOA{" "}
+            <small>
+              <em>Homeowners Association</em>
+            </small>
+          </label>
+          <div className="input-group mb-1">
+            <input
+              type="text"
+              className={inputClass["hoa"]}
+              value={displayState["hoaUnit"] == 0 || displayState["hoaUnit"] == 1 ? cashFormat(displayState["hoa"]) : displayState["hoa"]}
+              onChange={(e) => {
+                updateIfChanged(displayState["hoa"], e.target.value, "hoa");
+              }}
+            />
+
+            <select
+              className="form-select ps-2 grayBackground"
+              value={displayState["hoaUnit"]}
+              onChange={(e) => {
+                updateUserInput("hoaUnit", e.target.value);
+              }}
+            >
+              {feeOptions.map((x, i) => (
+                <option value={i} key={i}>
+                  {x}
+                </option>
+              ))}
+            </select>
+            <ValidFbComp x={valid["hoa"]} />
+          </div>
+        </div>
+
+        <div className="col-xxl-4 col-sm-6 col-12">
+          <label>Insurance</label>
+          <div className="input-group mb-1">
+            <input
+              type="text"
+              className={inputClass["insurance"]}
+              value={
+                displayState["insuranceUnit"] == 0 || displayState["insuranceUnit"] == 1 ? cashFormat(displayState["insurance"]) : displayState["insurance"]
+              }
+              onChange={(e) => updateIfChanged(displayState["insurance"], e.target.value, "insurance")}
+            />
+
+            <select
+              className="form-select ps-2 grayBackground"
+              value={displayState["insuranceUnit"]}
+              onChange={(e) => {
+                updateUserInput("insuranceUnit", e.target.value);
+              }}
+            >
+              {feeOptions.map((x, i) => (
+                <option value={i} key={i}>
+                  {x}
+                </option>
+              ))}
+            </select>
+            <ValidFbComp x={valid["insurance"]} />
+          </div>
+        </div>
+
+        <div className="col-xxl-4 col-sm-6 col-12">
+          <label>
+            PMI{" "}
+            <small>
+              <em>Private Mortgage Insurance</em>
+            </small>
+          </label>
+          <div className="input-group mb-1">
+            <input
+              type="text"
+              className={inputClass["pmi"]}
+              value={displayState["pmiUnit"] == 0 || displayState["pmiUnit"] == 1 ? cashFormat(displayState["pmi"]) : displayState["pmi"]}
+              onChange={(e) => {
+                updateIfChanged(displayState["pmi"], e.target.value, "pmi");
+              }}
+            />
+
+            {/* Special treatiment for PMI because it's a % of loan amount, not of home value */}
+            <select
+              className="form-select ps-2 grayBackground"
+              value={displayState["pmiUnit"] == 4 ? 2 : displayState["pmiUnit"] == 5 ? 3 : displayState["pmiUnit"]}
+              onChange={(e) => {
+                var pmiHack;
+                if (e.target.value == 2) pmiHack = 4;
+                else if (e.target.value == 3) pmiHack = 5;
+                else pmiHack = e.target.value;
+                updateUserInput("pmiUnit", pmiHack);
+              }}
+            >
+              {feeOptions.map((x, i) => (
+                <option value={i} key={i}>
+                  {x}
+                </option>
+              ))}
+            </select>
+            <ValidFbComp x={valid["pmi"]} />
+          </div>
+        </div>
+
+        <div className="col-xxl-4 col-sm-6 col-12">
+          <label>
+            Utilities{" "}
+            <small>
+              <a href="https://www.forbes.com/home-improvement/living/monthly-utility-costs-by-state/" target="_blank" rel="noopener noreferrer">
+                how much?
+              </a>
+            </small>
+          </label>
+          <div className="input-group mb-1">
+            <input
+              type="text"
+              className={inputClass["utilities"]}
+              value={
+                displayState["utilitiesUnit"] == 0 || displayState["utilitiesUnit"] == 1 ? cashFormat(displayState["utilities"]) : displayState["utilities"]
+              }
+              onChange={(e) => {
+                updateIfChanged(displayState["utilities"], e.target.value, "utilities");
+              }}
+            />
+
+            <select
+              className="form-select ps-2 grayBackground"
+              value={displayState["utilitiesUnit"]}
+              onChange={(e) => {
+                updateUserInput("utilitiesUnit", e.target.value);
+              }}
+            >
+              {feeOptions.map((x, i) => (
+                <option value={i} key={i}>
+                  {x}
+                </option>
+              ))}
+            </select>
+            <ValidFbComp x={valid["utilities"]} />
+          </div>
+        </div>
+        <div className="col-xxl-4 col-sm-6 col-12">
+          <label>Maintenance</label>
+          <div className="input-group mb-1">
+            <input
+              type="text"
+              className={inputClass["maintenance"]}
+              value={
+                displayState["maintenanceUnit"] == 0 || displayState["maintenanceUnit"] == 1
+                  ? cashFormat(displayState["maintenance"])
+                  : displayState["maintenance"]
+              }
+              onChange={(e) => {
+                updateIfChanged(displayState["maintenance"], e.target.value, "maintenance");
+              }}
+            />
+
+            <select
+              className="form-select ps-2 grayBackground"
+              value={displayState["maintenanceUnit"]}
+              onChange={(e) => {
+                updateUserInput("maintenanceUnit", e.target.value);
+              }}
+            >
+              {feeOptions.map((x, i) => (
+                <option value={i} key={i}>
+                  {x}
+                </option>
+              ))}
+            </select>
+            <ValidFbComp x={valid["maintenance"]} />
+          </div>
+        </div>
+        {displayState["pmi"] != 0 && (
+          <div className="col-xxl-8 col-sm-6 col-12">
+            <label>Appraisal Value </label>
+            <div className="input-group mb-1">
+              <input
+                type="text"
+                inputMode="numeric"
+                className="form-control"
+                value={displayState["appraisal"] == 0 ? "" : cashFormat(displayState["appraisal"])}
+                placeholder="Defaults to Home Value"
+                onChange={(e) => {
+                  updateIfChanged(displayState["appraisal"], e.target.value, "appraisal");
                 }}
-              >
-                Populate with estimates
-              </button>
+              />
+              <FbComp x={"PMI will cease when equity reaches 20% of appraisal"} />
             </div>
-            <div className="col-xxl-4 col-sm-6 col-12">
-              <label>Property Tax</label>
-              <div className="input-group mb-1">
-                <input
-                  type="text"
-                  className={inputClass["propertyTax"]}
-                  value={
-                    displayState["propertyTaxUnit"] == 0 || displayState["propertyTaxUnit"] == 1
-                      ? cashFormat(displayState["propertyTax"])
-                      : displayState["propertyTax"]
-                  }
-                  onChange={(e) => {
-                    updateIfChanged(displayState["propertyTax"], e.target.value, "propertyTax");
-                  }}
-                />
-
-                <select
-                  className="form-select ps-2 grayBackground"
-                  value={displayState["propertyTaxUnit"]}
-                  onChange={(e) => {
-                    updateUserInput("propertyTaxUnit", e.target.value);
-                  }}
-                >
-                  {feeOptions.map((x, i) => (
-                    <option value={i} key={i}>
-                      {x}
-                    </option>
-                  ))}
-                </select>
-                <ValidFbComp x={valid["propertyTax"]} />
-              </div>
-            </div>
-
-            <div className="col-xxl-4 col-sm-6 col-12">
-              <label>
-                HOA{" "}
-                <small>
-                  <em>Homeowners Association</em>
-                </small>
-              </label>
-              <div className="input-group mb-1">
-                <input
-                  type="text"
-                  className={inputClass["hoa"]}
-                  value={displayState["hoaUnit"] == 0 || displayState["hoaUnit"] == 1 ? cashFormat(displayState["hoa"]) : displayState["hoa"]}
-                  onChange={(e) => {
-                    updateIfChanged(displayState["hoa"], e.target.value, "hoa");
-                  }}
-                />
-
-                <select
-                  className="form-select ps-2 grayBackground"
-                  value={displayState["hoaUnit"]}
-                  onChange={(e) => {
-                    updateUserInput("hoaUnit", e.target.value);
-                  }}
-                >
-                  {feeOptions.map((x, i) => (
-                    <option value={i} key={i}>
-                      {x}
-                    </option>
-                  ))}
-                </select>
-                <ValidFbComp x={valid["hoa"]} />
-              </div>
-            </div>
-
-            <div className="col-xxl-4 col-sm-6 col-12">
-              <label>Insurance</label>
-              <div className="input-group mb-1">
-                <input
-                  type="text"
-                  className={inputClass["insurance"]}
-                  value={
-                    displayState["insuranceUnit"] == 0 || displayState["insuranceUnit"] == 1 ? cashFormat(displayState["insurance"]) : displayState["insurance"]
-                  }
-                  onChange={(e) => updateIfChanged(displayState["insurance"], e.target.value, "insurance")}
-                />
-
-                <select
-                  className="form-select ps-2 grayBackground"
-                  value={displayState["insuranceUnit"]}
-                  onChange={(e) => {
-                    updateUserInput("insuranceUnit", e.target.value);
-                  }}
-                >
-                  {feeOptions.map((x, i) => (
-                    <option value={i} key={i}>
-                      {x}
-                    </option>
-                  ))}
-                </select>
-                <ValidFbComp x={valid["insurance"]} />
-              </div>
-            </div>
-
-            <div className="col-xxl-4 col-sm-6 col-12">
-              <label>
-                PMI{" "}
-                <small>
-                  <em>Private Mortgage Insurance</em>
-                </small>
-              </label>
-              <div className="input-group mb-1">
-                <input
-                  type="text"
-                  className={inputClass["pmi"]}
-                  value={displayState["pmiUnit"] == 0 || displayState["pmiUnit"] == 1 ? cashFormat(displayState["pmi"]) : displayState["pmi"]}
-                  onChange={(e) => {
-                    updateIfChanged(displayState["pmi"], e.target.value, "pmi");
-                  }}
-                />
-
-                {/* Special treatiment for PMI because it's a % of loan amount, not of home value */}
-                <select
-                  className="form-select ps-2 grayBackground"
-                  value={displayState["pmiUnit"] == 4 ? 2 : displayState["pmiUnit"] == 5 ? 3 : displayState["pmiUnit"]}
-                  onChange={(e) => {
-                    var pmiHack;
-                    if (e.target.value == 2) pmiHack = 4;
-                    else if (e.target.value == 3) pmiHack = 5;
-                    else pmiHack = e.target.value;
-                    updateUserInput("pmiUnit", pmiHack);
-                  }}
-                >
-                  {feeOptions.map((x, i) => (
-                    <option value={i} key={i}>
-                      {x}
-                    </option>
-                  ))}
-                </select>
-                <ValidFbComp x={valid["pmi"]} />
-              </div>
-            </div>
-
-            <div className="col-xxl-4 col-sm-6 col-12">
-              <label>
-                Utilities{" "}
-                <small>
-                  <a href="https://www.forbes.com/home-improvement/living/monthly-utility-costs-by-state/" target="_blank" rel="noopener noreferrer">
-                    how much?
-                  </a>
-                </small>
-              </label>
-              <div className="input-group mb-1">
-                <input
-                  type="text"
-                  className={inputClass["utilities"]}
-                  value={
-                    displayState["utilitiesUnit"] == 0 || displayState["utilitiesUnit"] == 1 ? cashFormat(displayState["utilities"]) : displayState["utilities"]
-                  }
-                  onChange={(e) => {
-                    updateIfChanged(displayState["utilities"], e.target.value, "utilities");
-                  }}
-                />
-
-                <select
-                  className="form-select ps-2 grayBackground"
-                  value={displayState["utilitiesUnit"]}
-                  onChange={(e) => {
-                    updateUserInput("utilitiesUnit", e.target.value);
-                  }}
-                >
-                  {feeOptions.map((x, i) => (
-                    <option value={i} key={i}>
-                      {x}
-                    </option>
-                  ))}
-                </select>
-                <ValidFbComp x={valid["utilities"]} />
-              </div>
-            </div>
-            <div className="col-xxl-4 col-sm-6 col-12">
-              <label>
-                Maintenance
-              </label>
-              <div className="input-group mb-1">
-                <input
-                  type="text"
-                  className={inputClass["maintenance"]}
-                  value={
-                    displayState["maintenanceUnit"] == 0 || displayState["maintenanceUnit"] == 1 ? cashFormat(displayState["maintenance"]) : displayState["maintenance"]
-                  }
-                  onChange={(e) => {
-                    updateIfChanged(displayState["maintenance"], e.target.value, "maintenance");
-                  }}
-                />
-
-                <select
-                  className="form-select ps-2 grayBackground"
-                  value={displayState["maintenanceUnit"]}
-                  onChange={(e) => {
-                    updateUserInput("maintenanceUnit", e.target.value);
-                  }}
-                >
-                  {feeOptions.map((x, i) => (
-                    <option value={i} key={i}>
-                      {x}
-                    </option>
-                  ))}
-                </select>
-                <ValidFbComp x={valid["maintenance"]} />
-              </div>
-            </div>
-            {displayState["pmi"] != 0 && (
-              <div className="col-xxl-8 col-sm-6 col-12">
-                <label>Appraisal Value </label>
-                <div className="input-group mb-1">
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    className="form-control"
-                    value={displayState["appraisal"] == 0 ? "" : cashFormat(displayState["appraisal"])}
-                    placeholder="Defaults to Home Value"
-                    onChange={(e) => {
-                      updateIfChanged(displayState["appraisal"], e.target.value, "appraisal");
-                    }}
-                  />
-                  <FbComp x={"PMI will cease when equity reaches 20% of appraisal"} />
-                </div>
-              </div>
-            )}
-
-
+          </div>
+        )}
       </div>
     </div>
   );

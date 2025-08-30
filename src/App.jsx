@@ -385,7 +385,10 @@ function App() {
             newValid[i] = "Must be <100%";
           }
         }
-        if ((i == "propertyTax" || i == "hoa" || i == "pmi" || i == "utilities" || i == "insurance" || i == "maintenance") && newChosenInput == "monthlyPayment") {
+        if (
+          (i == "propertyTax" || i == "hoa" || i == "pmi" || i == "utilities" || i == "insurance" || i == "maintenance") &&
+          newChosenInput == "monthlyPayment"
+        ) {
           var unit;
           if (i == "propertyTax") unit = newUserInput.propertyTaxUnit;
           else if (i == "hoa") unit = newUserInput.hoaUnit;
