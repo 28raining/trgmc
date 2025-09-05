@@ -29,6 +29,7 @@ function LoanStats({ loanRes, userInput }) {
   var totalHoA = scaleMonthlyWUnit(userInput["hoa"], userInput["hoaUnit"], loanRes["homeVal"], lengthWithInflation, loanRes["loanAmount"]);
   var totalpmi = 0;
   var pmiPayments = 0;
+  const totalFeesSum = loanRes["totalFees"].reduce((a, b) => a + b, 0);
 
   for (var ii = 0; ii < loanRes["monthlyPMI"].length; ii++) {
     totalpmi += loanRes["monthlyPMI"][ii];
@@ -52,59 +53,53 @@ function LoanStats({ loanRes, userInput }) {
     totalmaintenance > 0 ||
     totalInsurance > 0 ||
     loanRes["extraPayments"] > 0 ||
-    loanRes["totalFees"] > 0;
+    totalFeesSum > 0;
 
   return (
-    <div className="row shadow-sm border rounded py-2 mx-0" style={{ backgroundColor: "white" }}>
+    <div className="row shadow-sm border rounded pb-2 mx-0" style={{ backgroundColor: "white" }}>
+      <div className="col-12 text-center py-1">
+        <small>
+          <i>Cost breakdown over life of the mortgage</i>
+        </small>
+      </div>
       <div className="col-12">
-        <div className="row pb-2">
-          <div className="col-12">
-            <div className="input-group">
-              <span className="input-group-text outputLabelWidth">Last Payment Date</span>
-              <output type="text" className="form-control bg-warning-subtle">
-                {lastMonth}
-              </output>
-            </div>
-          </div>
+        <div className="input-group pb-2">
+          <span className="input-group-text outputLabelWidth">Last Payment Date</span>
+          <output type="text" className="form-control bg-warning-subtle">
+            {lastMonth}
+          </output>
         </div>
-        <div className="row pb-2">
-          <div className="col-12">
-            <div className="input-group">
-              <span className="input-group-text outputLabelWidth">Total Loan Re-Payment</span>
-              <output type="text" className="form-control bg-warning-subtle">
-                {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(
-                  totalPrincipal + totalInterest + loanRes["extraPayments"]
-                )}
-              </output>
-            </div>
-          </div>
+
+        <div className="input-group pb-2">
+          <span className="input-group-text outputLabelWidth">Total Loan Re-Payment</span>
+          <output type="text" className="form-control bg-warning-subtle">
+            {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(
+              totalPrincipal + totalInterest + loanRes["extraPayments"]
+            )}
+          </output>
         </div>
         {!thereWereExtraPayments ? null : (
-          <div className="row">
-            <div className="col-12">
-              <div className="input-group">
-                <span className="input-group-text outputLabelWidth">
-                  Total Costs<small>&nbsp;(to {lastMonth})</small>
-                </span>
-                <output type="text" className="form-control bg-warning-subtle">
-                  {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(
-                    totalPrincipal +
-                      totalInterest +
-                      loanRes["extraPayments"] +
-                      totalTax +
-                      totalHoA +
-                      totalpmi +
-                      totalutilities +
-                      totalmaintenance +
-                      totalInsurance +
-                      loanRes["totalFees"]
-                  )}
-                </output>
-              </div>
-            </div>
+          <div className="input-group pb-2">
+            <span className="input-group-text outputLabelWidth">
+              Total Costs<small>&nbsp;(to {lastMonth})</small>
+            </span>
+            <output type="text" className="form-control bg-warning-subtle">
+              {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(
+                totalPrincipal +
+                  totalInterest +
+                  loanRes["extraPayments"] +
+                  totalTax +
+                  totalHoA +
+                  totalpmi +
+                  totalutilities +
+                  totalmaintenance +
+                  totalInsurance +
+                  totalFeesSum
+              )}
+            </output>
           </div>
         )}
-        <div className="row pt-2">
+        <div className="row">
           <div className="col-xxl-6 col-sm-12">
             <li>Principal: {cashFormat(totalPrincipal)}</li>
           </div>
@@ -116,9 +111,9 @@ function LoanStats({ loanRes, userInput }) {
               <li>Overpayments: {cashFormat(loanRes["extraPayments"])}</li>
             </div>
           ) : null}
-          {loanRes["totalFees"] > 0 ? (
+          {totalFeesSum > 0 ? (
             <div className="col-xxl-6 col-sm-12">
-              <li>Fees & Expenses: {cashFormat(loanRes["totalFees"])}</li>
+              <li>Fees & Expenses: {cashFormat(totalFeesSum)}</li>
             </div>
           ) : null}
           {userInput["propertyTax"] > 0 ? (

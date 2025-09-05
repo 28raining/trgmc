@@ -1,7 +1,9 @@
 
 # Todo
 - equity to be % of appraisal. Make apprasial make sense!
-- Add rent cost comparisson
+- show monthly payment by hovering over chart - in title?
+- fix crash case
+
 
 ## Later
 - add country picker

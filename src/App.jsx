@@ -4,6 +4,7 @@ import { loanMaths, isNumber } from "./loanMaths.js";
 import LoanPlot from "./LoanPlot.jsx";
 import LoanStats from "./LoanStats.jsx";
 import EventsForm from "./EventsForm.jsx";
+import Rent from "./Rent.jsx";
 import { Comments } from "@hyvor/hyvor-talk-react";
 import { BoxArrowUp, Trash, Bank, CCircle, Github } from "react-bootstrap-icons";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
@@ -183,11 +184,18 @@ const initialState = {
 };
 const searchParams = new URLSearchParams(window.location.search);
 const initialOverride = {};
+const initialRentSimulation = {
+  rent : 2000,
+  stocks: 0.03,
+}
+const overrideRentSimulation = {};
 var initialEvents = [];
 var gotStuffFromURL = false;
 for (const [key, value] of searchParams.entries()) {
   gotStuffFromURL = true;
   if (key == "events") initialEvents = loanEventDecoder(value, initialEvents);
+  if (key == "rent") overrideRentSimulation.rent=parseFloat(value);
+  else if (key == "stocks") overrideRentSimulation.stocks=parseFloat(value);
   else if (value == "true") initialOverride[key] = true;
   else if (value == "false") initialOverride[key] = false;
   else initialOverride[key] = value;
@@ -200,6 +208,7 @@ function App() {
   const [chosenInput, setChosenInput] = useState("homeVal");
   const [userSetDownPercent, setUserSetDownPercent] = useState(initialUserSetDownPercent);
   const [showURLToast, setShowURLToast] = useState(gotStuffFromURL);
+  const [rentSim, setRentSim] = useState({...initialRentSimulation, ...overrideRentSimulation});
 
   const [userInput, setUserInput] = useState({ ...initialState, ...initialOverride });
   const [flash, setFlash] = useState({
@@ -460,6 +469,11 @@ function App() {
       urlParams.set(i, newUserInput[i]);
     } else urlParams.delete(i);
   }
+  for (const i in rentSim) {
+    if (rentSim[i] != initialRentSimulation[i]) {
+      urlParams.set(i, rentSim[i]);
+    } else urlParams.delete(i);
+  }
   urlParams.delete("events");
   if (loanEvent.length > 0) {
     for (const o in loanEvent) {
@@ -518,7 +532,7 @@ function App() {
                   });
                 }}
               >
-                <img src={spreadsheetIcon} alt="Dowload as spreadsheet" width="20px" />
+                <img src={spreadsheetIcon} alt="Download as spreadsheet" width="20px" />
               </button>
             </OverlayTrigger>
             <OverlayTrigger overlay={<Tooltip>{"share"}</Tooltip>} placement="bottom">
@@ -535,7 +549,7 @@ function App() {
               </button>
             </OverlayTrigger>
             <OverlayTrigger overlay={<Tooltip>{"Re-start from scratch"}</Tooltip>} placement="bottom">
-              <button type="button" className="btn btn-outline-secondary" aria-label="Start fresh" onClick={() => updateUserInput("reset")}>
+              <button type="button" className="btn btn-outline-secondary" aria-label="Start fresh" onClick={() => {updateUserInput("reset"); setRentSim(initialRentSimulation);}}>
                 <Trash key="Trash" size={20} style={{ color: "black" }} />
               </button>
             </OverlayTrigger>
@@ -558,9 +572,8 @@ function App() {
               <div className="col">
                 <p className="my-2">
                   An easy to use mortgage calculator to find out exactly how much it will cost to buy a house. Or, enter a monthly budget. How much can you
-                  afford?
+                  afford? This tool supports unlimited overpayment, re-finance and recast events. Also, try adding inflation.
                 </p>
-                <p className="mb-2">This tool supports unlimited overpayment, re-finance and recast events. Also, try adding inflation.</p>
               </div>
             </div>
           </div>
@@ -609,7 +622,23 @@ function App() {
             />
           </div>
         </div>
-        <div className="row shadow-sm border rounded mx-0 text-secondary" style={{ backgroundColor: "white" }}>
+        <div className="row shadow-sm border rounded mx-0 mt-5 mb-3" style={{ backgroundColor: "white" }}>
+          <div className="col-12 py-2">
+            <Rent
+              downPayment={displayState["downPayCash"]}
+              loanMonths={loanRes["loanMonths"]}
+              inflation={loanRes["inflation"]}
+              equity={loanRes["equity"]}
+              homeVal={loanRes["homeVal"]}
+              monthlyPayment={loanRes["monthlyPayment"]}
+              overPayments={loanRes["overPayments"]}
+              totalFees={loanRes["totalFees"]}
+              rentSim={rentSim}
+              setRentSim={(r) => setRentSim(r)}
+            />
+          </div>
+        </div>
+        <div className="row shadow-sm border rounded mx-0" style={{ backgroundColor: "white" }}>
           <div className="col-12">
             <Accordion flush>
               <Accordion.Item eventKey="0">

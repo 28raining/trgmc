@@ -70,6 +70,33 @@
   background-color: rgb(248, 249, 250) !important;
 }
 
+.input-with-symbol {
+  position: relative; /* Needed for positioning the ::before element */
+  display: inline-block;
+}
+
+.input-with-symbol::before {
+  content: "$"; /* Or use an HTML entity like "\20AC" for Euro */
+  position: absolute;
+  left: 10px; /* Adjust position as needed */
+  top: 50%;
+  transform: translateY(-50%);
+  /* Add styling for the symbol, e.g., color, font-size */
+}
+.input-with-percent {
+  position: relative; /* Needed for positioning the ::before element */
+  display: inline-block;
+}
+
+.input-with-percent::before {
+  content: "%"; /* Or use an HTML entity like "\20AC" for Euro */
+  position: absolute;
+  right: 10px; /* Adjust position as needed */
+  top: 50%;
+  transform: translateY(-50%);
+  /* Add styling for the symbol, e.g., color, font-size */
+}
+
 @media (width <= 500px) {
   .hideLogo {
     display: none !important;

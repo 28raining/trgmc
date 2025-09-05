@@ -195,7 +195,6 @@ export function loanMaths(
   // var loanCopy = { ...loanData };
   var totalPrincipal = 0;
   var totalInterest = 0;
-  var overPay = 0;
   remaining[0] = loanData["loanAmount"];
 
   var rate = interestRate / 100;
@@ -212,8 +211,14 @@ export function loanMaths(
     //Check if any events happening this month
     while (loanEvent.length > eventIndex && thisMonth == loanEvent[eventIndex]["date"]) {
       if (loanEvent[eventIndex]["event"] == "Over-pay") {
-        fees[i] = fees[i] + parseFloat(loanEvent[eventIndex]["cost"]);
-        // extraPayments += parseFloat(loanEvent[eventIndex].cost);
+        fees = handleRepeatPayments(
+          fees,
+          loanEvent[eventIndex]["repeats"],
+          (arr, i) => {
+            arr[Math.floor(i)] += parseFloat(loanEvent[eventIndex]["cost"]);
+          },
+          i
+        );
         repeatingOverpayments = handleRepeatPayments(
           repeatingOverpayments,
           loanEvent[eventIndex]["repeats"],
@@ -308,17 +313,16 @@ export function loanMaths(
     }
 
     //Calculate 'the numbers' for the month
-    equity[i] = `${Math.round((1000 * (originalHomeVal - remaining[i])) / originalHomeVal) / 10}%`;
+    equity[i] = (originalHomeVal - remaining[i]) / originalHomeVal;
     monthlyPMI[i] = PMI_fixed > 0 ? PMI_fixed : (remaining[i] * PMI_int) / 12;
     monthlyInterest[i] = (remaining[i] * rate) / 12;
     monthlyPrincipal[i] = interestOnly ? 0 : PMI_int > 0 ? loanData.monthly - monthlyInterest[i] - monthlyPMI[i] : loanData.monthly - monthlyInterest[i];
     monthlyPayment[i] = loanData.monthly + loanData.monthlyExta;
     remaining[i + 1] = remaining[i] - monthlyPrincipal[i];
 
-    if (repeatingOverpayments[i] < remaining[i + 1]) overPay = repeatingOverpayments[i];
-    else overPay = 0;
-    remaining[i + 1] -= overPay;
-    extraPayments += overPay;
+    if (repeatingOverpayments[i] > remaining[i + 1]) repeatingOverpayments[i] = 0;
+    remaining[i + 1] -= repeatingOverpayments[i];
+    extraPayments += repeatingOverpayments[i];
 
     if (i == 0) monthlyPaymentPerEvent[0] = { loan: loanData.monthly, extra: loanData.monthlyExta }; //in case the event is on day 1 of the loan
     monthlyPaymentPerEvent[eventIndex] = { loan: loanData.monthly, extra: loanData.monthlyExta };
@@ -347,6 +351,7 @@ export function loanMaths(
   inflationScaler.splice(lastMonth + 1);
   loanMonths.splice(lastMonth + 1);
   repeatingOverpayments.splice(lastMonth + 1);
+  fees.splice(lastMonth + 1);
   return {
     loanAmount: originalLoanAmount,
     endMonth: lastMonth,
@@ -359,7 +364,7 @@ export function loanMaths(
     interestPlusPrincipal: originalInterestPlusPrincipal,
     homeVal: originalHomeVal,
     extraPayments: extraPayments,
-    totalFees: fees.reduce((a, b) => a + b, 0),
+    totalFees: fees,
     monthlyPaymentPerEvent: monthlyPaymentPerEvent,
     totalPrincipal: totalPrincipal,
     totalInterest: totalInterest,

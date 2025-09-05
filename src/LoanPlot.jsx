@@ -1,7 +1,20 @@
 import { Chart } from "react-chartjs-2";
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, BarController, LineController, Title, Tooltip, PointElement, LineElement } from "chart.js"; //Legend
-ChartJS.register(CategoryScale, LinearScale, BarElement, BarController, Title, Tooltip, PointElement, LineElement, LineController); //Legend
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  BarController,
+  LineController,
+  Title,
+  Tooltip,
+  PointElement,
+  LineElement,
+  Legend,
+} from "chart.js"; //Legend
+ChartJS.register(CategoryScale, LinearScale, BarElement, BarController, Title, Tooltip, PointElement, LineElement, LineController, Legend); //Legend
 import { useState } from "react";
+import { DEFAULT_PLOTLY_COLORS } from "./common.js";
 
 // ChartJS.register(
 //   LinearScale,
@@ -32,13 +45,14 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, pmi, util
   var utilitiesPlot = [];
   var maintenancePlot = [];
   var insPlot = [];
+  const equityString = loanRes["equity"].map((i) => `${Math.round((1000 * i) / 10)}%`);
 
   if (monthsPerYearToPlot == "Monthly Breakdown") {
     loanMonthsFiltered = loanMonths;
     monthlyPrincipalFiltered = loanRes["monthlyPrincipal"];
     monthlyInterestFiltered = loanRes["monthlyInterest"];
     remainingFiltered = loanRes["remaining"];
-    equityFiltered = loanRes["equity"];
+    equityFiltered = equityString;
     pmiPlot = loanRes["monthlyPMI"];
     for (var i = 0; i < loanMonthsFiltered.length; i++) {
       // if (pmiUnit < 2) pmiPlot[i] = pmi;
@@ -68,7 +82,7 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, pmi, util
         prev_year = year;
         loanMonthsFiltered[yearIndex] = loanMonths[i].substring(4, 8);
         remainingFiltered[yearIndex] = loanRes["remaining"][i];
-        equityFiltered[yearIndex] = loanRes["equity"][i];
+        equityFiltered[yearIndex] = equityString[i];
       }
       // console.log(yearIndex)
       // if ((yearIndex==0) || (i==0)) {
@@ -94,17 +108,6 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, pmi, util
       insPlot[yearIndex] = insPlot[yearIndex] + insurance * inflation[i];
     }
   }
-
-  const DEFAULT_PLOTLY_COLORS = [
-    "rgba(31, 119, 180, 0.6)",
-    "rgba(255, 127, 14, 0.6)",
-    "rgba(44, 160, 44, 0.6)",
-    "rgba(214, 39, 40, 0.6)",
-    "rgba(148, 103, 189, 0.6)",
-    "rgba(227, 119, 194, 0.6)",
-    "rgba(188, 189, 34, 0.6)",
-    "rgba(23, 190, 207, 0.6)",
-  ];
 
   var data = {
     labels: loanMonthsFiltered,
@@ -217,9 +220,10 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, pmi, util
       mode: "index",
     },
     plugins: {
-      // legend: {
-      //   position: "bottom",
-      // },
+      legend: {
+        display: false,
+        position: "bottom",
+      },
       tooltip: {
         titleFont: {
           size: 16,
