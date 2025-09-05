@@ -15,18 +15,7 @@ import {
 ChartJS.register(CategoryScale, LinearScale, BarElement, BarController, Title, Tooltip, PointElement, LineElement, LineController, Legend); //Legend
 import { useState } from "react";
 import { DEFAULT_PLOTLY_COLORS } from "./common.js";
-
-// ChartJS.register(
-//   LinearScale,
-//   CategoryScale,
-//   BarElement,
-//   PointElement,
-//   LineElement,
-//   Legend,
-//   Tooltip,
-//   LineController,
-//   BarController
-// );
+import { cashFormat } from "./loanMaths.js";
 
 function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, pmi, utilities, maintenance, insurance, startDate, inflation }) {
   const [monthsPerYearToPlot, setMonthsPerYearToPlot] = useState("Yearly Breakdown");
@@ -232,6 +221,14 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, pmi, util
           size: 16,
         },
         callbacks: {
+          title: function (context) {
+            console.log(context);
+            var sum = 0;
+            context.forEach((c) => {
+              if (c.dataset.label != "Remaining Balance") sum = sum + c.raw;
+            });
+            return `${context[0].label} - ${cashFormat(sum)}`;
+          },
           label: function (context) {
             let label = context.dataset.label || "";
 

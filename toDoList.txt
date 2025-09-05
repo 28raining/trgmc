@@ -1,8 +1,6 @@
 
 # Todo
 - equity to be % of appraisal. Make apprasial make sense!
-- show monthly payment by hovering over chart - in title?
-- fix crash case
 
 
 ## Later
