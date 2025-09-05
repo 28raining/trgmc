@@ -146,7 +146,6 @@ export function loanMaths(
   interestOnly
 ) {
   const appraisalIsSet = appraisal !== undefined && appraisal !== null && appraisal !== "" && appraisal !== 0;
-  // console.log(appraisal,'appraisal', appraisalIsSet, PMI, PMI_fixed);
   if (!isNumber(numYears) || numYears == 0) numYears = 1; //fix issue when loan length is blank
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   var stDate = new Date(Number(startDate));
@@ -318,7 +317,7 @@ export function loanMaths(
     }
 
     //Calculate 'the numbers' for the month
-    equity[i] = (originalHomeVal - remaining[i]) / originalHomeVal;
+    equity[i] = appraisalIsSet ? (appraisal - remaining[i]) / appraisal : (originalHomeVal - remaining[i]) / originalHomeVal;
     monthlyPMI[i] = PMI_fixed > 0 ? PMI_fixed : (remaining[i] * PMI_int) / 12;
     monthlyInterest[i] = (remaining[i] * rate) / 12;
     monthlyPrincipal[i] = interestOnly ? 0 : PMI_int > 0 ? loanData.monthly - monthlyInterest[i] - monthlyPMI[i] : loanData.monthly - monthlyInterest[i];
