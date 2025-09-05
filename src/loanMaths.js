@@ -209,7 +209,9 @@ export function loanMaths(
     loanMonths.push(thisMonth);
 
     //Check if any events happening this month
+    var wasAnEvent = false;
     while (loanEvent.length > eventIndex && thisMonth == loanEvent[eventIndex]["date"]) {
+      wasAnEvent = true;
       if (loanEvent[eventIndex]["event"] == "Over-pay") {
         fees = handleRepeatPayments(
           fees,
@@ -287,7 +289,10 @@ export function loanMaths(
         );
       }
       eventIndex = eventIndex + 1;
+      monthlyPaymentPerEvent[eventIndex] = { loan: loanData.monthly, extra: loanData.monthlyExta };
     }
+    if (i == 0) monthlyPaymentPerEvent[0] = { loan: loanData.monthly, extra: loanData.monthlyExta }; //in case the event is on day 1 of the loan
+    if (!wasAnEvent) monthlyPaymentPerEvent[eventIndex] = { loan: loanData.monthly, extra: loanData.monthlyExta };
 
     //handle case when PMI payments stop due to <80% L2V. This is like an event causing loan re-calculation
     if (PMI_int > 0 || PMI_fixed > 0) {
@@ -323,9 +328,6 @@ export function loanMaths(
     if (repeatingOverpayments[i] > remaining[i + 1]) repeatingOverpayments[i] = 0;
     remaining[i + 1] -= repeatingOverpayments[i];
     extraPayments += repeatingOverpayments[i];
-
-    if (i == 0) monthlyPaymentPerEvent[0] = { loan: loanData.monthly, extra: loanData.monthlyExta }; //in case the event is on day 1 of the loan
-    monthlyPaymentPerEvent[eventIndex] = { loan: loanData.monthly, extra: loanData.monthlyExta };
 
     if (remaining[i + 1] <= 0) {
       monthlyPrincipal[i] += remaining[i + 1];

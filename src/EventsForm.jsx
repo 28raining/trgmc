@@ -18,13 +18,15 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
 
   const [showEventToast, setShowEventToast] = useState(false);
 
-  var timeSaved = loanRes["numMonths"] - loanRes["endMonth"];
+  var timeSaved = loanRes["numMonths"] - 1 - loanRes["endMonth"];
   var yearsSaved = Math.floor(timeSaved / 12);
   var monthSaved = timeSaved % 12;
 
   var showTimeReduced = false;
   for (var i = 0; i < loanEvent.length; i++) {
     if (loanEvent[i]["event"] == "Over-pay") showTimeReduced = true;
+    if (loanEvent[i]["event"] == "Refinance") showTimeReduced = true;
+    if (loanEvent[i]["event"] == "Recast") showTimeReduced = true;
   }
 
   var interestSaved = loanRes["interestPlusPrincipal"] - loanRes["totalPrincipal"] - loanRes["totalInterest"] - loanRes["extraPayments"];
@@ -69,14 +71,6 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
     }
   }
 
-  function noOtherEvents() {
-    if (chosenEvent != "Refinance") return true;
-    for (const e of loanEvent) {
-      if (e["date"] == chosenDate) return false;
-    }
-    return true;
-  }
-
   const indexOfChosenDate = loanMonths.indexOf(chosenDate);
 
   if (indexOfChosenDate < 0) setChosenDate(loanMonths[1]);
@@ -85,8 +79,7 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
   const validDate = indexOfChosenDate >= 0;
   const validRecast = validRecastDate();
   const validOverpay = chosenEvent != "Over-pay" || (newChange > 0 && OverPayNotTooMuch);
-  const canRefi = noOtherEvents();
-  const canAdd = validDate & validRecast & validOverpay & canRefi;
+  const canAdd = validDate & validRecast & validOverpay;
   const canAddText = "Correct the form";
   const overPayText = !isNumber(newChange) || newChange == 0 ? "Overpay must be > 0" : "Overpay must be less than remaining balance";
 
@@ -288,10 +281,6 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
               ) : !validRecast ? (
                 <div className="invalid-feedback" style={{ display: "initial" }}>
                   Recast only possible after overpay
-                </div>
-              ) : !canRefi ? (
-                <div className="invalid-feedback" style={{ display: "initial" }}>
-                  Cannot refinance on same date as other event
                 </div>
               ) : !validOverpay ? (
                 <div className="invalid-feedback" style={{ display: "initial" }}>
