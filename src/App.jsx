@@ -185,17 +185,17 @@ const initialState = {
 const searchParams = new URLSearchParams(window.location.search);
 const initialOverride = {};
 const initialRentSimulation = {
-  rent : 2000,
+  rent: 2000,
   stocks: 0.03,
-}
+};
 const overrideRentSimulation = {};
 var initialEvents = [];
 var gotStuffFromURL = false;
 for (const [key, value] of searchParams.entries()) {
   gotStuffFromURL = true;
   if (key == "events") initialEvents = loanEventDecoder(value, initialEvents);
-  if (key == "rent") overrideRentSimulation.rent=parseFloat(value);
-  else if (key == "stocks") overrideRentSimulation.stocks=parseFloat(value);
+  if (key == "rent") overrideRentSimulation.rent = parseFloat(value);
+  else if (key == "stocks") overrideRentSimulation.stocks = parseFloat(value);
   else if (value == "true") initialOverride[key] = true;
   else if (value == "false") initialOverride[key] = false;
   else initialOverride[key] = value;
@@ -208,7 +208,7 @@ function App() {
   const [chosenInput, setChosenInput] = useState("homeVal");
   const [userSetDownPercent, setUserSetDownPercent] = useState(initialUserSetDownPercent);
   const [showURLToast, setShowURLToast] = useState(gotStuffFromURL);
-  const [rentSim, setRentSim] = useState({...initialRentSimulation, ...overrideRentSimulation});
+  const [rentSim, setRentSim] = useState({ ...initialRentSimulation, ...overrideRentSimulation });
 
   const [userInput, setUserInput] = useState({ ...initialState, ...initialOverride });
   const [flash, setFlash] = useState({
@@ -549,7 +549,15 @@ function App() {
               </button>
             </OverlayTrigger>
             <OverlayTrigger overlay={<Tooltip>{"Re-start from scratch"}</Tooltip>} placement="bottom">
-              <button type="button" className="btn btn-outline-secondary" aria-label="Start fresh" onClick={() => {updateUserInput("reset"); setRentSim(initialRentSimulation);}}>
+              <button
+                type="button"
+                className="btn btn-outline-secondary"
+                aria-label="Start fresh"
+                onClick={() => {
+                  updateUserInput("reset");
+                  setRentSim(initialRentSimulation);
+                }}
+              >
                 <Trash key="Trash" size={20} style={{ color: "black" }} />
               </button>
             </OverlayTrigger>

@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { DEFAULT_PLOTLY_COLORS } from "./common.js";
 import { Chart } from "react-chartjs-2";
 import { cashFormat } from "./loanMaths.js";
