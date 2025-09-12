@@ -99,60 +99,58 @@ function LoanStats({ loanRes, userInput }) {
             </output>
           </div>
         )}
-        <div className="row">
-          <div className="col-xxl-6 col-sm-12">
-            <li>Principal: {cashFormat(totalPrincipal)}</li>
-          </div>
-          <div className="col-xxl-6 col-sm-12">
-            <li>Interest: {cashFormat(totalInterest)}</li>
-          </div>
-          {loanRes["extraPayments"] > 0 ? (
-            <div className="col-xxl-6 col-sm-12">
-              <li>Overpayments: {cashFormat(loanRes["extraPayments"])}</li>
-            </div>
-          ) : null}
-          {totalFeesSum > 0 ? (
-            <div className="col-xxl-6 col-sm-12">
-              <li>Fees & Expenses: {cashFormat(totalFeesSum)}</li>
-            </div>
-          ) : null}
-          {userInput["propertyTax"] > 0 ? (
-            <div className="col-xxl-6 col-sm-12">
-              <li>Tax: {cashFormat(totalTax)}</li>
-            </div>
-          ) : null}
-          {userInput["hoa"] > 0 ? (
-            <div className="col-xxl-6 col-sm-12">
-              <li>HoA: {cashFormat(totalHoA)}</li>
-            </div>
-          ) : null}
-          {userInput["pmi"] > 0 ? (
-            <div className="col-xxl-6 col-sm-12">
-              <li>
-                PMI: {cashFormat(totalpmi)}{" "}
-                <small>
-                  <em>({pmiPayments} payments)</em>
-                </small>
-              </li>
-            </div>
-          ) : null}
-          {userInput["utilities"] > 0 ? (
-            <div className="col-xxl-6 col-sm-12">
-              <li>Utilities: {cashFormat(totalutilities)}</li>
-            </div>
-          ) : null}
-          {userInput["maintenance"] > 0 ? (
-            <div className="col-xxl-6 col-sm-12">
-              <li>Maintenance: {cashFormat(totalmaintenance)}</li>
-            </div>
-          ) : null}
-          {userInput["insurance"] > 0 ? (
-            <div className="col-xxl-6 col-sm-12">
-              <li>Insurance: {cashFormat(totalInsurance)}</li>
-            </div>
-          ) : null}
-        </div>
       </div>
+      <div className="col-xxl-6 col-sm-12 ps-4">
+        <li>Principal: {cashFormat(totalPrincipal)}</li>
+      </div>
+      <div className="col-xxl-6 col-sm-12 ps-4">
+        <li>Interest: {cashFormat(totalInterest)}</li>
+      </div>
+      {loanRes["extraPayments"] > 0 ? (
+        <div className="col-xxl-6 col-sm-12 ps-4">
+          <li>Overpayments: {cashFormat(loanRes["extraPayments"])}</li>
+        </div>
+      ) : null}
+      {totalFeesSum > 0 ? (
+        <div className="col-xxl-6 col-sm-12 ps-4">
+          <li>Fees & Expenses: {cashFormat(totalFeesSum)}</li>
+        </div>
+      ) : null}
+      {userInput["propertyTax"] > 0 ? (
+        <div className="col-xxl-6 col-sm-12 ps-4">
+          <li>Tax: {cashFormat(totalTax)}</li>
+        </div>
+      ) : null}
+      {userInput["hoa"] > 0 ? (
+        <div className="col-xxl-6 col-sm-12 ps-4">
+          <li>HoA: {cashFormat(totalHoA)}</li>
+        </div>
+      ) : null}
+      {userInput["pmi"] > 0 ? (
+        <div className="col-xxl-6 col-sm-12 ps-4">
+          <li>
+            PMI: {cashFormat(totalpmi)}{" "}
+            <small>
+              <em>({pmiPayments} payments)</em>
+            </small>
+          </li>
+        </div>
+      ) : null}
+      {userInput["utilities"] > 0 ? (
+        <div className="col-xxl-6 col-sm-12 ps-4">
+          <li>Utilities: {cashFormat(totalutilities)}</li>
+        </div>
+      ) : null}
+      {userInput["maintenance"] > 0 ? (
+        <div className="col-xxl-6 col-sm-12 ps-4">
+          <li>Maintenance: {cashFormat(totalmaintenance)}</li>
+        </div>
+      ) : null}
+      {userInput["insurance"] > 0 ? (
+        <div className="col-xxl-6 col-sm-12 ps-4">
+          <li>Insurance: {cashFormat(totalInsurance)}</li>
+        </div>
+      ) : null}
     </div>
   );
 }
