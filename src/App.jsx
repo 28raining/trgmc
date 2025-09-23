@@ -194,7 +194,7 @@ var gotStuffFromURL = false;
 for (const [key, value] of searchParams.entries()) {
   gotStuffFromURL = true;
   if (key == "events") initialEvents = loanEventDecoder(value, initialEvents);
-  if (key == "rent") overrideRentSimulation.rent = parseFloat(value);
+  else if (key == "rent") overrideRentSimulation.rent = parseFloat(value);
   else if (key == "stocks") overrideRentSimulation.stocks = parseFloat(value);
   else if (value == "true") initialOverride[key] = true;
   else if (value == "false") initialOverride[key] = false;

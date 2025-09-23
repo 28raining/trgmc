@@ -222,7 +222,6 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, pmi, util
         },
         callbacks: {
           title: function (context) {
-            console.log(context);
             var sum = 0;
             context.forEach((c) => {
               if (c.dataset.label != "Remaining Balance") sum = sum + c.raw;
