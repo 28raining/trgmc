@@ -127,8 +127,6 @@ function runCalculations(userInput, loanEvent, chosenInput, userSetDownPercent) 
 
 function loanEventEncoder(loanEvent) {
   var str = `${loanEvent["event"]}_${loanEvent["date"].replace(" ", "")}_${loanEvent["cost"]}_${loanEvent["change"]}_${loanEvent["newLength"]}_${loanEvent["repeats"]}`;
-  // if ("newLength" in loanEvent) str += `_${loanEvent["newLength"]}`;
-  // console.log(str, loanEvent)
   return str;
 }
 
@@ -257,12 +255,6 @@ function App() {
     var newDisplayState = { ...displayState };
     var newLoanEvent = loanEvent;
 
-    // if (userSetDownPercent) {
-    //   var downPayCash = (loanRes["loanAmount"] * userInput["downPayPercent"]) / 100;
-    // } else {
-    //   var downPayCash = parseFloat(userInput.downPayCash);
-    // }
-
     newDisplayState[field] = value; //FIXME - can do the same thing with user input?
 
     if (field == "homeVal") {
@@ -342,6 +334,8 @@ function App() {
       if (newChosenInput == "homeVal") newFlash["loanAmount"] = !newFlash["loanAmount"];
     } else if (field == "startDate") {
       newUserInput.startDate = value;
+      //wipe events incase any event was starting before the new start date
+      newLoanEvent = [];
     } else if (field == "reset") {
       newChosenInput = "homeVal";
       newUserInput = { ...initialState };
