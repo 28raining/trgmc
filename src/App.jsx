@@ -1,6 +1,7 @@
 import { useState } from "react";
 import LoanForm from "./LoanForm.jsx";
 import { loanMaths, isNumber } from "./loanMaths.js";
+import ModeToggle from "./ModeToggle.jsx";
 import LoanPlot from "./LoanPlot.jsx";
 import LoanStats from "./LoanStats.jsx";
 import EventsForm from "./EventsForm.jsx";
@@ -568,21 +569,18 @@ function App() {
         </Modal>
       </nav>
       <div className="container-xxl py-3 rounded">
-        <div className="row">
-          <div className="col-12">
-            <div className="row shadow-sm border rounded mx-0 mb-3" style={{ backgroundColor: "white" }}>
-              <div className="col">
-                <p className="my-2">
-                  An easy to use mortgage calculator to find out exactly how much it will cost to buy a house. Or, enter a monthly budget. How much can you
-                  afford? This tool supports unlimited overpayment, re-finance and recast events. Also, try adding inflation.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <ModeToggle
+          chosenInput={chosenInput}
+          displayState={displayState}
+          valid={valid}
+          flash={flash}
+          userInput={userInput}
+          updateUserInput={updateUserInput}
+        />
+
         <div className="row">
           <div className="col-lg-7 col-12 mb-3">
-            <LoanForm displayState={displayState} valid={valid} flash={flash} updateUserInput={(f, v) => updateUserInput(f, v)} />
+            <LoanForm displayState={displayState} valid={valid} flash={flash} updateUserInput={(f, v) => updateUserInput(f, v)} chosenInput={chosenInput} />
           </div>
           <div className="col-lg-5 col-12">
             <div className="row">

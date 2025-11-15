@@ -122,3 +122,63 @@ body {
   --bs-tooltip-bg: var(--bd-violet-bg);
   --bs-tooltip-color: var(--bs-white);
 }
+
+.mode-toggle-btn {
+  position: relative;
+  border: 1px solid #0dcaf0 !important;
+}
+
+.mode-toggle-btn:first-child {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+.mode-toggle-btn:last-child {
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
+
+.mode-toggle-active {
+  background-color: #0cbbde !important;
+  border-color: #0cbbde !important;
+  color: #fff !important;
+  z-index: 1;
+  box-shadow: 0 2px 4px rgba(13, 202, 240, 0.3);
+}
+
+.mode-toggle-active:hover {
+  background-color: #0aa2c0 !important;
+  border-color: #0aa2c0 !important;
+  color: #fff !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(13, 202, 240, 0.4);
+}
+
+.mode-toggle-inactive {
+  background-color: #fff !important;
+  border-color: #0dcaf0 !important;
+  color: #000 !important;
+}
+
+.mode-toggle-inactive:hover {
+  background-color: #cff4fc !important;
+  border-color: #0dcaf0 !important;
+  color: #000 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(13, 202, 240, 0.2);
+}
+
+.mode-toggle-btn:active {
+  transform: translateY(0);
+}
+
+@media (width <= 768px) {
+  .mode-toggle-btn {
+    min-width: 140px !important;
+    padding: 0.75rem 1rem !important;
+  }
+  
+  .mode-toggle-btn small {
+    font-size: 0.7rem !important;
+  }
+}

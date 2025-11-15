@@ -26,7 +26,7 @@ function FbComp({ x }) {
   }
 }
 
-function LoanForm({ displayState, flash, updateUserInput, valid }) {
+function LoanForm({ displayState, flash, updateUserInput, valid, chosenInput }) {
   const [show, setShow] = useState(false);
   const feeOptions = ["$ / year", "$ / month", "% / year", "% / month"];
   const additionalPayments =
@@ -97,43 +97,6 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
 
   return (
     <div>
-      <div className="row shadow-sm border rounded mb-3 py-2 mx-0" style={{ backgroundColor: "white" }}>
-        <div className="col-5 pe-0">
-          <label>Home Value</label>
-          <input
-            // key={homeVal}
-            type="text"
-            inputMode="numeric"
-            className={inputClass["homeVal"]}
-            value={cashFormat(displayState["homeVal"])}
-            onChange={(e) => updateIfChanged(displayState["homeVal"], e.target.value, "homeVal")}
-          />
-          <ValidFbComp x={valid["homeVal"]} />
-          {additionalPayments ? (
-            <label>
-              <small></small>
-            </label>
-          ) : null}
-        </div>
-        <div className="col-2 text-center align-self-center">or</div>
-        <div className="col-5 ps-0">
-          <label>Monthly Payment</label>
-          <input
-            type="text"
-            inputMode="numeric"
-            className={inputClass["monthlyPayment"]}
-            onChange={(e) => updateIfChanged(displayState["monthlyPayment"], e.target.value, "monthlyPayment")}
-            value={cashFormat(displayState["monthlyPayment"])}
-          />
-
-          <ValidFbComp x={valid["monthlyPayment"]} />
-          {additionalPayments ? (
-            <label>
-              <small>{cashFormat(displayState["monthlyPaymentToLoan"])} towards loan</small>
-            </label>
-          ) : null}
-        </div>
-      </div>
       <div className="row shadow-sm border rounded mb-3 py-2 mx-0" style={{ backgroundColor: "white" }}>
         <div className="col-12">
           <label>Down Payment</label>
