@@ -1,6 +1,7 @@
 import { useState } from "react";
 import LoanForm from "./LoanForm.jsx";
 import { loanMaths, isNumber } from "./loanMaths.js";
+import ModeToggle from "./ModeToggle.jsx";
 import LoanPlot from "./LoanPlot.jsx";
 import LoanStats from "./LoanStats.jsx";
 import EventsForm from "./EventsForm.jsx";
@@ -203,7 +204,7 @@ if (searchParams.has("downPayCash")) initialUserSetDownPercent = false;
 
 function App() {
   const [loanEvent, setLoanEvent] = useState(initialEvents);
-  const [chosenInput, setChosenInput] = useState("homeVal");
+  const [chosenInput, setChosenInput] = useState("monthlyPayment" in initialOverride ? "monthlyPayment" : "homeVal");
   const [userSetDownPercent, setUserSetDownPercent] = useState(initialUserSetDownPercent);
   const [showURLToast, setShowURLToast] = useState(gotStuffFromURL);
   const [rentSim, setRentSim] = useState({ ...initialRentSimulation, ...overrideRentSimulation });
@@ -568,28 +569,18 @@ function App() {
         </Modal>
       </nav>
       <div className="container-xxl py-3 rounded">
-        <div className="row">
-          <div className="col-12">
-            <div className="row shadow-sm border rounded mx-0 mb-3" style={{ backgroundColor: "white" }}>
-              <div className="col">
-                <p className="my-2">
-                  An easy to use mortgage calculator to find out exactly how much it will cost to buy a house. Or, enter a monthly budget. How much can you
-                  afford? This tool supports unlimited overpayment, re-finance and recast events. Also, try adding inflation.
-                </p>
-              </div>
-            </div>
+        <ModeToggle chosenInput={chosenInput} displayState={displayState} valid={valid} flash={flash} userInput={userInput} updateUserInput={updateUserInput} />
+
+        <div className="row mx-0">
+          <div className="col-lg-7 col-12 mb-3 px-2 mx-0">
+            <LoanForm displayState={displayState} valid={valid} flash={flash} updateUserInput={(f, v) => updateUserInput(f, v)} chosenInput={chosenInput} />
           </div>
-        </div>
-        <div className="row">
-          <div className="col-lg-7 col-12 mb-3">
-            <LoanForm displayState={displayState} valid={valid} flash={flash} updateUserInput={(f, v) => updateUserInput(f, v)} />
-          </div>
-          <div className="col-lg-5 col-12">
-            <div className="row">
-              <div className="col-12 mb-3">
+          <div className="col-lg-5 col-12 px-0 mx-0">
+            <div className="row mx-0 px-0">
+              <div className="col-12 mb-3 px-2 mx-0">
                 <LoanStats loanRes={loanRes} userInput={userInput} />
               </div>
-              <div className="col-12 mb-3">
+              <div className="col-12 mb-3 px-2 mx-0">
                 <EventsForm
                   loanMonths={loanRes["loanMonths"]}
                   loanEvent={loanEvent}
@@ -607,38 +598,32 @@ function App() {
             </div>
           </div>
         </div>
-        <div className="row">
-          <div className="col-12">
-            <LoanPlot
-              maxMonthly={Math.max(loanRes["monthlyPayment"])}
-              loanRes={loanRes}
-              loanMonths={loanRes["loanMonths"]}
-              propertyTax={userInput["propertyTax"] * unitScaler(userInput["propertyTaxUnit"])}
-              hoa={userInput["hoa"] * unitScaler(userInput["hoaUnit"])}
-              pmi={userInput["pmi"] * unitScaler(userInput["pmiUnit"])}
-              utilities={userInput["utilities"] * unitScaler(userInput["utilitiesUnit"])}
-              maintenance={userInput["maintenance"] * unitScaler(userInput["maintenanceUnit"])}
-              insurance={userInput["insurance"] * unitScaler(userInput["insuranceUnit"])}
-              startDate={new Date(Number(userInput["startDate"]))}
-              inflation={loanRes["inflation"]}
-            />
-          </div>
-        </div>
-        <div className="row shadow-sm border rounded mx-0 mt-5 mb-3" style={{ backgroundColor: "white" }}>
-          <div className="col-12 py-2">
-            <Rent
-              downPayment={displayState["downPayCash"]}
-              loanMonths={loanRes["loanMonths"]}
-              inflation={loanRes["inflation"]}
-              equity={loanRes["equity"]}
-              homeVal={loanRes["homeVal"]}
-              monthlyPayment={loanRes["monthlyPayment"]}
-              overPayments={loanRes["overPayments"]}
-              totalFees={loanRes["totalFees"]}
-              rentSim={rentSim}
-              setRentSim={(r) => setRentSim(r)}
-            />
-          </div>
+        <LoanPlot
+          maxMonthly={Math.max(loanRes["monthlyPayment"])}
+          loanRes={loanRes}
+          loanMonths={loanRes["loanMonths"]}
+          propertyTax={userInput["propertyTax"] * unitScaler(userInput["propertyTaxUnit"])}
+          hoa={userInput["hoa"] * unitScaler(userInput["hoaUnit"])}
+          pmi={userInput["pmi"] * unitScaler(userInput["pmiUnit"])}
+          utilities={userInput["utilities"] * unitScaler(userInput["utilitiesUnit"])}
+          maintenance={userInput["maintenance"] * unitScaler(userInput["maintenanceUnit"])}
+          insurance={userInput["insurance"] * unitScaler(userInput["insuranceUnit"])}
+          startDate={new Date(Number(userInput["startDate"]))}
+          inflation={loanRes["inflation"]}
+        />
+        <div className="row shadow-sm border rounded mx-2 mt-5 mb-3" style={{ backgroundColor: "white" }}>
+          <Rent
+            downPayment={displayState["downPayCash"]}
+            loanMonths={loanRes["loanMonths"]}
+            inflation={loanRes["inflation"]}
+            equity={loanRes["equity"]}
+            homeVal={loanRes["homeVal"]}
+            monthlyPayment={loanRes["monthlyPayment"]}
+            overPayments={loanRes["overPayments"]}
+            totalFees={loanRes["totalFees"]}
+            rentSim={rentSim}
+            setRentSim={(r) => setRentSim(r)}
+          />
         </div>
         <div className="row shadow-sm border rounded mx-0" style={{ backgroundColor: "white" }}>
           <div className="col-12">
