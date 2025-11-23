@@ -89,7 +89,7 @@ function Rent({ loanMonths, inflation, downPayment, equity, homeVal, monthlyPaym
 
   // Render chart with explanatory paragraph
   return (
-    <div className="row px-2">
+    <>
       <div className="col-12">
         <h5 className="my-2"> Instead of buying a home, what if that money was invested in the stock market?</h5>
         <ul>
@@ -173,7 +173,7 @@ function Rent({ loanMonths, inflation, downPayment, equity, homeVal, monthlyPaym
           <Chart type="line" data={data} options={options} />
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

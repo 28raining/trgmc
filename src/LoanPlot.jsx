@@ -249,23 +249,16 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, pmi, util
   };
 
   return (
-    <div className="row shadow-sm border rounded mb-3 py-1 mx-0 px-1" style={{ backgroundColor: "white" }}>
+    <div className="row shadow-sm border rounded mb-3 py-1 mx-2 px-1" style={{ backgroundColor: "white" }}>
       <div className="col-12 px-0">
-        <div className="row mx-0">
-          <div className="col-12 px-0">
-            <div className="plotHeight">
-              <Chart type="bar" data={data} options={options} />
-            </div>
-          </div>
+        <div className="plotHeight">
+          <Chart type="bar" data={data} options={options} />
         </div>
 
         <div className="row mx-0">
-          <div className="col-1">
-            <span>Show: </span>
-          </div>
-          {["Monthly Breakdown", "Yearly Breakdown"].map((x) => (
-            <div className="col-xxl-2 col-md-4 col-sm-5 col-12" key={x}>
-              <div className="form-check form-check-inline">
+          <div className="col-12 ps-4">
+            {["Monthly Breakdown", "Yearly Breakdown"].map((x) => (
+              <div className="form-check form-check-inline" key={x}>
                 <input
                   className="form-check-input"
                   type="radio"
@@ -276,8 +269,8 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, pmi, util
                 />
                 <label className="form-check-label">{x}</label>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </div>

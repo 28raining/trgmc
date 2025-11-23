@@ -35,52 +35,63 @@ function ModeToggle({ chosenInput, displayState, valid, flash, userInput, update
 
   return (
     <>
-      <div className="row">
+      <div className="row mx-0">
         <div className="col-12">
           <div className="d-flex flex-column align-items-center mb-4">
             <h6 className="mb-3 text-center fw-normal text-muted">I want to start with:</h6>
 
-            <div className="d-flex gap-0 shadow-sm" role="group" aria-label="Mortgage calculator mode" style={{ borderRadius: "12px" }}>
+            <div
+              className="d-flex gap-0 shadow-sm w-100"
+              role="group"
+              aria-label="Mortgage calculator mode"
+              style={{ borderRadius: "12px", maxWidth: "510px" }}
+            >
               <button
                 type="button"
-                className={`btn px-4 py-3 mode-toggle-btn ${chosenInput === "homeVal" ? "mode-toggle-active" : "mode-toggle-inactive"}`}
+                className={`btn px-2 px-md-4 py-3 mode-toggle-btn ${chosenInput === "homeVal" ? "mode-toggle-active" : "mode-toggle-inactive"}`}
                 onClick={handleHomeValClick}
                 style={{
                   borderRadius: "12px 0 0 12px",
                   borderRight: chosenInput === "homeVal" ? "none" : "1px solid #0dcaf0",
                   transition: "all 0.2s ease",
-                  minWidth: "160px",
+                  flex: "1 1 0",
+                  minWidth: 0,
                 }}
               >
                 <div className="d-flex flex-column align-items-center">
                   <div className="mb-1">
-                    <span className="me-2" style={{ fontSize: "1.2em" }}>🏠</span>
+                    <span className="me-2" style={{ fontSize: "1.2em" }}>
+                      🏠
+                    </span>
                     <span className="fw-semibold">Home Price</span>
                   </div>
                   <small className={chosenInput === "homeVal" ? "text-white" : "text-body"} style={{ fontSize: "0.75rem" }}>
-                    Enter the price of the home
+                    The price of the home
                   </small>
                 </div>
               </button>
 
               <button
                 type="button"
-                className={`btn px-4 py-3 mode-toggle-btn ${chosenInput === "monthlyPayment" ? "mode-toggle-active" : "mode-toggle-inactive"}`}
+                className={`btn px-2 px-md-4 py-3 mode-toggle-btn ${chosenInput === "monthlyPayment" ? "mode-toggle-active" : "mode-toggle-inactive"}`}
                 onClick={handleMonthlyPaymentClick}
                 style={{
                   borderRadius: "0 12px 12px 0",
                   borderLeft: chosenInput === "monthlyPayment" ? "none" : "1px solid #0dcaf0",
                   transition: "all 0.2s ease",
-                  minWidth: "160px",
+                  flex: "1 1 0",
+                  minWidth: 0,
                 }}
               >
                 <div className="d-flex flex-column align-items-center">
                   <div className="mb-1">
-                    <span className="me-2" style={{ fontSize: "1.2em" }}>💵</span>
+                    <span className="me-2" style={{ fontSize: "1.2em" }}>
+                      💵
+                    </span>
                     <span className="fw-semibold">Monthly Budget</span>
                   </div>
                   <small className={chosenInput === "monthlyPayment" ? "text-white" : "text-body"} style={{ fontSize: "0.75rem" }}>
-                    Enter how much you can pay each month
+                    How much you can pay each month
                   </small>
                 </div>
               </button>
@@ -88,94 +99,111 @@ function ModeToggle({ chosenInput, displayState, valid, flash, userInput, update
           </div>
         </div>
       </div>
-      {chosenInput && (
-        <div className="row mb-4">
-          <div className="col-12">
-            <div className="d-flex justify-content-center">
-              <div className="row shadow-sm border rounded py-3 px-4" style={{ backgroundColor: "white", maxWidth: "800px", width: "100%" }}>
-                {chosenInput === "homeVal" ? (
-                  <>
-                    <div className="col-md-5 pe-md-2">
-                      <label className="form-label mb-1">Home Value</label>
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        className={`form-control ${valid["homeVal"] !== null ? "is-invalid" : ""} ${flash["homeVal"] ? "anim1" : "anim2"} ${displayState["lock"]?.includes("homeVal") ? "lock lockBG" : ""}`}
-                        value={cashFormat(displayState["homeVal"])}
-                        onChange={(e) => updateIfChanged(displayState["homeVal"], e.target.value, "homeVal")}
-                      />
-                      {valid["homeVal"] !== null && (
-                        <div className="invalid-feedback" style={{ display: "initial" }}>
-                          {valid["homeVal"]}
-                        </div>
-                      )}
-                    </div>
-                    <div className="col-md-2 text-center align-self-center my-2 my-md-0">
-                      <span style={{ fontSize: "1.5em" }}>→</span>
-                    </div>
-                    <div className="col-md-5 ps-md-2">
-                      <label className="form-label mb-1">Monthly Payment</label>
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        className={`form-control ${flash["monthlyPayment"] ? "anim1" : "anim2"}`}
-                        value={cashFormat(displayState["monthlyPayment"])}
-                        readOnly
-                        style={{ backgroundColor: "#f8f9fa", cursor: "not-allowed" }}
-                      />
-                      {additionalPayments && (
-                        <label>
-                          <small className="text-muted">{cashFormat(displayState["monthlyPaymentToLoan"])} towards loan</small>
-                        </label>
-                      )}
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="col-md-5 pe-md-2">
-                      <label className="form-label mb-1">Monthly Payment</label>
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        className={`form-control ${valid["monthlyPayment"] !== null ? "is-invalid" : ""} ${flash["monthlyPayment"] ? "anim1" : "anim2"} ${displayState["lock"]?.includes("monthlyPayment") ? "lock lockBG" : ""}`}
-                        value={cashFormat(displayState["monthlyPayment"])}
-                        onChange={(e) => updateIfChanged(displayState["monthlyPayment"], e.target.value, "monthlyPayment")}
-                      />
-                      {valid["monthlyPayment"] !== null && (
-                        <div className="invalid-feedback" style={{ display: "initial" }}>
-                          {valid["monthlyPayment"]}
-                        </div>
-                      )}
-                      {additionalPayments && (
-                        <label>
-                          <small className="text-muted">{cashFormat(displayState["monthlyPaymentToLoan"])} towards loan</small>
-                        </label>
-                      )}
-                    </div>
-                    <div className="col-md-2 text-center align-self-center my-2 my-md-0">
-                      <span style={{ fontSize: "1.5em" }}>→</span>
-                    </div>
-                    <div className="col-md-5 ps-md-2">
-                      <label className="form-label mb-1">Home Value</label>
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        className={`form-control ${flash["homeVal"] ? "anim1" : "anim2"}`}
-                        value={cashFormat(displayState["homeVal"])}
-                        readOnly
-                        style={{ backgroundColor: "#f8f9fa", cursor: "not-allowed" }}
-                      />
-                    </div>
-                  </>
-                )}
-              </div>
+      <div className="row mb-4 mx-0">
+        <div className="col-12">
+          <div className="d-flex justify-content-center">
+            <div className="row shadow-sm border rounded py-3 px-2 px-md-4 w-100" style={{ backgroundColor: "white", maxWidth: "800px" }}>
+              {chosenInput === "homeVal" ? (
+                <>
+                  <div className="col-5 px-0">
+                    <label className="form-label mb-1">Home Value</label>
+                    <input
+                      key="homeVal-input"
+                      type="text"
+                      inputMode="numeric"
+                      className={`form-control ${valid["homeVal"] !== null ? "is-invalid" : ""}`}
+                      value={cashFormat(userInput["homeVal"])}
+                      onChange={(e) => updateIfChanged(userInput["homeVal"], e.target.value, "homeVal")}
+                    />
+                    {valid["homeVal"] !== null && (
+                      <div className="invalid-feedback" style={{ display: "initial" }}>
+                        {valid["homeVal"]}
+                      </div>
+                    )}
+                  </div>
+                  <div className="col-2 text-center align-self-center px-0">
+                    <span style={{ fontSize: "1.2em" }} className="d-md-none">
+                      →
+                    </span>
+                    <span style={{ fontSize: "1.5em" }} className="d-none d-md-inline">
+                      →
+                    </span>
+                  </div>
+                  <div className="col-5 px-0">
+                    <label className="form-label mb-1">Monthly Payment</label>
+                    <input
+                      key="monthlyPayment-input"
+                      type="text"
+                      inputMode="numeric"
+                      className={`form-control ${flash["monthlyPayment"] ? "anim1" : "anim2"}`}
+                      value={cashFormat(displayState["monthlyPayment"])}
+                      readOnly
+                      style={{ color: "rgb(222, 64, 40)", cursor: "not-allowed" }}
+                    />
+                    {additionalPayments && (
+                      <label>
+                        <small className="text-muted d-none d-md-inline">{cashFormat(displayState["monthlyPaymentToLoan"])} towards loan</small>
+                      </label>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="col-5 px-0">
+                    <label className="form-label mb-1">Monthly Payment</label>
+                    <input
+                      key="monthlyPayment-input"
+                      type="text"
+                      inputMode="numeric"
+                      className={`form-control ${valid["monthlyPayment"] !== null ? "is-invalid" : ""}`}
+                      value={cashFormat(userInput["monthlyPayment"] !== "0" ? userInput["monthlyPayment"] : displayState["monthlyPayment"])}
+                      onChange={(e) =>
+                        updateIfChanged(
+                          userInput["monthlyPayment"] !== "0" ? userInput["monthlyPayment"] : displayState["monthlyPayment"],
+                          e.target.value,
+                          "monthlyPayment"
+                        )
+                      }
+                    />
+                    {valid["monthlyPayment"] !== null && (
+                      <div className="invalid-feedback" style={{ display: "initial" }}>
+                        {valid["monthlyPayment"]}
+                      </div>
+                    )}
+                    {additionalPayments && (
+                      <label>
+                        <small className="text-muted d-none d-md-inline">{cashFormat(displayState["monthlyPaymentToLoan"])} towards loan</small>
+                      </label>
+                    )}
+                  </div>
+                  <div className="col-2 text-center align-self-center px-0">
+                    <span style={{ fontSize: "1.2em" }} className="d-md-none">
+                      →
+                    </span>
+                    <span style={{ fontSize: "1.5em" }} className="d-none d-md-inline">
+                      →
+                    </span>
+                  </div>
+                  <div className="col-5 px-0">
+                    <label className="form-label mb-1">Home Value</label>
+                    <input
+                      key="homeVal-input"
+                      type="text"
+                      inputMode="numeric"
+                      className={`form-control ${flash["homeVal"] ? "anim1" : "anim2"}`}
+                      value={cashFormat(displayState["homeVal"])}
+                      readOnly
+                      style={{ color: "rgb(222, 64, 40)", cursor: "not-allowed" }}
+                    />
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
-      )}
+      </div>
     </>
   );
 }
 
 export default ModeToggle;
-

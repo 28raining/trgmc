@@ -26,16 +26,9 @@ function FbComp({ x }) {
   }
 }
 
-function LoanForm({ displayState, flash, updateUserInput, valid, chosenInput }) {
+function LoanForm({ displayState, flash, updateUserInput, valid }) {
   const [show, setShow] = useState(false);
   const feeOptions = ["$ / year", "$ / month", "% / year", "% / month"];
-  const additionalPayments =
-    Number(displayState["propertyTax"]) > 0 ||
-    Number(displayState["hoa"]) > 0 ||
-    Number(displayState["insurance"]) > 0 ||
-    Number(displayState["pmi"]) ||
-    Number(displayState["maintenance"]) > 0 ||
-    Number(displayState["utilities"]) > 0;
 
   //builds class for each input based on flash (whether it changed and should flash) and valid (if user input is valid)
   const startDateOptions = { month: "short", year: "numeric" };
