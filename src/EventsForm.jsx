@@ -110,7 +110,7 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
   }
 
   return (
-    <div className="row shadow-sm border rounded py-2 mx-0" key="row0" style={{ backgroundColor: "white" }}>
+    <div className="row shadow-sm border rounded pb-2 mx-0" key="row0" style={{ backgroundColor: "white" }}>
       <ToastContainer position="top-end" className="pt-4">
         <Toast show={showEventToast} onClose={() => setShowEventToast(false)} delay={3000} autohide bg="info">
           <Toast.Header>
@@ -119,6 +119,12 @@ function EventsForm({ loanMonths, loanRes, loanEvent, setLoanEvent, monthlyPayme
           <Toast.Body>You just added an event, check the table</Toast.Body>
         </Toast>
       </ToastContainer>
+
+      <div className="col-12 text-center py-1">
+        <small>
+          <i>Mortgage events</i>
+        </small>
+      </div>
 
       <div className="col-12" key="col0">
         <div className="row">

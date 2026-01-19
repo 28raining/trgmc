@@ -249,7 +249,12 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, pmi, util
   };
 
   return (
-    <div className="row shadow-sm border rounded mb-3 py-1 mx-2 px-1" style={{ backgroundColor: "white" }}>
+    <div className="row shadow-sm border rounded pb-1 mb-3 mx-2 px-1" style={{ backgroundColor: "white" }}>
+      <div className="col-12 text-center py-1">
+        <small>
+          <i>Graph showing payment breakdown over time</i>
+        </small>
+      </div>
       <div className="col-12 px-0">
         <div className="plotHeight">
           <Chart type="bar" data={data} options={options} />
