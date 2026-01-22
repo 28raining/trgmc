@@ -569,6 +569,10 @@ function App() {
         </Modal>
       </nav>
       <div className="container-xxl py-3 rounded">
+        <p className="mb-3 text-muted" style={{ fontSize: "0.95rem", lineHeight: "1.5" }}>
+          <strong>This really is the best mortgage calculator!</strong> Choose a fixed monthly payment or choose a house price. Add household expenses,
+          repeating overpayments, recast mortgages, even account for inflation. Then download it to a spreadsheet or share the URL.
+        </p>
         <ModeToggle chosenInput={chosenInput} displayState={displayState} valid={valid} flash={flash} userInput={userInput} updateUserInput={updateUserInput} />
 
         <div className="row mx-0">

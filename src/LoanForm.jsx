@@ -90,7 +90,12 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
 
   return (
     <div>
-      <div className="row shadow-sm border rounded mb-3 py-2 mx-0" style={{ backgroundColor: "white" }}>
+      <div className="row shadow-sm border rounded pb-2 mb-3 mx-0" style={{ backgroundColor: "white" }}>
+        <div className="col-12 text-center py-1">
+          <small>
+            <i>Mortgage Details</i>
+          </small>
+        </div>
         <div className="col-12">
           <label>Down Payment</label>
           <div className="input-group mb-1">
@@ -186,30 +191,40 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
         </div>
       </div>
 
-      <div className="row shadow-sm border rounded py-2 mx-0" style={{ backgroundColor: "white" }}>
-        <div className="col-12 d-flex align-items-end justify-content-end">
-          <button
-            type="button"
-            className="btn btn-link py-0"
-            onClick={() => {
-              updateUserInput("propertyTaxUnit", 2);
-              updateUserInput("hoaUnit", 1);
-              updateUserInput("pmiUnit", 4);
-              updateUserInput("utilitiesUnit", 1);
-              updateUserInput("maintenanceUnit", 1);
-              updateUserInput("insuranceUnit", 0);
+      <div className="row shadow-sm border rounded pb-2 mx-0" style={{ backgroundColor: "white" }}>
+        <div className="col-12 py-1">
+          <div className="d-flex align-items-center justify-content-between flex-wrap">
+            <div className="order-2 order-md-1 flex-grow-1 d-md-block d-none"></div>
+            <div className="order-1 order-md-2 text-center flex-grow-1">
+              <small>
+                <i>Household expenses</i>
+              </small>
+            </div>
+            <div className="order-3 order-md-3 text-end">
+              <button
+                type="button"
+                className="btn btn-link py-0"
+                onClick={() => {
+                  updateUserInput("propertyTaxUnit", 2);
+                  updateUserInput("hoaUnit", 1);
+                  updateUserInput("pmiUnit", 4);
+                  updateUserInput("utilitiesUnit", 1);
+                  updateUserInput("maintenanceUnit", 1);
+                  updateUserInput("insuranceUnit", 0);
 
-              updateUserInput("propertyTax", "1.00");
-              updateUserInput("hoa", "300");
-              if (displayState["downPayPercent"] < 20) updateUserInput("pmi", "1.5");
-              else updateUserInput("pmi", "0");
-              updateUserInput("utilities", "120");
-              updateUserInput("maintenance", "300");
-              updateUserInput("insurance", "1000");
-            }}
-          >
-            Populate with estimates
-          </button>
+                  updateUserInput("propertyTax", "1.00");
+                  updateUserInput("hoa", "300");
+                  if (displayState["downPayPercent"] < 20) updateUserInput("pmi", "1.5");
+                  else updateUserInput("pmi", "0");
+                  updateUserInput("utilities", "120");
+                  updateUserInput("maintenance", "300");
+                  updateUserInput("insurance", "1000");
+                }}
+              >
+                Populate with estimates
+              </button>
+            </div>
+          </div>
         </div>
         <div className="col-xxl-4 col-sm-6 col-12">
           <label>Property Tax</label>

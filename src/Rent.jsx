@@ -90,8 +90,12 @@ function Rent({ loanMonths, inflation, downPayment, equity, homeVal, monthlyPaym
   // Render chart with explanatory paragraph
   return (
     <>
+      <div className="col-12 text-center py-1">
+        <small>
+          <i>Instead of buying a home, what if that money was invested in the stock market?</i>
+        </small>
+      </div>
       <div className="col-12">
-        <h5 className="my-2"> Instead of buying a home, what if that money was invested in the stock market?</h5>
         <ul>
           <li>Invested the down payment of {cashFormat(downPayment)}</li>
           <li>
