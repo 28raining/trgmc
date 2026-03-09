@@ -399,7 +399,12 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
           </div>
         </div>
         <div className="col-xxl-4 col-sm-6 col-12">
-          <label>Maintenance</label>
+          <label>
+            Other{" "}
+            <small>
+              <em>maintenance, etc</em>
+            </small>
+          </label>
           <div className="input-group mb-1">
             <input
               type="text"

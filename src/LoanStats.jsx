@@ -143,7 +143,7 @@ function LoanStats({ loanRes, userInput }) {
       ) : null}
       {userInput["maintenance"] > 0 ? (
         <div className="col-xxl-6 col-sm-12 ps-4">
-          <li>Maintenance: {cashFormat(totalmaintenance)}</li>
+          <li>Other: {cashFormat(totalmaintenance)}</li>
         </div>
       ) : null}
       {userInput["insurance"] > 0 ? (
