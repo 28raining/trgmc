@@ -25,6 +25,8 @@ function LoanStats({ loanRes, userInput }) {
   var totalInterest = 0;
   for (const i of loanRes["monthlyPrincipal"]) totalPrincipal = totalPrincipal + i;
   for (const i of loanRes["monthlyInterest"]) totalInterest = totalInterest + i;
+  const buyerSubsidy = sumArray(loanRes["buydownSubsidy"] || []);
+  totalInterest = Math.max(0, totalInterest - buyerSubsidy);
   var totalTax = scaleMonthlyWUnit(userInput["propertyTax"], userInput["propertyTaxUnit"], loanRes["homeVal"], lengthWithInflation, loanRes["loanAmount"]);
   var totalHoA = scaleMonthlyWUnit(userInput["hoa"], userInput["hoaUnit"], loanRes["homeVal"], lengthWithInflation, loanRes["loanAmount"]);
   var totalpmi = 0;

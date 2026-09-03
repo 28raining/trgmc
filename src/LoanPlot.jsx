@@ -17,6 +17,13 @@ import { useState } from "react";
 import { DEFAULT_PLOTLY_COLORS } from "./common.js";
 import { cashFormat } from "./loanMaths.js";
 
+function buyerPaymentSplit(interest, principal, subsidy) {
+  var s = subsidy || 0;
+  var i = interest - s;
+  if (i >= 0) return { interest: i, principal: principal };
+  return { interest: 0, principal: Math.max(0, principal + i) };
+}
+
 function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, pmi, utilities, maintenance, insurance, startDate, inflation }) {
   const [monthsPerYearToPlot, setMonthsPerYearToPlot] = useState("Yearly Breakdown");
   const yTitle = monthsPerYearToPlot == "Monthly Breakdown" ? "Monthly Payment" : "Yearly Payment";
@@ -36,15 +43,19 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, pmi, util
   var insPlot = [];
   const equityString = loanRes["equity"].map((i) => `${Math.round((1000 * i) / 10)}%`);
 
+  const subsidy = loanRes["buydownSubsidy"] || [];
+
   if (monthsPerYearToPlot == "Monthly Breakdown") {
     loanMonthsFiltered = loanMonths;
-    monthlyPrincipalFiltered = loanRes["monthlyPrincipal"];
-    monthlyInterestFiltered = loanRes["monthlyInterest"];
+    monthlyPrincipalFiltered = [];
+    monthlyInterestFiltered = [];
     remainingFiltered = loanRes["remaining"];
     equityFiltered = equityString;
     pmiPlot = loanRes["monthlyPMI"];
     for (var i = 0; i < loanMonthsFiltered.length; i++) {
-      // if (pmiUnit < 2) pmiPlot[i] = pmi;
+      var split = buyerPaymentSplit(loanRes["monthlyInterest"][i], loanRes["monthlyPrincipal"][i], subsidy[i]);
+      monthlyInterestFiltered[i] = split.interest;
+      monthlyPrincipalFiltered[i] = split.principal;
       taxPlot[i] = propertyTax * inflation[i];
       hoaPlot[i] = hoa * inflation[i];
       utilitiesPlot[i] = utilities * inflation[i];
@@ -86,8 +97,9 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, pmi, util
       if (yearIndex >= utilitiesPlot.length) utilitiesPlot.push(0);
       if (yearIndex >= maintenancePlot.length) maintenancePlot.push(0);
       if (yearIndex >= insPlot.length) insPlot.push(0);
-      monthlyPrincipalFiltered[yearIndex] = monthlyPrincipalFiltered[yearIndex] + loanRes["monthlyPrincipal"][i];
-      monthlyInterestFiltered[yearIndex] = monthlyInterestFiltered[yearIndex] + loanRes["monthlyInterest"][i];
+      var yearSplit = buyerPaymentSplit(loanRes["monthlyInterest"][i], loanRes["monthlyPrincipal"][i], subsidy[i]);
+      monthlyPrincipalFiltered[yearIndex] = monthlyPrincipalFiltered[yearIndex] + yearSplit.principal;
+      monthlyInterestFiltered[yearIndex] = monthlyInterestFiltered[yearIndex] + yearSplit.interest;
       pmiPlot[yearIndex] = pmiPlot[yearIndex] + loanRes["monthlyPMI"][i];
       // else pmiPlot[yearIndex] = pmiPlot[yearIndex] + pmi;
       taxPlot[yearIndex] = taxPlot[yearIndex] + propertyTax * inflation[i];
@@ -159,7 +171,7 @@ function LoanPlot({ maxMonthly, loanRes, loanMonths, propertyTax, hoa, pmi, util
     maintainAspectRatio: false,
     scales: {
       y: {
-        max: Math.round(maxMonthly),
+        ...(monthsPerYearToPlot == "Monthly Breakdown" && isFinite(maxMonthly) ? { max: Math.round(maxMonthly) } : {}),
         position: "left",
         stacked: true,
         grid: { display: false },

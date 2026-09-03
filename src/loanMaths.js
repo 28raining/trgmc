@@ -103,6 +103,54 @@ function loanCalc(
   }
 }
 
+export const BUYDOWN_STRUCTURES = {
+  "1-0": [1],
+  "2-1": [2, 1],
+  "3-2-1": [3, 2, 1],
+};
+
+// Principal-and-interest only, original amount and original term (payment-equivalent).
+export function paymentEquivalent(loanAmount, numMonths, interestRate, interestOnly) {
+  if (!isNumber(interestRate) || !isNumber(loanAmount) || !isNumber(numMonths) || numMonths <= 0) return 0;
+  var rate = Math.max(0, parseFloat(interestRate));
+  return loanCalc(numMonths, rate, loanAmount, "homeVal", null, 0, 0, 0, 0, 0, 0, interestOnly).monthly;
+}
+
+export function getBuydownSchedule(loanAmount, numYears, noteRate, structure, interestOnly) {
+  var steps = BUYDOWN_STRUCTURES[structure];
+  if (!steps || !isNumber(loanAmount) || !isNumber(numYears) || !isNumber(noteRate)) return null;
+  var numMonths = numYears * 12;
+  var notePayment = paymentEquivalent(loanAmount, numMonths, noteRate, interestOnly);
+  var years = steps.map((reduction, i) => {
+    var rate = Math.max(0, noteRate - reduction);
+    var payment = paymentEquivalent(loanAmount, numMonths, rate, interestOnly);
+    return { year: i + 1, rate, payment, monthlySavings: notePayment - payment };
+  });
+  var cost = years.reduce((sum, y) => sum + y.monthlySavings * 12, 0);
+  return { notePayment, years, cost };
+}
+
+export function boughtRateFromCut(advertisedRate, points, rateCut) {
+  var pts = isNumber(points) ? parseFloat(points) : 0;
+  var cut = isNumber(rateCut) && rateCut !== "" ? parseFloat(rateCut) : 0.25;
+  if (!isNumber(advertisedRate) || pts <= 0) return null;
+  return Math.max(0, parseFloat(advertisedRate) - pts * cut);
+}
+
+export function getPointsBuydown(loanAmount, numYears, advertisedRate, rateCut, points, interestOnly) {
+  var pts = isNumber(points) ? parseFloat(points) : 0;
+  if (pts <= 0 || !isNumber(loanAmount) || !isNumber(numYears) || !isNumber(advertisedRate)) return null;
+  var numMonths = numYears * 12;
+  var cost = pts * 0.01 * loanAmount;
+  var boughtRate = boughtRateFromCut(advertisedRate, pts, rateCut);
+  var appliedCut = boughtRate != null ? (isNumber(rateCut) && rateCut !== "" ? parseFloat(rateCut) : 0.25) : null;
+  var before = paymentEquivalent(loanAmount, numMonths, advertisedRate, interestOnly);
+  var after = boughtRate != null ? paymentEquivalent(loanAmount, numMonths, boughtRate, interestOnly) : before;
+  var monthlySavings = before - after;
+  var breakEvenMonths = monthlySavings > 0 ? cost / monthlySavings : null;
+  return { cost, before, after, monthlySavings, breakEvenMonths, boughtRate, points: pts, rateCut: appliedCut };
+}
+
 function handleRepeatPayments(payArray, repeats, addPaymentToExistingPayments, month) {
   //it is more correct to count sundays in a month - that way every month would get exactly the right number of sundays (overpayments).
   //then the tool would be more accurate because the interest calculations are based on different remaining balances
@@ -143,7 +191,8 @@ export function loanMaths(
   PMI,
   PMI_fixed,
   appraisal,
-  interestOnly
+  interestOnly,
+  buydownOpts
 ) {
   const appraisalIsSet = appraisal !== undefined && appraisal !== null && appraisal !== "" && appraisal !== 0;
   if (!isNumber(numYears) || numYears == 0) numYears = 1; //fix issue when loan length is blank
@@ -161,6 +210,16 @@ export function loanMaths(
   var extraPayments = 0;
 
   var PMI_int = PMI;
+
+  var opts = buydownOpts || {};
+  var advertisedRate = interestRate;
+  var mode = opts.buydown || "";
+  var isPointsMode = mode === "points";
+  var tempStructure = !isPointsMode && chosenInput != "monthlyPayment" && BUYDOWN_STRUCTURES[mode] ? mode : "";
+  var points = isPointsMode && chosenInput != "monthlyPayment" && isNumber(opts.points) ? parseFloat(opts.points) : 0;
+  var boughtRate = isPointsMode && chosenInput != "monthlyPayment" ? boughtRateFromCut(advertisedRate, points, opts.rateCut) : null;
+  if (boughtRate != null) interestRate = boughtRate;
+  var buydownPayer = opts.buydownPayer == "buyer" ? "buyer" : "seller";
 
   var loanData = loanCalc(
     numMonths,
@@ -195,6 +254,36 @@ export function loanMaths(
   var totalPrincipal = 0;
   var totalInterest = 0;
   remaining[0] = loanData["loanAmount"];
+
+  var tempSchedule = getBuydownSchedule(originalLoanAmount, numYears, interestRate, tempStructure, interestOnly);
+  var pointsInfo =
+    isPointsMode && chosenInput != "monthlyPayment" ? getPointsBuydown(originalLoanAmount, numYears, advertisedRate, opts.rateCut, points, interestOnly) : null;
+  var pointsCost = pointsInfo ? pointsInfo.cost : 0;
+  if (pointsCost > 0) fees[0] += pointsCost;
+  if (tempSchedule && buydownPayer == "buyer") fees[0] += tempSchedule.cost;
+
+  var buydownSubsidy = new Array(numYears * 12).fill(0);
+  var buydownActive = tempSchedule != null;
+  var buydownInfo = null;
+  if (tempSchedule || pointsInfo) {
+    buydownInfo = {
+      advertisedRate: advertisedRate,
+      noteRate: interestRate,
+      structure: tempStructure || "",
+      payer: buydownPayer,
+      notePayment: tempSchedule ? tempSchedule.notePayment : pointsInfo ? pointsInfo.after : null,
+      years: tempSchedule ? tempSchedule.years : [],
+      tempCost: tempSchedule ? tempSchedule.cost : 0,
+      pointsCost: pointsCost,
+      points: points,
+      rateCut: pointsInfo ? pointsInfo.rateCut : null,
+      paymentBeforePoints: pointsInfo ? pointsInfo.before : null,
+      paymentAfterPoints: pointsInfo ? pointsInfo.after : null,
+      monthlySavings: pointsInfo ? pointsInfo.monthlySavings : 0,
+      breakEvenMonths: pointsInfo ? pointsInfo.breakEvenMonths : null,
+      tempCostPoints: tempSchedule && originalLoanAmount > 0 ? (tempSchedule.cost / originalLoanAmount) * 100 : 0,
+    };
+  }
 
   var rate = interestRate / 100;
   var lastMonth = 0;
@@ -258,6 +347,7 @@ export function loanMaths(
           interestOnly
         );
         refinanceEvents[i] = { interestRate: rate, newLength: loanEvent[eventIndex]["newLength"] };
+        buydownActive = false;
       } else if (loanEvent[eventIndex]["event"] == "Recast") {
         // rate = loanEvent[eventIndex].change/100;
         fees[i] = fees[i] + parseFloat(loanEvent[eventIndex].cost);
@@ -321,7 +411,13 @@ export function loanMaths(
     monthlyPMI[i] = PMI_fixed > 0 ? PMI_fixed : (remaining[i] * PMI_int) / 12;
     monthlyInterest[i] = (remaining[i] * rate) / 12;
     monthlyPrincipal[i] = interestOnly ? 0 : PMI_int > 0 ? loanData.monthly - monthlyInterest[i] - monthlyPMI[i] : loanData.monthly - monthlyInterest[i];
-    monthlyPayment[i] = loanData.monthly + loanData.monthlyExta;
+    var subsidy = 0;
+    if (buydownActive && tempSchedule) {
+      var buydownYear = Math.floor(i / 12);
+      if (buydownYear < tempSchedule.years.length) subsidy = tempSchedule.years[buydownYear].monthlySavings;
+    }
+    buydownSubsidy[i] = subsidy;
+    monthlyPayment[i] = loanData.monthly + loanData.monthlyExta - subsidy;
     remaining[i + 1] = remaining[i] - monthlyPrincipal[i];
 
     if (repeatingOverpayments[i] > remaining[i + 1]) repeatingOverpayments[i] = 0;
@@ -353,6 +449,7 @@ export function loanMaths(
   loanMonths.splice(lastMonth + 1);
   repeatingOverpayments.splice(lastMonth + 1);
   fees.splice(lastMonth + 1);
+  buydownSubsidy.splice(lastMonth + 1);
   return {
     loanAmount: originalLoanAmount,
     endMonth: lastMonth,
@@ -374,5 +471,7 @@ export function loanMaths(
     inflation: inflationScaler,
     overPayments: repeatingOverpayments,
     refinanceEvents: refinanceEvents,
+    buydownSubsidy: buydownSubsidy,
+    buydownInfo: buydownInfo,
   };
 }

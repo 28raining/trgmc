@@ -162,7 +162,8 @@ function runLoanMaths(o) {
     o.PMI,
     o.PMI_fixed,
     o.appraisal,
-    o.interestOnly
+    o.interestOnly,
+    o.buydownOpts
   );
 }
 
@@ -210,4 +211,116 @@ testScenario("loanMaths: 5", in_5, res5);
 testScenario("loanMaths: 6", in_6, res6);
 testScenario("loanMaths: 7", in_7, res7);
 testScenario("loanMaths: 8", in_8, res8);
+
+const buydownBase = {
+  loanAmount: 400000,
+  numYears: 30,
+  interestRate: 6.5,
+  loanEvent: [],
+  chosenInput: "homeVal",
+  monthlyPaymentInput: 0,
+  downPay: 0,
+  userSetDownPercent: false,
+  monthlyExtraPercent: 0,
+  monthlyExtraFee: 0,
+  startDate: 1736035200000,
+  PMI: 0,
+  PMI_fixed: 0,
+};
+
+test("2-1 buydown matches golden PMT fixtures and does not change amortization", () => {
+  const none = runLoanMaths(buydownBase);
+  const with21 = runLoanMaths({ ...buydownBase, buydownOpts: { buydown: "2-1", buydownPayer: "seller" } });
+
+  expect(with21.monthlyPayment[0]).toBeCloseTo(2026.74, 2);
+  expect(with21.monthlyPayment[11]).toBeCloseTo(2026.74, 2);
+  expect(with21.monthlyPayment[12]).toBeCloseTo(2271.16, 2);
+  expect(with21.monthlyPayment[23]).toBeCloseTo(2271.16, 2);
+  expect(with21.monthlyPayment[24]).toBeCloseTo(2528.27, 2);
+  expect(with21.buydownInfo.tempCost).toBeCloseTo(9103.76, 2);
+  expect(with21.remaining).toEqual(none.remaining);
+  expect(with21.monthlyPrincipal).toEqual(none.monthlyPrincipal);
+  expect(with21.monthlyInterest).toEqual(none.monthlyInterest);
+  expect(with21.totalFees.reduce((a, b) => a + b, 0)).toBeCloseTo(0, 5);
+});
+
+test("3-2-1 buydown matches golden PMT fixtures", () => {
+  const with321 = runLoanMaths({ ...buydownBase, buydownOpts: { buydown: "3-2-1", buydownPayer: "seller" } });
+  expect(with321.monthlyPayment[0]).toBeCloseTo(1796.18, 2);
+  expect(with321.monthlyPayment[12]).toBeCloseTo(2026.74, 2);
+  expect(with321.monthlyPayment[24]).toBeCloseTo(2271.16, 2);
+  expect(with321.monthlyPayment[36]).toBeCloseTo(2528.27, 2);
+  expect(with321.buydownInfo.tempCost).toBeCloseTo(17888.88, 2);
+});
+
+test("buyer-paid 2-1 adds escrow cost to fees; seller-paid does not", () => {
+  const seller = runLoanMaths({ ...buydownBase, buydownOpts: { buydown: "2-1", buydownPayer: "seller" } });
+  const buyer = runLoanMaths({ ...buydownBase, buydownOpts: { buydown: "2-1", buydownPayer: "buyer" } });
+  expect(seller.totalFees.reduce((a, b) => a + b, 0)).toBeCloseTo(0, 5);
+  expect(buyer.totalFees[0]).toBeCloseTo(9103.76, 2);
+});
+
+test("permanent 1 point on $400k at 6.75% to 6.50%", () => {
+  const none = runLoanMaths({ ...buydownBase, interestRate: 6.75 });
+  const withPoints = runLoanMaths({
+    ...buydownBase,
+    interestRate: 6.75,
+    buydownOpts: { buydown: "points", points: 1, rateCut: 0.25, buydownPayer: "seller" },
+  });
+  expect(withPoints.totalFees[0]).toBeCloseTo(4000, 5);
+  expect(none.monthlyPayment[0]).toBeCloseTo(2594.39, 2);
+  expect(withPoints.monthlyPayment[0]).toBeCloseTo(2528.27, 2);
+  expect(withPoints.buydownInfo.monthlySavings).toBeCloseTo(66.12, 2);
+  expect(withPoints.buydownInfo.breakEvenMonths).toBeCloseTo(60.5, 1);
+  expect(withPoints.remaining).not.toEqual(none.remaining);
+});
+
+test("points from the form (string inputs) change P&I even when rate cut is omitted", () => {
+  const none = runLoanMaths({ ...buydownBase, interestRate: 6.75 });
+  const withStrings = runLoanMaths({
+    ...buydownBase,
+    interestRate: 6.75,
+    buydownOpts: { buydown: "points", points: "1", rateCut: "0.25" },
+  });
+  const omittedCut = runLoanMaths({
+    ...buydownBase,
+    interestRate: 6.75,
+    buydownOpts: { buydown: "points", points: "1" },
+  });
+  expect(withStrings.monthlyPayment[0]).toBeCloseTo(2528.27, 2);
+  expect(omittedCut.monthlyPayment[0]).toBeCloseTo(2528.27, 2);
+  expect(none.monthlyPayment[0]).toBeCloseTo(2594.39, 2);
+});
+
+test("refinance during year 1 ends the temporary subsidy", () => {
+  const with21 = runLoanMaths({ ...buydownBase, buydownOpts: { buydown: "2-1", buydownPayer: "seller" } });
+  const refiDate = with21.loanMonths[5];
+  const withRefi = runLoanMaths({
+    ...buydownBase,
+    loanEvent: [{ event: "Refinance", date: refiDate, cost: 0, change: 6.5, newLength: 30, repeats: 0 }],
+    buydownOpts: { buydown: "2-1", buydownPayer: "seller" },
+  });
+  expect(withRefi.monthlyPayment[0]).toBeCloseTo(2026.74, 2);
+  expect(withRefi.buydownSubsidy[4]).toBeGreaterThan(1);
+  expect(withRefi.buydownSubsidy[5]).toBeCloseTo(0, 5);
+  expect(withRefi.monthlyPayment[5]).toBeCloseTo(withRefi.monthlyInterest[5] + withRefi.monthlyPrincipal[5], 2);
+});
+
+test("points and a temporary 2-1 are exclusive", () => {
+  const with21 = runLoanMaths({
+    ...buydownBase,
+    buydownOpts: { buydown: "2-1", points: 1, rateCut: 0.25, buydownPayer: "seller" },
+  });
+  expect(with21.totalFees[0] || 0).toBeCloseTo(0, 5);
+  expect(with21.monthlyPayment[0]).toBeCloseTo(2026.74, 2);
+  expect(with21.buydownInfo.pointsCost).toBeCloseTo(0, 5);
+
+  const withPoints = runLoanMaths({
+    ...buydownBase,
+    interestRate: 6.75,
+    buydownOpts: { buydown: "points", points: 1, rateCut: 0.25 },
+  });
+  expect(withPoints.monthlyPayment[0]).toBeCloseTo(2528.27, 2);
+  expect(withPoints.buydownInfo.structure).toBe("");
+});
 //had trouble testing xlsx generation because the sheets contain formulas, which get corrupted in sheet read

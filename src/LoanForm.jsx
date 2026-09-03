@@ -1,8 +1,9 @@
-import { isNumber } from "./loanMaths.js";
+import { isNumber, cashFormat, getBuydownSchedule, getPointsBuydown, BUYDOWN_STRUCTURES } from "./loanMaths.js";
 import { Calendar } from "react-calendar";
 import { Modal } from "react-bootstrap";
 import { useState } from "react";
-import { cashFormat } from "./loanMaths.js";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Tooltip from "react-bootstrap/Tooltip";
 
 function ValidFbComp({ x }) {
   if (x === null) return null;
@@ -26,7 +27,7 @@ function FbComp({ x }) {
   }
 }
 
-function LoanForm({ displayState, flash, updateUserInput, valid }) {
+function LoanForm({ displayState, flash, updateUserInput, valid, chosenInput }) {
   const [show, setShow] = useState(false);
   const feeOptions = ["$ / year", "$ / month", "% / year", "% / month"];
 
@@ -87,6 +88,30 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
     setShow(false);
     updateUserInput("startDate", newDate.getTime());
   }
+
+  const buydownOn = displayState["buydown"] !== "";
+  const showBuydown = displayState["buydownOpen"] || buydownOn;
+  const isPointsMode = displayState["buydown"] === "points";
+  const isTempMode = Boolean(BUYDOWN_STRUCTURES[displayState["buydown"]]);
+  const tempPreview = isTempMode
+    ? getBuydownSchedule(
+        parseFloat(displayState["loanAmount"]),
+        parseFloat(displayState["loanLength"]),
+        parseFloat(displayState["interestRate"]),
+        displayState["buydown"],
+        displayState["interestOnly"]
+      )
+    : null;
+  const pointsPreview = isPointsMode
+    ? getPointsBuydown(
+        parseFloat(displayState["loanAmount"]),
+        parseFloat(displayState["loanLength"]),
+        parseFloat(displayState["interestRate"]),
+        displayState["rateCut"],
+        displayState["points"],
+        displayState["interestOnly"]
+      )
+    : null;
 
   return (
     <div>
@@ -177,17 +202,141 @@ function LoanForm({ displayState, flash, updateUserInput, valid }) {
           </Modal>
         </div>
         <div className="col-12">
-          <div className="form-check mt-2">
-            <input
-              className="form-check-input"
-              type="checkbox"
-              checked={displayState["interestOnly"]}
-              onChange={(e) => {
-                updateUserInput("interestOnly", e.target.checked);
-              }}
-            />
-            <label className="form-check-label">Interest-Only Loan</label>
+          <div className="mt-2 d-flex flex-wrap align-items-center gap-3">
+            <div className="form-check mb-0">
+              <input
+                className="form-check-input"
+                type="checkbox"
+                checked={displayState["interestOnly"]}
+                onChange={(e) => {
+                  updateUserInput("interestOnly", e.target.checked);
+                }}
+              />
+              <label className="form-check-label">Interest-Only Loan</label>
+            </div>
+            {chosenInput == "homeVal" ? (
+              <div className="form-check mb-0">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  checked={showBuydown}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      updateUserInput("buydownOpen", true);
+                    } else {
+                      updateUserInput("buydownOpen", false);
+                      updateUserInput("buydown", "");
+                      updateUserInput("points", "0");
+                    }
+                  }}
+                />
+                <OverlayTrigger overlay={<Tooltip>Pay extra now (or use a seller credit) to lower the rate or the first years of payments</Tooltip>}>
+                  <label className="form-check-label">Buy down this rate</label>
+                </OverlayTrigger>
+              </div>
+            ) : null}
           </div>
+          {chosenInput == "homeVal" && showBuydown ? (
+            <div className="border rounded p-2 mt-2 mb-1" style={{ backgroundColor: "#f8f9fa" }}>
+              <label>Buydown</label>
+              <select
+                className="form-select mb-1"
+                value={displayState["buydown"] || ""}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  updateUserInput("buydown", v);
+                  if (v !== "points") {
+                    updateUserInput("points", "0");
+                  } else if (displayState["rateCut"] === "" || displayState["rateCut"] == null) {
+                    updateUserInput("rateCut", "0.25");
+                  }
+                }}
+              >
+                <option value="">None</option>
+                <option value="points">Points</option>
+                <option value="1-0">1-0</option>
+                <option value="2-1">2-1</option>
+                <option value="3-2-1">3-2-1</option>
+              </select>
+              {isPointsMode ? (
+                <div>
+                  <label className="mt-1">Points</label>
+                  <div className="input-group mb-1">
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={displayState["points"]}
+                      onChange={(e) => updateIfChanged(displayState["points"], e.target.value, "points")}
+                    />
+                  </div>
+                  <label>Rate cut per point</label>
+                  <div className="input-group mb-1">
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="0.25"
+                      value={displayState["rateCut"] === "" || displayState["rateCut"] == null ? "0.25" : displayState["rateCut"]}
+                      onChange={(e) => updateIfChanged(displayState["rateCut"], e.target.value, "rateCut")}
+                    />
+                    <span className="input-group-text">%</span>
+                  </div>
+                  {pointsPreview ? (
+                    <small className="text-muted">
+                      Cost {cashFormat(pointsPreview.cost)}
+                      {pointsPreview.boughtRate != null ? ` · new rate ${pointsPreview.boughtRate.toFixed(2)}%` : ""}
+                      {pointsPreview.breakEvenMonths
+                        ? ` · break-even ${pointsPreview.breakEvenMonths.toFixed(1)} months`
+                        : displayState["rateCut"]
+                          ? ""
+                          : " · enter the rate cut per point"}
+                    </small>
+                  ) : null}
+                </div>
+              ) : null}
+              {isTempMode ? (
+                <div>
+                  <label className="mt-1">Paid by</label>
+                  <div className="mb-1">
+                    <div className="form-check form-check-inline">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="buydownPayer"
+                        checked={displayState["buydownPayer"] == "seller"}
+                        onChange={() => updateUserInput("buydownPayer", "seller")}
+                      />
+                      <label className="form-check-label">Seller / builder</label>
+                    </div>
+                    <div className="form-check form-check-inline">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="buydownPayer"
+                        checked={displayState["buydownPayer"] == "buyer"}
+                        onChange={() => updateUserInput("buydownPayer", "buyer")}
+                      />
+                      <label className="form-check-label">Me</label>
+                    </div>
+                  </div>
+                  {tempPreview ? (
+                    <small className="text-muted">
+                      {tempPreview.years.map((y) => (
+                        <span key={y.year}>
+                          Year {y.year}: {cashFormat(y.payment)} at {y.rate.toFixed(2)}%
+                          <br />
+                        </span>
+                      ))}
+                      Then: {cashFormat(tempPreview.notePayment)}
+                      <br />
+                      Escrow cost {cashFormat(tempPreview.cost)}
+                      {displayState["loanAmount"] > 0 ? ` (${((tempPreview.cost / displayState["loanAmount"]) * 100).toFixed(2)} points)` : ""}
+                      {displayState["buydownPayer"] == "seller" ? " (seller pays)" : ""}
+                    </small>
+                  ) : null}
+                </div>
+              ) : null}
+            </div>
+          ) : null}
         </div>
       </div>
 

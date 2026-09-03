@@ -71,7 +71,13 @@ function runCalculations(userInput, loanEvent, chosenInput, userSetDownPercent) 
     PMI_percent,
     PMI_fixed,
     userInput["appraisal"],
-    userInput["interestOnly"]
+    userInput["interestOnly"],
+    {
+      buydown: userInput["buydown"],
+      buydownPayer: userInput["buydownPayer"],
+      points: userInput["points"],
+      rateCut: userInput["rateCut"],
+    }
   );
 
   const homeVal = parseFloat(loanRes["homeVal"]);
@@ -81,7 +87,9 @@ function runCalculations(userInput, loanEvent, chosenInput, userSetDownPercent) 
   } else {
     displayState["monthlyPayment"] = Math.round(loanRes["monthlyPayment"][0]).toString();
   }
-  displayState["monthlyPaymentToLoan"] = parseFloat(loanRes["monthlyInterest"][0]) + parseFloat(loanRes["monthlyPrincipal"][0]);
+  displayState["fullMonthlyPayment"] = Math.round(parseFloat(loanRes["monthlyPayment"][0]) + (loanRes["buydownSubsidy"][0] || 0)).toString();
+  displayState["monthlyPaymentToLoan"] =
+    parseFloat(loanRes["monthlyInterest"][0]) + parseFloat(loanRes["monthlyPrincipal"][0]) - (loanRes["buydownSubsidy"][0] || 0);
   // console.log("homeVal",homeVal)
   if (userSetDownPercent) {
     displayState["downPayPercent"] = userInput["downPayPercent"];
@@ -117,6 +125,12 @@ function runCalculations(userInput, loanEvent, chosenInput, userSetDownPercent) 
   displayState["utilitiesUnit"] = userInput["utilitiesUnit"];
   displayState["insuranceUnit"] = userInput["insuranceUnit"];
   displayState["startDate"] = userInput["startDate"];
+  displayState["buydown"] = userInput["buydown"];
+  displayState["buydownPayer"] = userInput["buydownPayer"];
+  displayState["points"] = userInput["points"];
+  displayState["rateCut"] = userInput["rateCut"];
+  displayState["buydownInfo"] = loanRes["buydownInfo"];
+  displayState["buydownOpen"] = userInput["buydownOpen"];
 
   displayState["lock"] = [];
   displayState["lock"].push(chosenInput);
@@ -180,6 +194,11 @@ const initialState = {
   insuranceUnit: 0,
   startDate: coarseDate,
   appraisal: 0,
+  buydown: "",
+  buydownPayer: "seller",
+  points: "0",
+  rateCut: "0.25",
+  buydownOpen: false,
 };
 const searchParams = new URLSearchParams(window.location.search);
 const initialOverride = {};
@@ -333,6 +352,8 @@ function App() {
     } else if (field == "interestOnly") {
       newUserInput.interestOnly = value;
       if (newChosenInput == "homeVal") newFlash["loanAmount"] = !newFlash["loanAmount"];
+    } else if (field == "buydown" || field == "buydownPayer" || field == "points" || field == "rateCut" || field == "buydownOpen") {
+      newUserInput[field] = value;
     } else if (field == "startDate") {
       newUserInput.startDate = value;
       //wipe events incase any event was starting before the new start date
@@ -353,8 +374,13 @@ function App() {
     }
 
     // console.log("newUserInput", newUserInput)
+    const skipValid = ["buydown", "buydownPayer", "interestOnly", "buydownOpen"];
     for (const i in newUserInput) {
       newValid[i] = null;
+      if (!(i in initialState)) continue;
+      if (skipValid.includes(i)) continue;
+      if (i == "rateCut" && (newUserInput[i] === "" || newUserInput[i] == null)) continue;
+      if (i == "points" && (newUserInput[i] === "" || newUserInput[i] == null)) continue;
       if (!isNumber(newUserInput[i])) {
         if (i != "appraisal") newValid[i] = "Must be a valid number";
       } else {
@@ -514,7 +540,7 @@ function App() {
                     homeVal: displayState["homeVal"],
                     downPayCash: displayState["downPayCash"],
                     loanMonths: loanRes["loanMonths"],
-                    interestRate: parseFloat(userInput["interestRate"]),
+                    interestRate: loanRes["buydownInfo"] ? loanRes["buydownInfo"].noteRate : parseFloat(userInput["interestRate"]),
                     loanLength: parseFloat(userInput["loanLength"]),
                     propertyTax: userInput["propertyTax"] * unitScaler(userInput["propertyTaxUnit"]),
                     hoa: userInput["hoa"] * unitScaler(userInput["hoaUnit"]),
@@ -524,6 +550,7 @@ function App() {
                     insurance: userInput["insurance"] * unitScaler(userInput["insuranceUnit"]),
                     overPayments: loanRes["overPayments"],
                     refinanceEvents: loanRes["refinanceEvents"],
+                    buydownSubsidy: loanRes["buydownSubsidy"],
                   });
                 }}
               >
@@ -603,7 +630,7 @@ function App() {
           </div>
         </div>
         <LoanPlot
-          maxMonthly={Math.max(loanRes["monthlyPayment"])}
+          maxMonthly={Math.max(0, ...loanRes["monthlyPayment"])}
           loanRes={loanRes}
           loanMonths={loanRes["loanMonths"]}
           propertyTax={userInput["propertyTax"] * unitScaler(userInput["propertyTaxUnit"])}

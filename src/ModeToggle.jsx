@@ -9,7 +9,7 @@ function ModeToggle({ chosenInput, displayState, valid, flash, userInput, update
 
   const handleMonthlyPaymentClick = () => {
     if (chosenInput !== "monthlyPayment") {
-      const monthlyPaymentValue = userInput.monthlyPayment !== "0" ? userInput.monthlyPayment : displayState.monthlyPayment;
+      const monthlyPaymentValue = displayState.fullMonthlyPayment || displayState.monthlyPayment;
       updateUserInput("monthlyPayment", monthlyPaymentValue);
     }
   };

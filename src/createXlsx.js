@@ -19,6 +19,7 @@ export async function createXlsx({
   insurance,
   overPayments,
   refinanceEvents,
+  buydownSubsidy,
 }) {
   const utils = XLSX.utils;
   const writeFile = XLSX.writeFile;
@@ -154,6 +155,11 @@ export async function createXlsx({
   ws[`${col}${row}`] = { v: "Overpayments" };
   nextCol();
   ws[`${col}${row}`] = { v: "Monthly Interest" };
+  const hasBuydown = Array.isArray(buydownSubsidy) && buydownSubsidy.some((s) => s > 0.005);
+  if (hasBuydown) {
+    nextCol();
+    ws[`${col}${row}`] = { v: "Buydown subsidy" };
+  }
   for (var i = 0; i < loanMonths.length; i++) {
     if (!loanMonths[i]) break; // If the month is not defined, break the loop (overpayments or some event has caused loan to finish early)
     nextRow();
@@ -161,7 +167,7 @@ export async function createXlsx({
     nextCol();
     ws[`${col}${row}`] = { v: `${loanMonths[i]}` }; // Date formula
     nextCol();
-    ws[`${col}${row}`] = { f: `SUM(${colOffset(col, 1)}${row}:${colOffset(col, 7)}${row})` }; // Monthly Payment formula
+    ws[`${col}${row}`] = { f: `SUM(${colOffset(col, 1)}${row}:${colOffset(col, 7)}${row})${hasBuydown ? `-${colOffset(col, 12)}${row}` : ""}` }; // Monthly Payment formula
     ws[`${col}${row}`].z = "$#,##0.00";
     nextCol();
     cellMonthlyPayment = `${col}${row}`;
@@ -223,6 +229,11 @@ export async function createXlsx({
     else if (refinanceEvents[i] !== null && refinanceEvents[i] !== undefined) ws[cellInterest] = { f: `${refinanceEvents[i].interestRate / 12}` };
     else ws[cellInterest] = { f: `${col}${row - 1}` }; // Remaining balance formula
     ws[cellInterest].z = "0.00%";
+    if (hasBuydown) {
+      nextCol();
+      ws[`${col}${row}`] = { f: `${buydownSubsidy[i] || 0}` };
+      ws[`${col}${row}`].z = "$#,##0.00";
+    }
   }
 
   // Do all the styling
@@ -256,9 +267,13 @@ export async function createXlsx({
     { wch: 18 }, // Column B width Remaining Balance
     { wch: 18 }, // Column B width Remaining Balance
   ];
+  if (hasBuydown) ws["!cols"].push({ wch: 16 });
 
   const headerRow = 11;
-  ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N"].forEach((col) => {
+  const tableCols = hasBuydown
+    ? ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O"]
+    : ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N"];
+  tableCols.forEach((col) => {
     const cell = ws[`${col}${headerRow}`];
     if (cell) {
       cell.s = cell.s || {};
@@ -277,7 +292,7 @@ export async function createXlsx({
 
   // Center align all values in the main data table
   for (let i = 12; i <= row; ++i) {
-    ["B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N"].forEach((col) => {
+    tableCols.forEach((col) => {
       const cell = ws[`${col}${i}`];
       if (cell) {
         cell.s = cell.s || {};
@@ -300,7 +315,7 @@ export async function createXlsx({
   for (let i = 12; i <= row; ++i) {
     if (refinanceEvents[i - 12] !== null || overPayments[i - 12] > 0) {
       // Adjust index for the refinanceEvents array
-      ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N"].forEach((col) => {
+      tableCols.forEach((col) => {
         const cell = ws[`${col}${i}`];
         if (cell) {
           cell.s = cell.s || {};
